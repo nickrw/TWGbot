@@ -38,7 +38,7 @@ module TWG
 
     def opped(m, *args)
       @isopped ||= false
-      @bot.logger.debug "Opped params: %s" % m.params.inspect 
+      @bot.loggers.debug "Opped params: %s" % m.params.inspect 
       chan, mode, user = m.params
       @bot.config.game = TWG::Game.new if @bot.config.game.nil?
       if chan == @bot.config.game_channel && mode == "+o" && user == @bot.nick
@@ -95,8 +95,8 @@ module TWG
         m.reply "Registration is now open, say !join to join the game within #{@bot.config.game_timers[:registration]} seconds, !help for more information. A minimum of #{@bot.config.game.min_part} players is required to play TWG."
         @bot.config.game.register(m.user.to_s)
         voice(m.user)
-        @bot.dispatch(:ten_seconds_left, m)
-        @bot.dispatch(:complete_startup, m)
+        @bot.handlers.dispatch(:ten_seconds_left, m)
+        @bot.handlers.dispatch(:complete_startup, m)
       end
     end
 
@@ -111,9 +111,9 @@ module TWG
         chanm "You will shortly receive your role via private message"
         #@bot.config.game.participants.keys.sort.each { |part| voice(part) }
         Channel(@bot.config.game_channel).mode('+m')
-        @bot.dispatch(:notify_roles)
+        @bot.handlers.dispatch(:notify_roles)
         sleep 5
-        @bot.dispatch(:enter_night)
+        @bot.handlers.dispatch(:enter_night)
         #TODO: Register timer for first night
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
@@ -148,13 +148,13 @@ module TWG
       @bot.config.game.state_transition_in
       solicit_wolf_votes 
       sleep @bot.config.game_timers[:night]
-      @bot.dispatch(:exit_night, m)
+      @bot.handlers.dispatch(:exit_night, m)
     end
   
     def exit_night(m)
       return if @bot.config.game.nil?
       r = @bot.config.game.next_state
-      @bot.dispatch(:seer_reveal, m, @bot.config.game.reveal)
+      @bot.handlers.dispatch(:seer_reveal, m, @bot.config.game.reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
         chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. #{k}, a villager, is dead.")
@@ -164,7 +164,7 @@ module TWG
         chanm("Everybody wakes, bleary eyed. There doesn't appear to be any body! Nobody was murdered during the night!")
       end
       unless check_victory_conditions
-        @bot.dispatch(:enter_day, m, k)
+        @bot.handlers.dispatch(:enter_day, m, k)
       end
     end
 
@@ -173,7 +173,7 @@ module TWG
       @bot.config.game.state_transition_in
       solicit_human_votes(killed)
       sleep @bot.config.game_timers[:day]
-      @bot.dispatch(:exit_day,m)
+      @bot.handlers.dispatch(:exit_day,m)
     end
 
     def exit_day(m)
@@ -196,7 +196,7 @@ module TWG
         chanm("No consensus could be reached, hurrying off to bed the villagers uneasily hope that the wolves have already had their fill.")
       end
       unless check_victory_conditions
-        @bot.dispatch(:enter_night,m)
+        @bot.handlers.dispatch(:enter_night,m)
       end
     end
 

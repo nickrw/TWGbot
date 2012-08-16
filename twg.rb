@@ -8,8 +8,8 @@ bot = Cinch::Bot.new do
     c.channels = ["##testtwg"]
     c.plugins.plugins = [
       TWG::IRC,
-      TWG::IRC::Seer,
-      TWG::IRC::Debug
+      TWG::IRC::Seer
+#      TWG::IRC::Debug
     ]
     c.nick = "testtwgbot"
     c.name = "testtwgbot"
@@ -29,7 +29,7 @@ bot = Cinch::Bot.new do
 
   on :channel, "!quit" do |m|
     m.user.refresh
-    @bot.logger.debug "Shutting down at the request of %s (%s)" % [m.user.nick, m.user.authname]
+    @bot.loggers.debug "Shutting down at the request of %s (%s)" % [m.user.nick, m.user.authname]
     exit if @bot.config.admins.include? m.user.authname
   end
 end
