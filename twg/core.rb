@@ -23,8 +23,8 @@ module TWG
       @state = :signup
       @iteration = 0
       @participants = {}
-      @min_part = 3
-      @wolf_ratio = (1.0/3.0)
+      @min_part = 6
+      @wolf_ratio = (1.0/5.0)
       @game_wolves = []
       @live_wolves = 0
       @live_norms = 0
