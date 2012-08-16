@@ -149,7 +149,7 @@ module TWG
     def state_transition_out
       return [@state, @state] if [:humanswin, :wolveswin].include?(@state)
       r = apply_votes
-      if @live_wolves >= @live_norms
+      if (@state == :day) && (@live_wolves >= (@live_norms - 1))
         [:wolveswin, r]
       elsif @live_wolves == 0
         [:humanswin, r]
