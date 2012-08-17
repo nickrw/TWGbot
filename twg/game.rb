@@ -102,7 +102,6 @@ module TWG
       end
       return Haps.new(:action => :none, :code => :voternotplayer, :state => @state, :message => "#{nick} tried to vote but isn't playing") unless player?(nick)
       return Haps.new(:action => :none, :code => :voterdead, :state => @state, :message => "#{nick} is dead but tried to vote for #{vfor}") if dead?(nick)
-      return Haps.new(:action => :reply, :code => :alreadyvoted, :state => @state, :message => "#{nick} has already voted but tried to vote for #{vfor}") if @voted.include?(nick)
       return Haps.new(:action => :reply, :code => :voteself, :state => @state, :message => "#{nick} tried to vote for themselves") if nick == vfor
       return Haps.new(:action => :reply, :code => :voteenotplayer, :state => @state, :message => "#{nick} tried to vote for non-player: #{vfor}") unless player?(vfor)
       return Haps.new(:action => :reply, :code => :voteedead, :state => @state, :message => "#{nick} tried to vote for dead player: #{vfor}") if dead?(vfor)
@@ -110,8 +109,13 @@ module TWG
         return Haps.new(:action => :reply, :code => :notawolf, :state => @state, :message => "#{nick} is not a wolf but tried to vote at night") unless @game_wolves.include?(nick)
         return Haps.new(:action => :reply, :code => :fellowwolf, :state => @state, :message => "#{nick} tried to vote for fellow wolf #{vfor}") if @game_wolves.include?(vfor)
       end
-      record_vote(nick,vfor)
-      return Haps.new(:action => :reply, :code => :confirmvote, :state => @state, :message => "#{nick} voted for #{vfor}")
+      if @voted.include?(nick)
+        record_vote(nick,vfor)
+        return Haps.new(:action => :reply, :code => :changedvote, :state => @state, :message => "#{nick} changed their vote to #{vfor}") 
+      else
+        record_vote(nick,vfor)
+        return Haps.new(:action => :reply, :code => :confirmvote, :state => @state, :message => "#{nick} voted for #{vfor}")
+      end
     end
     
     def see(user, target)
@@ -165,7 +169,11 @@ module TWG
     private
 
     def record_vote(nick,vfor)
-      @voted << nick
+      if @voted[nick]
+        @votes[@voted[nick]] -= 1
+      else
+        @voted[nick] = vfor
+      end
       if @votes[vfor].nil?
         @votes[vfor] = 1
       else
@@ -174,7 +182,7 @@ module TWG
     end
 
     def clear_votes
-      @voted = []
+      @voted = {}
       @votes = {}
       @seetarget = ""
     end
@@ -211,7 +219,6 @@ module TWG
     def apply_votes
       highest = 0
       tiebreak = []
-      puts "DEBUG @votes: #{@votes.inspect}"
       @votes.each do |votee, count|
         if count > highest
           tiebreak = [votee]
@@ -220,14 +227,12 @@ module TWG
           tiebreak << votee
         end
       end
-      puts "DEBUG tiebreak: #{tiebreak.inspect}"
       killme = nil
       if tiebreak.length > 1
         killme = tiebreak[rand(tiebreak.length)]
       elsif tiebreak.length == 1
         killme = tiebreak[0]
       end
-      puts "DEBUG: killme is: #{killme.inspect}"
       return Haps.new(:action => :channel, :code => :novotes, :state => @state, :message => "No votes were made!") if killme.nil?
       was = ""
       wasn = ""

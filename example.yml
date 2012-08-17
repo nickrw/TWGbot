@@ -1,0 +1,28 @@
+options:
+  log_output: false
+  dir_mode: normal
+  dir: "cinchize"
+servers:
+  mensearch:
+    server: irc.freenode.net
+    port: 6667
+    nick: egtwgbot
+    user: egtwgbot
+    realname: egtwgbot
+    shared:
+        admins:
+          - "mynick"
+    channels:
+      - "##twgbot"
+    plugins:
+      - 
+        class: "TWG::IRC"
+        options:
+            game_channel: "##twgbot"
+            game_timers:
+                registration: 30
+                day: 60
+                night: 60
+                dramatic_effect: 5
+	  -
+		  class: "TWG::IRC::Seer"
