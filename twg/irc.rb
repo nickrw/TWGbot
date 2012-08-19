@@ -12,24 +12,31 @@ module TWG
     listen_to :nick, :method => :nickchange
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
+    listen_to :do_allow_starts, :method => :do_allow_starts
     match "start", :method => :start
     match /vote ([^ ]+)$/, :method => :vote
     match "join", :method => :join
       
+    def initialize(*args)
+      super
+      shared[:game] = TWG::Game.new if shared[:game].nil?
+      @allow_starts = false
+    end
+
     def vote(m, mfor)
       unless shared[:game].nil?
         m.user.refresh
         r = shared[:game].vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
         if r.code == :confirmvote
           if m.channel?
-            rmessage = "#{m.user} voted for #{mfor}"
+            rmessage = "#{m.user} voted for %s" % Format(:bold, mfor)
           else
             rmessage = "You have voted for #{mfor} to be killed tonight"
           end
           m.reply rmessage
         elsif r.code == :changedvote
           if m.channel?
-            rmessage = "#{m.user} changed their vote to #{mfor}"
+            rmessage = "#{m.user} %s their vote to %s" % [Format(:bold, "changed"), Format(:bold, mfor)]
           else
             rmessage = "You have changed your vote to #{mfor}"
           end
@@ -38,12 +45,6 @@ module TWG
       end
     end
     
-    def initialize(*args)
-      super
-      shared[:game] = TWG::Game.new if shared[:game].nil?
-      @allow_starts = false
-    end
-
     def opped(m, *args)
       @isopped ||= false
       debug "Opped params: %s" % m.params.inspect 
@@ -53,11 +54,10 @@ module TWG
         @isopped = true
         unless [:night,:day].include?(shared[:game].state) || @signup_started == true
           wipe_slate
-          chanm "TWG bot is now up and running! Say !start to start a new game."
+	  delaydispatch(15, :do_allow_starts)
         end
-        @allow_starts = true
       elsif chan == config["game_channel"] && mode == "-o" && user == bot.nick
-        chanm "Cancelling game! I have been deopped!" if shared[:game].state != :signup || (shared[:game].state == :signup && @signup_started == true)
+        chanm Format(:bold, "Cancelling game! I have been deopped!") if shared[:game].state != :signup || (shared[:game].state == :signup && @signup_started == true)
         shared[:game] = nil
         @signup_started = false
         @isopped = false
@@ -65,19 +65,17 @@ module TWG
       end
     end
 
-    def wipe_slate
-      @signup_started = false
-      gchan = Channel(config["game_channel"])
-      gchan.mode('-m')
-      gchan.users.each do |user,mode|
-        devoice(user) if mode.include? 'v'
-      end
+    def do_allow_starts(m)
+      chanm "TWG bot is now up and running! Say !start to start a new game."
+      @allow_starts = true
     end
 
     def nickchange(m)
       unless shared[:game].nil?
-        shared[:game].nickchange(m.user.last_nick, m.user.nick)
-        chanm("Player %s is now known as %s" % [m.user.last_nick, m.user.nick]) if shared[:game].participants[m.user.nick] != :dead
+        if shared[:game].state != :signup
+          shared[:game].nickchange(m.user.last_nick, m.user.nick)
+          chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.nick)]) if shared[:game].participants[m.user.nick] != :dead
+	end
       end
     end
 
@@ -103,31 +101,27 @@ module TWG
         m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
         shared[:game].register(m.user.to_s)
         voice(m.user)
-        bot.handlers.dispatch(:ten_seconds_left, m)
-        bot.handlers.dispatch(:complete_startup, m)
+	delaydispatch(config["game_timers"]["registration"] - 10, :ten_seconds_left, m)
+	delaydispatch(config["game_timers"]["registration"], :complete_startup, m)
       end
     end
 
     def complete_startup(m)
-      sleep(config["game_timers"]["registration"])
       return if shared[:game].nil?
       return unless shared[:game].state == :signup
       r = shared[:game].start
 
       if r.code == :gamestart
-        chanm "Game starting! Players are: #{shared[:game].participants.keys.sort.join(', ')}"
+        chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), shared[:game].participants.keys.sort.join(', ')]
         chanm "You will shortly receive your role via private message"
-        #shared[:game].participants.keys.sort.each { |part| voice(part) }
         Channel(config["game_channel"]).mode('+m')
         bot.handlers.dispatch(:notify_roles)
-        sleep 5
-        bot.handlers.dispatch(:enter_night)
-        #TODO: Register timer for first night
+	delaydispatch(10, :enter_night)
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
         wipe_slate
       else
-        chanm "An unexpected error occured, the game could not be started."
+        chanm Format(:red, "An unexpected error occured, the game could not be started.")
         wipe_slate
       end
     end
@@ -145,7 +139,6 @@ module TWG
     end
 
     def ten_seconds_left(m)
-      sleep(config["game_timers"]["registration"] - 10)
       return if shared[:game].nil?
       return unless shared[:game].state == :signup
       chanm "10 seconds left to !join. #{shared[:game].participants.length} out of a minimum of #{shared[:game].min_part} players joined so far."
@@ -153,11 +146,10 @@ module TWG
 
     def enter_night(m)
       return if shared[:game].nil?
-      chanm("A chilly mist decends, it is now NIGHT #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds.")
+      chanm("A chilly mist decends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
       shared[:game].state_transition_in
       solicit_wolf_votes 
-      sleep config["game_timers"]["night"]
-      bot.handlers.dispatch(:exit_night, m)
+      delaydispatch(config["game_timers"]["night"], :exit_night, m)
     end
   
     def exit_night(m)
@@ -166,11 +158,11 @@ module TWG
       bot.handlers.dispatch(:seer_reveal, m, shared[:game].reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
-        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. #{k}, a villager, is dead.")
+        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. %s" % Format(:red, "#{k.capitalize}, a villager, is dead."))
         devoice(k)
       elsif r.code == :novotes
         k = :none
-        chanm("Everybody wakes, bleary eyed. There doesn't appear to be any body! Nobody was murdered during the night!")
+        chanm("Everybody wakes, bleary eyed. %s Nobody was murdered during the night!" % Format(:underline, "There doesn't appear to be a body!"))
       end
       unless check_victory_conditions
         bot.handlers.dispatch(:enter_day, m, k)
@@ -181,31 +173,72 @@ module TWG
       return if shared[:game].nil?
       shared[:game].state_transition_in
       solicit_human_votes(killed)
-      sleep config["game_timers"]["day"]
-      bot.handlers.dispatch(:exit_day,m)
+      delaydispatch(config["game_timers"]["day"], :exit_day, m)
     end
 
     def exit_day(m)
       return if shared[:game].nil?
       r = shared[:game].next_state
-      chanm "Voting over!"
-      if r.code == :normkilled
-        k = r.opts[:killed]
+      k = r.opts[:killed]
+      unless r.code == :novotes
+        chanm "Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k)
+        sleep 2
         chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The villagers examine the body...")
         sleep(config["game_timers"]["dramatic_effect"])
+      else
+        chanm("Voting over! No consensus could be reached.")
+      end
+      if r.code == :normkilled
         chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
         devoice(k)
       elsif r.code == :wolfkilled
-        k = r.opts[:killed]
-        chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The villagers examine the body...")
-        sleep(config["game_timers"]["dramatic_effect"])
         chanm("...and it starts to transform before their very eyes! A dead wolf lies before them.")
         devoice(k)
-      else
-        chanm("No consensus could be reached, hurrying off to bed the villagers uneasily hope that the wolves have already had their fill.")
       end
       unless check_victory_conditions
         bot.handlers.dispatch(:enter_night,m)
+      end
+    end
+
+    def notify_roles(m)
+      return if shared[:game].nil?
+      shared[:game].participants.keys.each do |user|
+        case shared[:game].participants[user]
+          when :normal
+            userm(user, "You are a normal human being.")
+          when :wolf
+	    if user == "michal"
+              userm(user, "Holy shit you're finally a WOLF!")
+	    else
+              userm(user, "You are a WOLF!")
+	    end
+            wolfcp = shared[:game].game_wolves.dup
+            wolfcp.delete(user)
+            if wolfcp.length > 1
+              userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
+            elsif wolfcp.length == 1
+              userm(user, "Your fellow wolf is: #{wolfcp[0]}")
+            elsif wolfcp.length == 0
+              userm(user, "You are the only wolf in this game.")
+            end
+        end
+      end
+    end
+
+    private
+    
+    def admin?(user)
+      user.refresh
+      shared[:admins].include?(user.authname)
+    end
+
+    def delaydispatch(secs, method, m = nil)
+      Timer(secs, {:shots => 1}) do
+        if m.nil?
+	  bot.handlers.dispatch(method)
+	else
+          bot.handlers.dispatch(method, m)
+	end
       end
     end
 
@@ -215,7 +248,7 @@ module TWG
         if shared[:game].live_wolves > 1
           chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{shared[:game].live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
         else
-          chanm "With a bloodcurdling howl, hair begins sprouting from #{shared[:game].wolves_alive[0]}'s every orifice. One human doesn't stand a chance."
+          chanm "With a bloodcurdling howl, hair begins sprouting from #{shared[:game].wolves_alive[0]}'s every orifice. The remaining villagers don't stand a chance."
         end
         if shared[:game].game_wolves.length == 1
           chanm "Game over! The lone wolf #{shared[:game].wolves_alive[0]} wins!"
@@ -241,35 +274,6 @@ module TWG
       else
         return false
       end
-    end
-
-
-    def notify_roles(m)
-      return if shared[:game].nil?
-      shared[:game].participants.keys.each do |user|
-        case shared[:game].participants[user]
-          when :normal
-            userm(user, "You are a normal human being.")
-          when :wolf
-            userm(user, "You are a WOLF!")
-            wolfcp = shared[:game].game_wolves.dup
-            wolfcp.delete(user)
-            if wolfcp.length > 1
-              userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
-            elsif wolfcp.length == 1
-              userm(user, "Your fellow wolf is: #{wolfcp[0]}")
-            elsif wolfcp.length == 0
-              userm(user, "You are the only wolf in this game.")
-            end
-        end
-      end
-    end
-
-    private
-    
-    def admin?(user)
-      user.refresh
-      shared[:admins].include?(user.authname)
     end
 
     def devoice(uname)
@@ -326,6 +330,34 @@ module TWG
 
     def userm(user, m)
       User(user).send(m)
+    end
+
+    def wipe_slate
+      @signup_started = false
+      gchan = Channel(config["game_channel"])
+      gchan.mode('-m')
+      deop = []
+      devoice = []
+      gchan.users.each do |user,mode|
+        next if user == bot.nick
+        deop << user if mode.include? 'o'
+	devoice << user if mode.include? 'v'
+      end
+      multimode(deop, config["game_channel"], "-", "o")
+      multimode(devoice, config["game_channel"], "-", "v")
+    end
+
+    def multimode(musers, mchannel, direction, mode)
+      while musers.count > 0
+        if musers.count < 4
+	  rc = musers.count
+	else
+	  rc = 4
+	end
+        add = musers.pop(rc)
+	ms = direction + mode * rc
+	bot.irc.send "MODE %s %s %s" % [mchannel, ms, add.join(" ")]
+      end
     end
 
   end
