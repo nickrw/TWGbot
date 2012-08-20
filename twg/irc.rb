@@ -15,17 +15,20 @@ module TWG
     listen_to :do_allow_starts, :method => :do_allow_starts
     match "start", :method => :start
     match /vote ([^ ]+)$/, :method => :vote
+    match "votes", :method => :votes
     match "join", :method => :join
       
     def initialize(*args)
       super
       shared[:game] = TWG::Game.new if shared[:game].nil?
       @allow_starts = false
+      @authnames = {}
     end
 
     def vote(m, mfor)
       unless shared[:game].nil?
         m.user.refresh
+        return if @authnames[m.user.to_s] != m.user.authname
         r = shared[:game].vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
         if r.code == :confirmvote
           if m.channel?
@@ -45,6 +48,22 @@ module TWG
       end
     end
     
+    def votes(m)
+      return if !m.channel?
+      return if shared[:game].state != :day
+      tally = {}
+      shared[:game].voted.each do |voter,votee|
+        if tally[votee]
+          tally[votee] << voter
+        else
+          tally[votee] = [voter]
+        end
+      end
+      tally.each do |votee,voters|
+        m.reply "#{votee} has #{voters.count} votes (#{voters.join(', ')})."
+      end
+    end
+    
     def opped(m, *args)
       @isopped ||= false
       debug "Opped params: %s" % m.params.inspect 
@@ -54,7 +73,7 @@ module TWG
         @isopped = true
         unless [:night,:day].include?(shared[:game].state) || @signup_started == true
           wipe_slate
-	  delaydispatch(15, :do_allow_starts)
+          delaydispatch(15, :do_allow_starts)
         end
       elsif chan == config["game_channel"] && mode == "-o" && user == bot.nick
         chanm Format(:bold, "Cancelling game! I have been deopped!") if shared[:game].state != :signup || (shared[:game].state == :signup && @signup_started == true)
@@ -72,10 +91,11 @@ module TWG
 
     def nickchange(m)
       unless shared[:game].nil?
-        if shared[:game].state != :signup
-          shared[:game].nickchange(m.user.last_nick, m.user.nick)
-          chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.nick)]) if shared[:game].participants[m.user.nick] != :dead
-	end
+        if shared[:game].state != :signup && shared[:game].participants[m.user.to_s] && shared[:game].participants[m.user.to_s] != :dead
+          shared[:game].nickchange(m.user.last_nick, m.user.to_s)
+          @authnames[m.user.to_s] = @authnames.delete(m.user.last_nick)
+          chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
+        end
       end
     end
 
@@ -95,14 +115,19 @@ module TWG
         shared[:game].reset
       end
       if shared[:game].state == :signup
-        wipe_slate
-        @signup_started = true
-        m.reply "TWG has been started by #{m.user}!"
-        m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
-        shared[:game].register(m.user.to_s)
-        voice(m.user)
-	delaydispatch(config["game_timers"]["registration"] - 10, :ten_seconds_left, m)
-	delaydispatch(config["game_timers"]["registration"], :complete_startup, m)
+        unless m.user.authname.nil?
+          wipe_slate
+          @signup_started = true
+          m.reply "TWG has been started by #{m.user}!"
+          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
+          shared[:game].register(m.user.to_s)
+          voice(m.user)
+          @authnames[m.user.to_s] = m.user.authname
+          delaydispatch(config["game_timers"]["registration"] - 10, :ten_seconds_left, m)
+          delaydispatch(config["game_timers"]["registration"], :complete_startup, m)
+        else
+          m.reply "you are unable to start a game as you are not authenticated to network services", true
+        end
       end
     end
 
@@ -116,7 +141,7 @@ module TWG
         chanm "You will shortly receive your role via private message"
         Channel(config["game_channel"]).mode('+m')
         bot.handlers.dispatch(:notify_roles)
-	delaydispatch(10, :enter_night)
+        delaydispatch(10, :enter_night)
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
         wipe_slate
@@ -129,11 +154,16 @@ module TWG
     def join(m)
       return if !m.channel?
       return if !@signup_started
+      if m.user.authname.nil?
+        m.reply "unable to add you to the game, you are not identified with services", true
+        return
+      end
       if !shared[:game].nil? && shared[:game].state == :signup
         r = shared[:game].register(m.user.to_s)
         if r.code == :confirmplayer
           m.reply "#{m.user} has joined the game (#{shared[:game].participants.length}/#{shared[:game].min_part}[minimum])"
           Channel(config["game_channel"]).voice(m.user)
+          @authnames[m.user.to_s] = m.user.authname
         end
       end
     end
@@ -146,7 +176,7 @@ module TWG
 
     def enter_night(m)
       return if shared[:game].nil?
-      chanm("A chilly mist decends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
+      chanm("A chilly mist descends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
       shared[:game].state_transition_in
       solicit_wolf_votes 
       delaydispatch(config["game_timers"]["night"], :exit_night, m)
@@ -204,23 +234,23 @@ module TWG
       return if shared[:game].nil?
       shared[:game].participants.keys.each do |user|
         case shared[:game].participants[user]
-          when :normal
-            userm(user, "You are a normal human being.")
-          when :wolf
-	    if user == "michal"
-              userm(user, "Holy shit you're finally a WOLF!")
-	    else
-              userm(user, "You are a WOLF!")
-	    end
-            wolfcp = shared[:game].game_wolves.dup
-            wolfcp.delete(user)
-            if wolfcp.length > 1
-              userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
-            elsif wolfcp.length == 1
-              userm(user, "Your fellow wolf is: #{wolfcp[0]}")
-            elsif wolfcp.length == 0
-              userm(user, "You are the only wolf in this game.")
-            end
+        when :normal
+          userm(user, "You are a normal human being.")
+        when :wolf
+          if user == "michal"
+            userm(user, "Holy shit you're finally a WOLF!")
+          else
+            userm(user, "You are a WOLF!")
+          end
+          wolfcp = shared[:game].game_wolves.dup
+          wolfcp.delete(user)
+          if wolfcp.length > 1
+            userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
+          elsif wolfcp.length == 1
+            userm(user, "Your fellow wolf is: #{wolfcp[0]}")
+          elsif wolfcp.length == 0
+            userm(user, "You are the only wolf in this game.")
+          end
         end
       end
     end
@@ -235,10 +265,10 @@ module TWG
     def delaydispatch(secs, method, m = nil)
       Timer(secs, {:shots => 1}) do
         if m.nil?
-	  bot.handlers.dispatch(method)
-	else
+          bot.handlers.dispatch(method)
+        else
           bot.handlers.dispatch(method, m)
-	end
+        end
       end
     end
 
@@ -334,14 +364,15 @@ module TWG
 
     def wipe_slate
       @signup_started = false
-      gchan = Channel(config["game_channel"])
-      gchan.mode('-m')
+      @gchan = Channel(config["game_channel"])
+      @authnames = {}
+      @gchan.mode('-m')
       deop = []
       devoice = []
-      gchan.users.each do |user,mode|
+      @gchan.users.each do |user,mode|
         next if user == bot.nick
         deop << user if mode.include? 'o'
-	devoice << user if mode.include? 'v'
+        devoice << user if mode.include? 'v'
       end
       multimode(deop, config["game_channel"], "-", "o")
       multimode(devoice, config["game_channel"], "-", "v")
@@ -350,13 +381,13 @@ module TWG
     def multimode(musers, mchannel, direction, mode)
       while musers.count > 0
         if musers.count < 4
-	  rc = musers.count
-	else
-	  rc = 4
-	end
+          rc = musers.count
+        else
+          rc = 4
+        end
         add = musers.pop(rc)
-	ms = direction + mode * rc
-	bot.irc.send "MODE %s %s %s" % [mchannel, ms, add.join(" ")]
+        ms = direction + mode * rc
+        bot.irc.send "MODE %s %s %s" % [mchannel, ms, add.join(" ")]
       end
     end
 

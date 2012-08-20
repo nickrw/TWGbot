@@ -171,9 +171,8 @@ module TWG
     def record_vote(nick,vfor)
       if @voted[nick]
         @votes[@voted[nick]] -= 1
-      else
-        @voted[nick] = vfor
       end
+      @voted[nick] = vfor
       if @votes[vfor].nil?
         @votes[vfor] = 1
       else
