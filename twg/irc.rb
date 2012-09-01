@@ -15,7 +15,7 @@ module TWG
     listen_to :deop, :method => :opped
     listen_to :do_allow_starts, :method => :do_allow_starts
     match "start", :method => :start
-    match /vote ([^ ]+)$/, :method => :vote
+    match /vote ([^ ]+)(.*)?$/, :method => :vote
     match "votes", :method => :votes
     match "join", :method => :join
       
@@ -26,7 +26,7 @@ module TWG
       @authnames = {}
     end
 
-    def vote(m, mfor)
+    def vote(m, mfor, reason)
       unless shared[:game].nil?
         m.user.refresh
         return if @authnames[m.user.to_s] != m.user.authname
