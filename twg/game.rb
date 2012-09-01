@@ -76,6 +76,9 @@ module TWG
         count = @votes.delete(oldnick)
         @votes.merge!({newnick => count})
       end
+      if @seetarget == oldnick
+        @seetarget = newnick
+      end
     end
 
     # Advances the game to the next state (and returns the action taken when exiting current state)
