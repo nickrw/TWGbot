@@ -374,7 +374,7 @@ module TWG
       else
         blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
       end
-      chanm("It is now DAY #{shared[:game].iteration}: #{blurb} Cast your vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
+      chanm("It is now DAY #{shared[:game].iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
     end
 
     def chanm(m)
