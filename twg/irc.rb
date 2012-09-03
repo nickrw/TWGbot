@@ -179,19 +179,19 @@ module TWG
       return if shared[:game].nil?
       if shared[:game].state == :day
         notvoted = []
-	shared[:game].participants.each do |player,state|
-	  next if state == :dead
-	  unless shared[:game].voted.keys.include?(player)
-	    notvoted << player
-	  end
-	end
-	wmessage = Format(:bold, "Voting closes in #{secsremain} seconds! ")
-	if notvoted.count > 0
-	  wmessage << "Yet to vote: #{notvoted.join(', ')}"
-	else
-	  wmessage << "Everybody has voted, but it's not too late to change your mind..." 
-	end
-	chanm(wmessage)
+        shared[:game].participants.each do |player,state|
+          next if state == :dead
+          unless shared[:game].voted.keys.include?(player)
+            notvoted << player
+          end
+        end
+        wmessage = Format(:bold, "Voting closes in #{secsremain} seconds! ")
+        if notvoted.count > 0
+          wmessage << "Yet to vote: #{notvoted.join(', ')}"
+        else
+          wmessage << "Everybody has voted, but it's not too late to change your mind..." 
+        end
+        chanm(wmessage)
       end
     end
 
