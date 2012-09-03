@@ -61,7 +61,7 @@ module TWG
         end
       end
       tally.each do |votee,voters|
-        chanm "#{votee} has #{voters.count} votes (#{voters.join(', ')})."
+        chanm "#{votee} has #{voters.count} vote#{voters.count > 1 ? "s" : nil} (#{voters.join(', ')})."
       end
     end
     
