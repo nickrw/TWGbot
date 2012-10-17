@@ -366,9 +366,9 @@ module TWG
     def solicit_human_votes(killed=:none)
       return if shared[:game].nil?
       if killed == :none
-        blurb = "Talk to your fellow villagers about this unusual and eery dog absence!"
+        blurb = "Have a stand-up with your colleagues to talk about this unusual and eery dog absence!"
       else
-        blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
+        blurb = "Schedule an urgent meeting with your colleagues about #{killed}'s untimely demise!"
       end
       chanm("It is now DAY #{shared[:game].iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
     end
