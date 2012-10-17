@@ -12,12 +12,10 @@ module TWG
     attr_reader :iteration
     attr_reader :seer
     attr_accessor :enable_seer
-    attr_accessor :ignore_votes
 
     def initialize(debug=false)
       reset
       @enable_seer = false
-      @ignore_votes = false
       @debug = debug
     end
 
@@ -40,7 +38,6 @@ module TWG
       if @participants.length >= @min_part
         assign_roles
         start = Haps.new(:action => :channel, :code => :gamestart, :message => "Game started!")
-        @ignore_votes = true
         @state = :night
         @iteration = 1
         state_transition_in
@@ -115,7 +112,6 @@ module TWG
         return Haps.new(:action => :reply, :code => :notawolf, :state => @state, :message => "#{nick} is not a wolf but tried to vote at night") unless @game_wolves.include?(nick)
         return Haps.new(:action => :reply, :code => :fellowwolf, :state => @state, :message => "#{nick} tried to vote for fellow wolf #{vfor}") if @game_wolves.include?(vfor)
       end
-      return Haps.new(:action => :none, :code => :ignoringvote, :state => @state, :message => "Ignoring vote from #{nick} for #{vfor} during #{@state} - all votes ignored at operator request") if @ignore_votes
       if @voted.include?(nick)
         record_vote(nick,vfor)
         return Haps.new(:action => :reply, :code => :changedvote, :state => @state, :message => "#{nick} changed their vote to #{vfor}") 

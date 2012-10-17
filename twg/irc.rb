@@ -9,6 +9,7 @@ module TWG
     listen_to :ten_seconds_left, :method => :ten_seconds_left
     listen_to :warn_vote_timeout, :method => :warn_vote_timeout
     listen_to :complete_startup, :method => :complete_startup
+    listen_to :notify_roles, :method => :notify_roles
     listen_to :nick, :method => :nickchange
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
@@ -44,11 +45,6 @@ module TWG
             rmessage = "You have changed your vote to #{mfor}"
           end
           m.reply rmessage
-        elsif r.code == :ignoringvote
-          # Triggered when ignore_votes is set in the game object.
-          # the game sets ignore_votes to true upon start, we set it to true once all roles have
-          # been notified and night 1 is properly commencing.
-          m.reply "I'm not ready for votes yet, sorry."
         end
       end
     end
@@ -145,10 +141,8 @@ module TWG
         chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), shared[:game].participants.keys.sort.join(', ')]
         chanm "You will shortly receive your role via private message"
         Channel(config["game_channel"]).mode('+m')
-        notify_roles
-        sleep 10
-        shared[:game].ignore_votes = false
-        bot.handlers.dispatch(:enter_night, m)
+        bot.handlers.dispatch(:notify_roles)
+        delaydispatch(10, :enter_night)
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
         wipe_slate
@@ -205,7 +199,7 @@ module TWG
       return if shared[:game].nil?
       chanm("A chilly mist descends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
       shared[:game].state_transition_in
-      solicit_wolf_votes
+      solicit_wolf_votes 
       delaydispatch(config["game_timers"]["night"], :exit_night, m)
     end
   
@@ -263,9 +257,7 @@ module TWG
       end
     end
 
-    private
-
-    def notify_roles
+    def notify_roles(m)
       return if shared[:game].nil?
       shared[:game].participants.keys.each do |user|
         case shared[:game].participants[user]
@@ -289,6 +281,8 @@ module TWG
         end
       end
     end
+
+    private
     
     def admin?(user)
       user.refresh
