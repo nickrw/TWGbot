@@ -35,7 +35,7 @@ module TWG
           if m.channel?
             rmessage = "#{m.user} voted for %s" % Format(:bold, mfor)
           else
-            rmessage = "You have voted for #{mfor} to be killed tonight"
+            rmessage = "You have voted for #{mfor} to be uglied to death tonight"
           end
           m.reply rmessage
         elsif r.code == :changedvote
@@ -119,8 +119,8 @@ module TWG
         unless m.user.authname.nil?
           wipe_slate
           @signup_started = true
-          m.reply "TWG has been started by #{m.user}!"
-          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
+          m.reply "TUDG has been started by #{m.user}!"
+          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TUDG."
           shared[:game].register(m.user.to_s)
           voice(m.user)
           @authnames[m.user.to_s] = m.user.authname
@@ -197,7 +197,7 @@ module TWG
 
     def enter_night(m)
       return if shared[:game].nil?
-      chanm("A chilly mist descends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
+      chanm("Somebody mistakenly presses for applause, %s #{shared[:game].iteration}. Mendeleyans, sleep soundly. Ugly dogs, you have #{config["game_timers"]["night"]} seconds to decide who to slobber on." % Format(:underline, "it is now NIGHT"))
       shared[:game].state_transition_in
       solicit_wolf_votes 
       delaydispatch(config["game_timers"]["night"], :exit_night, m)
@@ -209,7 +209,7 @@ module TWG
       bot.handlers.dispatch(:seer_reveal, m, shared[:game].reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
-        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. %s" % Format(:red, "#{k.capitalize}, a villager, is dead."))
+        chanm("A bloodcurdling squeal is heard throughout the office. Everybody rushes to find the broken body of #{k} lying in an ugly pool of drool. Their body bears the unmistakable signs of being looked at by an ugly dog. %s" % Format(:red, "#{k.capitalize}, a mendeleyan, is dead."))
         devoice(k)
       elsif r.code == :novotes
         k = :none
@@ -240,7 +240,7 @@ module TWG
       unless r.code == :novotes
         chanm "Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k)
         sleep 2
-        chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The villagers examine the body...")
+        chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The dilligent workers examine the body...")
         sleep(config["game_timers"]["dramatic_effect"])
       else
         chanm("Voting over! No consensus could be reached.")
@@ -249,7 +249,7 @@ module TWG
         chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
         devoice(k)
       elsif r.code == :wolfkilled
-        chanm("...and it starts to transform before their very eyes! A dead wolf lies before them.")
+        chanm("...and it starts to transform before their very eyes! A hideous puppy lies before them.")
         devoice(k)
       end
       unless check_victory_conditions
@@ -262,21 +262,17 @@ module TWG
       shared[:game].participants.keys.each do |user|
         case shared[:game].participants[user]
         when :normal
-          userm(user, "You are a normal human being.")
+          userm(user, "You are a normal mendeleyan.")
         when :wolf
-          if user == "michal"
-            userm(user, "Holy shit you're finally a WOLF!")
-          else
-            userm(user, "You are a WOLF!")
-          end
+          userm(user, "You are an UGLY DOG!")
           wolfcp = shared[:game].game_wolves.dup
           wolfcp.delete(user)
           if wolfcp.length > 1
-            userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
+            userm(user, "Your fellow ugly dogs are: #{wolfcp.join(', ')}")
           elsif wolfcp.length == 1
-            userm(user, "Your fellow wolf is: #{wolfcp[0]}")
+            userm(user, "Your fellow ugly dog is: #{wolfcp[0]}")
           elsif wolfcp.length == 0
-            userm(user, "You are the only wolf in this game.")
+            userm(user, "You are the only ugly dog in this game.")
           end
         end
       end
@@ -299,28 +295,28 @@ module TWG
       return if shared[:game].nil?
       if shared[:game].state == :wolveswin
         if shared[:game].live_wolves > 1
-          chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{shared[:game].live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
+          chanm "With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from the corners of the #{shared[:game].live_wolves} triumphant ugly dogs' mouthes. The remaining mendeleyans don't stand a chance." 
         else
-          chanm "With a bloodcurdling howl, hair begins sprouting from #{shared[:game].wolves_alive[0]}'s every orifice. The remaining villagers don't stand a chance."
+          chanm "With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from #{shared[:game].wolves_alive[0]}'s mouth. The remaining mendeleyans don't stand a chance."
         end
         if shared[:game].game_wolves.length == 1
-          chanm "Game over! The lone wolf #{shared[:game].wolves_alive[0]} wins!"
+          chanm "Game over! The lone ugly dog #{shared[:game].wolves_alive[0]} wins!"
         else
           if shared[:game].live_wolves == shared[:game].game_wolves.length
-            chanm "Game over! The wolves (#{shared[:game].game_wolves.join(', ')}) win!"
+            chanm "Game over! The ugly dogs (#{shared[:game].game_wolves.join(', ')}) win!"
           elsif shared[:game].live_wolves > 1
-            chanm "Game over! The remaining wolves (#{shared[:game].wolves_alive.join(', ')}) win!"
+            chanm "Game over! The remaining ugly dog (#{shared[:game].wolves_alive.join(', ')}) win!"
           else
-            chanm "Game over! The last remaining wolf, #{shared[:game].wolves_alive[0]}, wins!"
+            chanm "Game over! The last remaining ugly dog, #{shared[:game].wolves_alive[0]}, wins!"
           end
         end
         wipe_slate
         return true
       elsif shared[:game].state == :humanswin
         if shared[:game].game_wolves.length > 1
-          chanm "Game over! The wolves (#{shared[:game].game_wolves.join(', ')}) were unable to pull the wool over the humans' eyes."
+          chanm "Game over! The ugly dogs (#{shared[:game].game_wolves.join(', ')}) was unable to outrun the mendeleyans on their pitiful legs."
         else
-          chanm "Game over! The lone wolf #{shared[:game].game_wolves[0]} was unable to pull the wool over the humans' eyes."
+          chanm "Game over! The ugly dog #{shared[:game].game_wolves[0]} was unable to outrun the mendeleyans on its pitiful legs."
         end
         wipe_slate
         return true
@@ -351,26 +347,26 @@ module TWG
       alive = shared[:game].wolves_alive
       if alive.length == 1
         if shared[:game].game_wolves.length == 1
-          whatwereyou = "You are a lone wolf."
+          whatwereyou = "You are a lonesome ugly dog."
         else
-          whatwereyou = "You are the last remaining wolf."
+          whatwereyou = "You are the last remaining ugly dog."
         end
-        userm(alive[0], "It is now NIGHT #{shared[:game].iteration}: #{whatwereyou} To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind.")
+        userm(alive[0], "It is now NIGHT #{shared[:game].iteration}: #{whatwereyou} To choose who to slobber over, say !vote <nickname> to me. You can !vote again if you change your mind.")
         return
       elsif alive.length == 2
-        others = "Talk with your fellow wolf"
+        others = "Talk with your fellow ugly dog"
       else
-        others = "Talk with your fellow wolves to decide who to kill"
+        others = "Talk with your fellow ugly dog to decide who to kill"
       end
       alive.each do |wolf|
-        userm(wolf, "It is now NIGHT #{shared[:game].iteration}: To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind. #{others}") 
+        userm(wolf, "It is now NIGHT #{shared[:game].iteration}: To choose who to slobber over, say !vote <nickname> to me. You can !vote again if you change your mind. #{others}") 
       end
     end
 
     def solicit_human_votes(killed=:none)
       return if shared[:game].nil?
       if killed == :none
-        blurb = "Talk to your fellow villagers about this unusual and eery lupine silence!"
+        blurb = "Talk to your fellow villagers about this unusual and eery dog absence!"
       else
         blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
       end

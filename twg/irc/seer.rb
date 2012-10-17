@@ -24,20 +24,20 @@ module TWG
         unless r.nil?
           case r.code
             when :targetkilled
-              User(shared[:game].seer).send "You have a vision of %s's body, twisted, broken and bloody. A wolf got there before you." % r.opts[:target]
+              User(shared[:game].seer).send "You snuck up to %s's desk to see if you got sniffles, but find their dead body. An ugly dog got there before you." % r.opts[:target]
             when :youkilled
-              User(shared[:game].seer).send "While dreaming vividly about %s you get viciously torn to pieces. Your magic 8 ball didn't see that one coming!" % r.opts[:target]
+              User(shared[:game].seer).send "While you are sneaking about at night trying to find the culprit you stumble across an ugly dog. Uh oh, you're dead." % r.opts[:target]
             when :sawwolf
-              User(shared[:game].seer).send "You have a vivid dream about %s wearing a new fur coat. You've found a WOLF." % r.opts[:target]
+              User(shared[:game].seer).send "As soon as you got anywhere near %s you started sneezing uncontrollably! Looks like you found an UGLY DOG." % r.opts[:target]
             when :sawhuman
-              User(shared[:game].seer).send "You have a dull dream about %s lying in bed, dreaming. It looks like %s is a fellow villager." % [r.opts[:target], r.opts[:target]]
+              User(shared[:game].seer).send "You don't have any reaction to %s - looks like %s is a fellow wage slave." % [r.opts[:target], r.opts[:target]]
           end
         end
       end
   
       def notify_roles(m)
         return if shared[:game].nil?
-        User(shared[:game].seer).send "You are the SEER. Each night you can have the role of a player of your choice revealed. Choose carefully, once the inner eye has selected a target it cannot be swayed." if shared[:game].seer
+        User(shared[:game].seer).send "You are the SEER. You are allergic to dogs, giving you a natural ability to sense their presence." if shared[:game].seer
       end
   
       def see(m, target)
@@ -47,11 +47,11 @@ module TWG
             when :confirmsee
               m.reply "#{target}'s identity will be revealed to you as you wake."
             when :seerself
-              m.reply "Surely you know what you are... try again."
+              m.reply "You'd probably notice if you were the ugly dog"
             when :targetdead
               m.reply "#{target} is dead, try again."
             when :alreadyseen
-              m.reply "You have already selected tonight's vision!"
+              m.reply "You have already chosen tonight."
           end
         end
       end
