@@ -86,7 +86,7 @@ module TWG
     end
 
     def do_allow_starts(m)
-      chanm "TWG bot is now up and running! Say !start to start a new game."
+      chanm "TUDG bot is now up and running! Say !start to start a new game."
       @allow_starts = true
     end
 
