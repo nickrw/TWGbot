@@ -295,7 +295,7 @@ module TWG
       return if shared[:game].nil?
       if shared[:game].state == :wolveswin
         if shared[:game].live_wolves > 1
-          chanm "With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from the corners of the #{shared[:game].live_wolves} triumphant ugly dogs' mouthes. The remaining mendeleyans don't stand a chance." 
+          chanm "With a sickening guttural noise due to centuries of inbreeding, slobber begins dripping from the corners of the #{shared[:game].live_wolves} triumphant ugly dogs' mouthes. The remaining mendeleyans don't stand a chance." 
         else
           chanm "With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from #{shared[:game].wolves_alive[0]}'s mouth. The remaining mendeleyans don't stand a chance."
         end
