@@ -27,5 +27,7 @@ servers:
                   - 10
                 night: 60
                 dramatic_effect: 5
-	  -
-		  class: "TWG::IRC::Seer"
+      -
+        class: "TWG::IRC::Seer"
+      -
+        class: "TWG::IRC::SHA1"
