@@ -36,13 +36,32 @@ module TWG
           else
             rmessage = "You have voted for #{mfor} to be killed tonight"
           end
-          m.reply rmessage
         elsif r.code == :changedvote
           if m.channel?
             rmessage = "#{m.user} %s their vote to %s" % [Format(:bold, "changed"), Format(:bold, mfor)]
           else
             rmessage = "You have changed your vote to #{mfor}"
           end
+        elsif r.code == :fellowwolf
+          rmessage = "You can't vote for one of your own kind!"
+        elsif r.code == :voteenotplayer
+          if m.channel?
+            rmessage = "#{m.user}: #{mfor} is not a player in this game"
+          else
+            rmessage = "#{mfor} is not a player in this game"
+          end
+        elsif r.code == :voteedead
+          if m.channel?
+            rmessage = "Good news #{m.user}, #{mfor} is already dead! "
+          else
+            rmessage = "#{mfor} is already dead"
+          end
+        elsif r.code == :voteself
+          if not m.channel?
+            rmessage = "Error ID - 10T"
+          end
+        end
+        if rmessage
           m.reply rmessage
         end
       end
