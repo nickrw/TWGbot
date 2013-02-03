@@ -22,7 +22,12 @@ servers:
             game_timers:
                 registration: 30
                 day: 60
+                day_warn:
+                  - 30
+                  - 10
                 night: 60
                 dramatic_effect: 5
-	  -
-		  class: "TWG::IRC::Seer"
+      -
+        class: "TWG::IRC::Seer"
+      -
+        class: "TWG::IRC::SHA1"

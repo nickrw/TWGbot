@@ -7,6 +7,7 @@ module TWG
     listen_to :exit_night, :method => :exit_night
     listen_to :exit_day, :method => :exit_day
     listen_to :ten_seconds_left, :method => :ten_seconds_left
+    listen_to :warn_vote_timeout, :method => :warn_vote_timeout
     listen_to :complete_startup, :method => :complete_startup
     listen_to :notify_roles, :method => :notify_roles
     listen_to :nick, :method => :nickchange
@@ -14,7 +15,7 @@ module TWG
     listen_to :deop, :method => :opped
     listen_to :do_allow_starts, :method => :do_allow_starts
     match "start", :method => :start
-    match /vote ([^ ]+)$/, :method => :vote
+    match /vote ([^ ]+)(.*)?$/, :method => :vote
     match "votes", :method => :votes
     match "join", :method => :join
       
@@ -25,7 +26,7 @@ module TWG
       @authnames = {}
     end
 
-    def vote(m, mfor)
+    def vote(m, mfor, reason)
       unless shared[:game].nil?
         m.user.refresh
         return if @authnames[m.user.to_s] != m.user.authname
@@ -79,7 +80,7 @@ module TWG
         end
       end
       tally.each do |votee,voters|
-        m.reply "#{votee} has #{voters.count} votes (#{voters.join(', ')})."
+        chanm "#{votee} has #{voters.count} vote#{voters.count > 1 ? "s" : nil} (#{voters.join(', ')})."
       end
     end
     
@@ -193,6 +194,26 @@ module TWG
       chanm "10 seconds left to !join. #{shared[:game].participants.length} out of a minimum of #{shared[:game].min_part} players joined so far."
     end
 
+    def warn_vote_timeout(m, secsremain)
+      return if shared[:game].nil?
+      if shared[:game].state == :day
+        notvoted = []
+        shared[:game].participants.each do |player,state|
+          next if state == :dead
+          unless shared[:game].voted.keys.include?(player)
+            notvoted << player
+          end
+        end
+        wmessage = Format(:bold, "Voting closes in #{secsremain} seconds! ")
+        if notvoted.count > 0
+          wmessage << "Yet to vote: #{notvoted.join(', ')}"
+        else
+          wmessage << "Everybody has voted, but it's not too late to change your mind..." 
+        end
+        chanm(wmessage)
+      end
+    end
+
     def enter_night(m)
       return if shared[:game].nil?
       chanm("A chilly mist descends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
@@ -222,6 +243,12 @@ module TWG
       return if shared[:game].nil?
       shared[:game].state_transition_in
       solicit_human_votes(killed)
+      warn_timeout = config["game_timers"]["day_warn"]
+      warn_timeout = [warn_timeout] if warn_timeout.class != Array
+      warn_timeout.each do |warnat|
+        secsremain = config["game_timers"]["day"].to_i - warnat.to_i
+        delaydispatch(secsremain, :warn_vote_timeout, m, warnat.to_i)
+      end
       delaydispatch(config["game_timers"]["day"], :exit_day, m)
     end
 
@@ -281,13 +308,9 @@ module TWG
       shared[:admins].include?(user.authname)
     end
 
-    def delaydispatch(secs, method, m = nil)
+    def delaydispatch(secs, method, m = nil, *args)
       Timer(secs, {:shots => 1}) do
-        if m.nil?
-          bot.handlers.dispatch(method)
-        else
-          bot.handlers.dispatch(method, m)
-        end
+        bot.handlers.dispatch(method, m, *args)
       end
     end
 
@@ -370,7 +393,7 @@ module TWG
       else
         blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
       end
-      chanm("It is now DAY #{shared[:game].iteration}: #{blurb} Cast your vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
+      chanm("It is now DAY #{shared[:game].iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
     end
 
     def chanm(m)
