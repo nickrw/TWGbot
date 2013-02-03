@@ -320,26 +320,26 @@ module TWG
         if shared[:game].live_wolves > 1
           chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{shared[:game].live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
         else
-          chanm "With a bloodcurdling howl, hair begins sprouting from #{shared[:game].wolves_alive[0]}'s every orifice. The remaining villagers don't stand a chance."
+          chanm("With a bloodcurdling howl, hair begins sprouting from %s's every orifice. The remaining villagers don't stand a chance." % Format(:bold, shared[:game].wolves_alive[0]))
         end
         if shared[:game].game_wolves.length == 1
-          chanm "Game over! The lone wolf #{shared[:game].wolves_alive[0]} wins!"
+          chanm("Game over! The lone wolf %s wins!" % Format(:bold, shared[:game].wolves_alive[0]))
         else
           if shared[:game].live_wolves == shared[:game].game_wolves.length
-            chanm "Game over! The wolves (#{shared[:game].game_wolves.join(', ')}) win!"
+            chanm("Game over! The wolves (%s) win!" % Format(:bold, shared[:game].game_wolves.join(', ')))
           elsif shared[:game].live_wolves > 1
-            chanm "Game over! The remaining wolves (#{shared[:game].wolves_alive.join(', ')}) win!"
+            chanm("Game over! The remaining wolves (%s) win!" % Format(:bold, shared[:game].wolves_alive.join(', ')))
           else
-            chanm "Game over! The last remaining wolf, #{shared[:game].wolves_alive[0]}, wins!"
+            chanm("Game over! The last remaining wolf, %s, wins!" % Format(:bold, shared[:game].wolves_alive[0]))
           end
         end
         wipe_slate
         return true
       elsif shared[:game].state == :humanswin
         if shared[:game].game_wolves.length > 1
-          chanm "Game over! The wolves (#{shared[:game].game_wolves.join(', ')}) were unable to pull the wool over the humans' eyes."
+          chanm("Game over! The wolves (%s) were unable to pull the wool over the humans' eyes." % Format(:bold, shared[:game].game_wolves.join(', ')))
         else
-          chanm "Game over! The lone wolf #{shared[:game].game_wolves[0]} was unable to pull the wool over the humans' eyes."
+          chanm("Game over! The lone wolf %s was unable to pull the wool over the humans' eyes." % Format(:bold, shared[:game].game_wolves[0]))
         end
         wipe_slate
         return true
