@@ -405,6 +405,7 @@ module TWG
     end
 
     def wipe_slate
+      shared[:game].reset
       @signup_started = false
       @gchan = Channel(config["game_channel"])
       @authnames = {}
