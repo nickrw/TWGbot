@@ -200,17 +200,19 @@ module TWG
       @live_wolves = (@wolf_ratio * @participants.length).to_i
       @live_norms = @participants.length - @live_wolves
       @game_wolves = @participants.keys.shuffle[0..(@live_wolves-1)].sort
-      
-      # An array of normal players to select a seer from
-      norms = @participants.keys
+
       @game_wolves.each do |wolf|
         @participants[wolf] = :wolf
-        norms.delete(wolf)
       end
       
       if @enable_seer
-        @seer = norms.shuffle[0]
-        @participants[@seer] = :seer
+        @seer = @participants.keys.shuffle[0]
+        if not @game_wolves.include? @seer
+          @participants[@seer] = :seer
+	else
+	  @seer = nil
+	  @enable_seer = false
+        end
       end
       
     end

@@ -37,13 +37,32 @@ module TWG
           else
             rmessage = "You have voted for #{mfor} to be uglied to death tonight"
           end
-          m.reply rmessage
         elsif r.code == :changedvote
           if m.channel?
             rmessage = "#{m.user} %s their vote to %s" % [Format(:bold, "changed"), Format(:bold, mfor)]
           else
             rmessage = "You have changed your vote to #{mfor}"
           end
+        elsif r.code == :fellowwolf
+          rmessage = "You can't vote for one of your own kind!"
+        elsif r.code == :voteenotplayer
+          if m.channel?
+            rmessage = "#{m.user}: #{mfor} is not a player in this game"
+          else
+            rmessage = "#{mfor} is not a player in this game"
+          end
+        elsif r.code == :voteedead
+          if m.channel?
+            rmessage = "Good news #{m.user}, #{mfor} is already dead! "
+          else
+            rmessage = "#{mfor} is already dead"
+          end
+        elsif r.code == :voteself
+          if not m.channel?
+            rmessage = "Error ID - 10T"
+          end
+        end
+        if rmessage
           m.reply rmessage
         end
       end
@@ -297,26 +316,26 @@ module TWG
         if shared[:game].live_wolves > 1
           chanm "With a sickening guttural noise due to centuries of inbreeding, slobber begins dripping from the corners of the #{shared[:game].live_wolves} triumphant ugly dogs' mouthes. The remaining mendeleyans don't stand a chance." 
         else
-          chanm "With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from #{shared[:game].wolves_alive[0]}'s mouth. The remaining mendeleyans don't stand a chance."
+          chanm("With a sickening gutteral noise due to centuries of inbreeding, slobber begins dripping from %s's mouth. The remaining mendeleyans don't stand a chance." % Format(:bold, shared[:game].wolves_alive[0]))
         end
         if shared[:game].game_wolves.length == 1
-          chanm "Game over! The lone ugly dog #{shared[:game].wolves_alive[0]} wins!"
+          chanm("Game over! The lone ugly dog %s wins!" % Format(:bold, shared[:game].wolves_alive[0]))
         else
           if shared[:game].live_wolves == shared[:game].game_wolves.length
-            chanm "Game over! The ugly dogs (#{shared[:game].game_wolves.join(', ')}) win!"
+            chanm("Game over! The ugly dogs (%s) win!" % Format(:bold, shared[:game].game_wolves.join(', ')))
           elsif shared[:game].live_wolves > 1
-            chanm "Game over! The remaining ugly dog (#{shared[:game].wolves_alive.join(', ')}) win!"
+            chanm("Game over! The remaining ugly dogs (%s) win!" % Format(:bold, shared[:game].wolves_alive.join(', ')))
           else
-            chanm "Game over! The last remaining ugly dog, #{shared[:game].wolves_alive[0]}, wins!"
+            chanm("Game over! The last remaining ugly dog, %s, wins!" % Format(:bold, shared[:game].wolves_alive[0]))
           end
         end
         wipe_slate
         return true
       elsif shared[:game].state == :humanswin
         if shared[:game].game_wolves.length > 1
-          chanm "Game over! The ugly dogs (#{shared[:game].game_wolves.join(', ')}) was unable to outrun the mendeleyans on their pitiful legs."
+          chanm("Game over! The ugly dogs (%s) were unable to outrun the mendeleyans on their pitiful legs." % Format(:bold, shared[:game].game_wolves.join(', ')))
         else
-          chanm "Game over! The ugly dog #{shared[:game].game_wolves[0]} was unable to outrun the mendeleyans on its pitiful legs."
+          chanm("Game over! The ugly dog %s was unable to outrun the mendeleyans on its pitiful legs." % Format(:bold, shared[:game].game_wolves[0]))
         end
         wipe_slate
         return true
@@ -382,6 +401,7 @@ module TWG
     end
 
     def wipe_slate
+      shared[:game].reset
       @signup_started = false
       @gchan = Channel(config["game_channel"])
       @authnames = {}
