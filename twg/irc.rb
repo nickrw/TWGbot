@@ -123,8 +123,12 @@ module TWG
       return if !m.channel?
       return if m.channel != config["game_channel"]
       if !@allow_starts
-      m.reply "I require channel ops before starting a game"
-      return
+        if @isopped
+          m.reply "I'm not ready yet, #{m.user.to_s}. Give me a few seconds."
+        else
+          m.reply "I require channel ops before starting a game"
+        end 
+        return
       end
       if shared[:game].nil?
         shared[:game] = TWG::Game.new
