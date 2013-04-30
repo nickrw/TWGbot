@@ -128,7 +128,7 @@ module TWG
       return Haps.new(:action => :private, :code => :seerdead, :state => @state, :message => "The seer, #{user}, tried to see #{target}, but the seer is dead.") if @participants[user] == :dead
       return Haps.new(:action => :private, :code => :targetnotplayer, :state => @state, :message => "#{user} tried to see #{target}, which is not a player.") if !player?(target)
       return Haps.new(:action => :private, :code => :targetdead, :state => @state, :message => "The seer, #{user}, tried to see #{target}, but the target is dead.") if @participants[target] == :dead
-      return Haps.new(:action => :private, :code => :seerself, :state => @state, :message => "The seer, #{user}, tried to see themselves.") if @participants[target] == :dead
+      return Haps.new(:action => :private, :code => :seerself, :state => @state, :message => "The seer, #{user}, tried to see themselves.") if target == user
       @seetarget = target
       return Haps.new(:action => :private, :code => :confirmsee, :state => @state, :message => "The seer, #{user}, selected a target: #{target}.")
     end
