@@ -209,9 +209,8 @@ module TWG
         @seer = @participants.keys.shuffle[0]
         if not @game_wolves.include? @seer
           @participants[@seer] = :seer
-	else
-	  @seer = nil
-	  @enable_seer = false
+        else
+          @seer = nil
         end
       end
       
