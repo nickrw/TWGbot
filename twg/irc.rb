@@ -18,6 +18,7 @@ module TWG
     match /vote ([^ ]+)(.*)?$/, :method => :vote
     match "votes", :method => :votes
     match "join", :method => :join
+    match /join ([^ ]+)$/, :method => :forcejoin
 
     def initialize(*args)
       super
@@ -212,6 +213,26 @@ module TWG
           Channel(config["game_channel"]).voice(m.user)
           @authnames[m.user.to_s] = m.user.authname
         end
+      end
+    end
+
+    def forcejoin(m, user)
+      return if not m.channel?
+      return if not admin?(m.user)
+      return if not @signup_started
+      return if shared[:game].nil?
+      return if shared[:game].state != :signup
+      uobj = User(user)
+      uobj.refresh
+      if uobj.authname.nil?
+        m.reply "Unable to add #{user} to the game - not identified with services", true
+        return
+      end
+      r = shared[:game].register(user)
+      if r.code == :confirmplayer
+        m.reply "#{user} has been forced to join the game (#{shared[:game].participants.length}/#{shared[:game].min_part}[minimum])"
+        Channel(config["game_channel"]).voice(uobj)
+        @authnames[user] = uobj.authname
       end
     end
 
