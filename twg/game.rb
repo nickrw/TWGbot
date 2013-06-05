@@ -149,6 +149,12 @@ module TWG
       alive
     end
 
+    def check_victory_condition
+      return :wolveswin if (@state == :day) && (@live_wolves >= (@live_norms - 1))
+      return :humanswin if @live_wolves == 0
+      return nil
+    end
+
     def state_transition_in
       clear_votes
     end
@@ -156,10 +162,9 @@ module TWG
     def state_transition_out
       return [@state, @state] if [:humanswin, :wolveswin].include?(@state)
       r = apply_votes
-      if (@state == :day) && (@live_wolves >= (@live_norms - 1))
-        [:wolveswin, r]
-      elsif @live_wolves == 0
-        [:humanswin, r]
+      victory = check_victory_condition
+      if not victory.nil?
+        [victory, r]
       elsif [:day, :signup].include?(@state)
         [:night, r]
       elsif @state == :night
