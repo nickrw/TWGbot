@@ -18,18 +18,34 @@ module TWG
     match /vote ([^ ]+)(.*)?$/, :method => :vote
     match "votes", :method => :votes
     match "join", :method => :join
-      
+
     def initialize(*args)
       super
       shared[:game] = TWG::Game.new if shared[:game].nil?
+      @timer = nil
       @allow_starts = false
       @authnames = {}
     end
 
+    def authn(user)
+      return true if not config["use_authname"]
+      user.refresh
+      @authnames[user.to_s] == user.authname
+    end
+
+    def cancel_dispatch(run = false)
+      return if @timer.nil?
+      return if @timer.stopped?
+      @timer.stop
+      return if not run
+      @timer.interval = 0
+      @timer.shots = 1
+      @timer.start
+    end
+
     def vote(m, mfor, reason)
       unless shared[:game].nil?
-        m.user.refresh
-        return if @authnames[m.user.to_s] != m.user.authname
+        return if not authn(m.user)
         r = shared[:game].vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
         if r.code == :confirmvote
           if m.channel?
@@ -110,12 +126,15 @@ module TWG
     end
 
     def nickchange(m)
-      unless shared[:game].nil?
-        if shared[:game].state != :signup && shared[:game].participants[m.user.to_s] && shared[:game].participants[m.user.to_s] != :dead
-          shared[:game].nickchange(m.user.last_nick, m.user.to_s)
-          @authnames[m.user.to_s] = @authnames.delete(m.user.last_nick)
-          chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
-        end
+      oldname = m.user.last_nick.to_s
+      newname = m.user.to_s
+      return if shared[:game].nil?
+      return if shared[:game].participants[oldname].nil?
+      return if shared[:game].participants[oldname] == :dead
+      if not @authnames.delete(oldname).nil?
+        shared[:game].nickchange(oldname, newname)
+        @authnames[newname] = m.user.authname
+        chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
       end
     end
 
@@ -133,7 +152,10 @@ module TWG
       if shared[:game].nil?
         shared[:game] = TWG::Game.new
       else
-        return if @signup_started == true
+        if @signup_started == true
+          cancel_dispatch(true)
+          return
+        end
       end
       if shared[:game].state.nil? || shared[:game].state == :wolveswin || shared[:game].state == :humanswin
         shared[:game].reset
@@ -144,11 +166,11 @@ module TWG
           @signup_started = true
           m.reply "TWG has been started by #{m.user}!"
           m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
+          m.reply "Say !start again to skip the wait when everybody has joined"
           shared[:game].register(m.user.to_s)
           voice(m.user)
           @authnames[m.user.to_s] = m.user.authname
           delaydispatch(config["game_timers"]["registration"] - 10, :ten_seconds_left, m)
-          delaydispatch(config["game_timers"]["registration"], :complete_startup, m)
         else
           m.reply "you are unable to start a game as you are not authenticated to network services", true
         end
@@ -159,6 +181,7 @@ module TWG
       return if shared[:game].nil?
       return unless shared[:game].state == :signup
       r = shared[:game].start
+      @signup_started = false
 
       if r.code == :gamestart
         chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), shared[:game].participants.keys.sort.join(', ')]
@@ -196,6 +219,7 @@ module TWG
       return if shared[:game].nil?
       return unless shared[:game].state == :signup
       chanm "10 seconds left to !join. #{shared[:game].participants.length} out of a minimum of #{shared[:game].min_part} players joined so far."
+      delaydispatch(10, :complete_startup, m)
     end
 
     def warn_vote_timeout(m, secsremain)
@@ -313,7 +337,7 @@ module TWG
     end
 
     def delaydispatch(secs, method, m = nil, *args)
-      Timer(secs, {:shots => 1}) do
+      @timer = Timer(secs, {:shots => 1}) do
         bot.handlers.dispatch(method, m, *args)
       end
     end
@@ -411,6 +435,7 @@ module TWG
     def wipe_slate
       shared[:game].reset
       @signup_started = false
+      @timer = nil
       @gchan = Channel(config["game_channel"])
       @authnames = {}
       @gchan.mode('-m')
