@@ -62,23 +62,43 @@ module TWG
     end
 
     def nickchange(oldnick, newnick)
+
+      # replace player
       role = @participants.delete(oldnick)
       @participants.merge!({newnick => role})
+
+      # Change special characters
       if @game_wolves.include?(oldnick)
         @game_wolves.delete(oldnick)
         @game_wolves << newnick
       end
-      if @voted.include?(oldnick)
-        @voted.delete(oldnick)
-        @voted << newnick
-      end
-      if @votes.keys.include?(oldnick)
-        count = @votes.delete(oldnick)
-        @votes.merge!({newnick => count})
-      end
       if @seetarget == oldnick
         @seetarget = newnick
       end
+      if @seer == oldnick
+        @seer = newnick
+      end
+
+      # Replace votes for and by the player
+      tvoted = @voted.dup
+      tvoted.each do |voter,votee|
+        if votee == oldnick
+          record_vote(voter,newnick)
+        end
+        if voter == oldnick
+          @voted[newnick] = votee
+          @voted.delete(oldnick)
+        end
+      end
+      tvoted = nil
+
+      # Tidy up the vote count for the old nick. This should be zero
+      # as looping through and using record_vote on the voted hash should
+      # have decremented it.
+      if @votes.keys.include?(oldnick)
+        @votes.delete(oldnick)
+      end
+
     end
 
     # Advances the game to the next state (and returns the action taken when exiting current state)
@@ -177,7 +197,7 @@ module TWG
     private
 
     def record_vote(nick,vfor)
-      if @voted[nick]
+      if @voted[nick] and not @votes[@voted[nick]].nil?
         @votes[@voted[nick]] -= 1
       end
       @voted[nick] = vfor
