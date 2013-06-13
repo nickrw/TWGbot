@@ -65,10 +65,6 @@ module TWG
           m.reply "... and a tinkling crash cuts through the silence as a crystal ball rolls from #{target}'s sleeve."
           m.reply "%s just shot the seer! What rotten luck." % m.user.nick
         else
-          live = []
-          shared[:game].participants.each do |player,role|
-            live << player if role != :dead
-          end
           brave = players_of_role(:dead, true).shuffle[0]
           m.reply "... the brave #{brave} steps forward and rolls #{target} over with their toe, but nothing happens."
           m.reply "%s's single silver bullet was wasted on %s - a fellow villager." % [m.user.nick, Format(:bold, target)]
