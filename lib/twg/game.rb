@@ -101,9 +101,9 @@ module TWG
 
     end
 
-    # Advances the game to the next state (and returns the action taken when exiting current state)
+    # Advances the game to the next state
     def next_state
-      newstate, r = state_transition_out
+      newstate = state_transition_out
       newiteration = @iteration
       if [:day, :signup].include?(@state)
         newiteration = @iteration + 1
@@ -111,7 +111,7 @@ module TWG
       @state = newstate
       @iteration = newiteration
       #state_transition_in
-      r
+      @state
     end
 
     # Receives and process a vote from the outside world
@@ -158,7 +158,7 @@ module TWG
       return Haps.new(:action => :private, :code => :targetkilled, :target => @seetarget, :state => @state, :message => "The seer's target was killed during the night") if @participants[@seetarget] == :dead
       return Haps.new(:action => :private, :code => :youkilled, :target => @seetarget, :state => @state, :message => "The seer was killed during the night") if @participants[@seer] == :dead
       return Haps.new(:action => :private, :code => :sawwolf, :target => @seetarget, :state => @state, :message => "The seer's target was a wolf!") if @participants[@seetarget] == :wolf
-      return Haps.new(:action => :private, :code => :sawhuman, :target => @seetarget, :state => @state, :message => "The seer's target was a human") if @participants[@seetarget] == :normal
+      return Haps.new(:action => :private, :code => :sawhuman, :target => @seetarget, :state => @state, :message => "The seer's target was a human") if @participants[@seetarget].class == Symbol
     end
 
     def wolves_alive
@@ -180,21 +180,18 @@ module TWG
     end
 
     def state_transition_out
-      return [@state, @state] if [:humanswin, :wolveswin].include?(@state)
-      r = apply_votes
+      return @state if [:humanswin, :wolveswin].include?(@state)
       victory = check_victory_condition
       if not victory.nil?
-        [victory, r]
+        victory
       elsif [:day, :signup].include?(@state)
-        [:night, r]
+        :night
       elsif @state == :night
-        [:day, r]
+        :day
       else
-        [@state, r]
+        @state
       end
     end
-
-    private
 
     def record_vote(nick,vfor)
       if @voted[nick] and not @votes[@voted[nick]].nil?
@@ -259,21 +256,26 @@ module TWG
         killme = tiebreak[0]
       end
       return Haps.new(:action => :channel, :code => :novotes, :state => @state, :message => "No votes were made!") if killme.nil?
-      was = ""
-      wasn = ""
-      @participants.each do |part,role|
-        was = role if part == killme.to_s
-        wasn = part if part == killme.to_s
-      end
-      @participants[wasn] = :dead
+      was = kill(killme)
       case was
         when :wolf
-          @live_wolves -= 1
           return Haps.new(:action => :channel, :code => :wolfkilled, :killed => killme, :state => @state, :message => "#{killme} has been killed at popular request")
         else 
-          @live_norms -= 1
           return Haps.new(:action => :channel, :code => :normkilled, :killed => killme, :state => @state, :message => "#{killme} has been killed at popular request")
       end
+    end
+
+    def kill(target)
+      role = @participants[target]
+      return nil if role.nil?
+      @participants[target] = :dead
+      case role
+      when :wolf
+        @live_wolves -= 1
+      else
+        @live_norms -= 1
+      end
+      role
     end
 
     def player?(name)

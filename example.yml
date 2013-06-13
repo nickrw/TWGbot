@@ -30,4 +30,4 @@ servers:
       -
         class: "TWG::IRC::Seer"
       -
-        class: "TWG::IRC::SHA1"
+        class: "TWG::IRC::Vigilante"

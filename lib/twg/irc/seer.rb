@@ -2,7 +2,7 @@ module TWG
   class IRC
     class Seer
       include Cinch::Plugin
-      listen_to :notify_roles, :method => :notify_roles
+      listen_to :hook_notify_roles, :method => :notify_roles
       listen_to :enter_night, :method => :solicit_seer_choice
       listen_to :seer_reveal, :method => :seer_reveal
       match /see ([^ ]+)$/, :method => :see

@@ -9,7 +9,7 @@ module TWG
     listen_to :ten_seconds_left, :method => :ten_seconds_left
     listen_to :warn_vote_timeout, :method => :warn_vote_timeout
     listen_to :complete_startup, :method => :complete_startup
-    listen_to :notify_roles, :method => :notify_roles
+    listen_to :hook_notify_roles, :method => :notify_roles
     listen_to :nick, :method => :nickchange
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
@@ -19,6 +19,8 @@ module TWG
     match "votes", :method => :votes
     match "join", :method => :join
     match /join ([^ ]+)$/, :method => :forcejoin
+
+    attr_accessor :timer
 
     def initialize(*args)
       super
@@ -30,7 +32,6 @@ module TWG
 
     def authn(user)
       return true if not config["use_authname"]
-      user.refresh
       @authnames[user.to_s] == user.authname
     end
 
@@ -188,7 +189,8 @@ module TWG
         chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), shared[:game].participants.keys.sort.join(', ')]
         chanm "You will shortly receive your role via private message"
         Channel(config["game_channel"]).mode('+m')
-        bot.handlers.dispatch(:notify_roles)
+        hook_sync(:hook_roles_assigned)
+        hook_async(:hook_notify_roles)
         delaydispatch(10, :enter_night)
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
@@ -273,7 +275,8 @@ module TWG
   
     def exit_night(m)
       return if shared[:game].nil?
-      r = shared[:game].next_state
+      r = shared[:game].apply_votes
+      shared[:game].next_state
       bot.handlers.dispatch(:seer_reveal, m, shared[:game].reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
@@ -303,7 +306,8 @@ module TWG
 
     def exit_day(m)
       return if shared[:game].nil?
-      r = shared[:game].next_state
+      r = shared[:game].apply_votes
+      shared[:game].next_state
       k = r.opts[:killed]
       unless r.code == :novotes
         chanm "Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k)
@@ -350,17 +354,42 @@ module TWG
       end
     end
 
-    private
-    
     def admin?(user)
       user.refresh
       shared[:admins].include?(user.authname)
     end
 
+    # TODO: replace delaydispatch with a hook_ method
     def delaydispatch(secs, method, m = nil, *args)
       @timer = Timer(secs, {:shots => 1}) do
         bot.handlers.dispatch(method, m, *args)
       end
+    end
+
+    def hook_raise(method, async=true, m=nil, *args)
+      debug "Calling #{async ? 'async' : 'sync'} hook: #{method.to_s}"
+      ta = bot.handlers.dispatch(method, m, *args)
+      debug "Hooked threads for #{method.to_s}: #{ta}"
+      return ta if async
+      return ta if not ta.respond_to?(:each)
+      debug "Joining threads for #{method.to_s}"
+      ta.each do |thread|
+        begin 
+          thread.join
+        rescue => e
+          debug e.inspect
+        end
+      end
+      debug "Hooked threads for #{method.to_s} complete"
+      ta
+    end
+
+    def hook_async(method, m=nil, *args)
+      hook_raise(method, true, m, *args)
+    end
+
+    def hook_sync(method, m=nil, *args)
+      hook_raise(method, false, m, *args)
     end
 
     def check_victory_conditions
