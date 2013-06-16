@@ -28,7 +28,9 @@ servers:
                 night: 60
                 dramatic_effect: 5
       -
-        class: "TWG::IRC::Seer"
+        class: "TWG::Seer"
+        options:
+            odds_per_player: 6
       -
         class: "TWG::Vigilante"
         options:

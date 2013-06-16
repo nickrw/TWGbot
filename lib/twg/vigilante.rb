@@ -8,19 +8,7 @@ module TWG
     match /shoot ([^ ]+)(.*)?$/, :method => :shoot
 
     def pick_vigilante(m)
-      p = players_of_role(:normal)
-      odds_per_player = config["odds_per_player"]
-      odds_per_player ||= 5
-      odds = p.count * odds_per_player
-      info "Picking vigilante, with #{odds}% chance of success. (#{odds_per_player}% * #{p.count} normal players)"
-      r = rand(100)
-      if r <= odds
-        v = p.shuffle[0]
-        @game.participants[v] = :vigilante
-        info "Selected player: #{v} (#{r} <= #{odds})"
-      else
-        info "No player selected (#{r} > #{odds})"
-      end
+      pick_special(:vigilante)
     end
 
     def notify_roles(m)

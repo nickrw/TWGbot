@@ -15,6 +15,24 @@ module TWG
       a
     end
 
+    def pick_special(role, default_odds=5)
+      synchronize(:pick_special) do
+        p = players_of_role(:normal)
+        odds_per_player = config["odds_per_player"]
+        odds_per_player ||= default_odds
+        odds = p.count * odds_per_player
+        info "Picking #{role.to_s}, with #{odds}% chance of success. #{odds_per_player}% * #{p.count} normal players)"
+        r = rand(100)
+        if r <= odds
+          s = p.shuffle[0]
+          @game.participants[s] = role
+          info "Selected player: #{s} (#{s} <= #{odds})"
+        else
+          info "No player selected (#{s} > #{odds})"
+        end
+      end
+    end
+
     def hook_raise(method, async=true, m=nil, *args)
       info "Calling #{async ? 'async' : 'sync'} hook: #{method.to_s}"
       ta = bot.handlers.dispatch(method, m, *args)

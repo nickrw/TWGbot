@@ -195,7 +195,7 @@ module TWG
         wipe_slate
       end
     end
-    
+
     def join(m)
       return if !m.channel?
       return if !@signup_started
@@ -263,15 +263,15 @@ module TWG
       return if @game.nil?
       chanm("A chilly mist descends, %s #{@game.iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
       @game.state_transition_in
-      solicit_wolf_votes 
+      solicit_wolf_votes
       hook_async(:exit_night, config["game_timers"]["night"])
     end
-  
+
     def exit_night(m)
       return if @game.nil?
       r = @game.apply_votes
+      hook_sync(:hook_votes_applied)
       @game.next_state
-      hook_async(:seer_reveal, 0, nil, @game.reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
         chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. %s" % Format(:red, "#{k.capitalize}, a villager, is dead."))
@@ -301,6 +301,7 @@ module TWG
     def exit_day(m)
       return if @game.nil?
       r = @game.apply_votes
+      hook_sync(:hook_votes_applied)
       @game.next_state
       k = r.opts[:killed]
       unless r.code == :novotes

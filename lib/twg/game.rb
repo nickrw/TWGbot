@@ -1,6 +1,6 @@
 module TWG
   class Game
-    
+
     attr_reader :participants
     attr_reader :state
     attr_reader :live_wolves
@@ -10,12 +10,9 @@ module TWG
     attr_reader :game_wolves
     attr_reader :min_part
     attr_reader :iteration
-    attr_reader :seer
-    attr_accessor :enable_seer
 
     def initialize(debug=false)
       reset
-      @enable_seer = false
       @debug = debug
     end
 
@@ -28,12 +25,10 @@ module TWG
       @game_wolves = []
       @live_wolves = 0
       @live_norms = 0
-      @seer = ""
-      @seetarget = ""
       @votes = {}
       @voted = []
     end
-    
+
     def start
       if @participants.length >= @min_part
         assign_roles
@@ -47,7 +42,7 @@ module TWG
         return Haps.new(:action => :channel, :code => :notenoughplayers, :message => "Not enough players to start game: #{@participants.length}/#{@min_part}")
       end
     end
-    
+
     def register(nick)
       if @state == :signup
         unless @participants.keys.include?(nick)
@@ -74,9 +69,6 @@ module TWG
       end
       if @seetarget == oldnick
         @seetarget = newnick
-      end
-      if @seer == oldnick
-        @seer = newnick
       end
 
       # Replace votes for and by the player
@@ -140,26 +132,6 @@ module TWG
         return Haps.new(:action => :reply, :code => :confirmvote, :state => @state, :message => "#{nick} voted for #{vfor}")
       end
     end
-    
-    def see(user, target)
-      return Haps.new(:action => :private, :code => :notnight, :state => @state, :message => "#{user} tried to see #{target} during #{@state}") if @state != :night
-      return Haps.new(:action => :private, :code => :nottheseer, :state => @state, :message => "#{user} tried to see #{target} but is not the seer") if user != @seer
-      return Haps.new(:action => :private, :code => :alreadyseen, :state => @state, :message => "The seer, #{user}, tried to see #{target} but has already seen in this iteration.") unless @seetarget.empty?
-      return Haps.new(:action => :private, :code => :seerdead, :state => @state, :message => "The seer, #{user}, tried to see #{target}, but the seer is dead.") if @participants[user] == :dead
-      return Haps.new(:action => :private, :code => :targetnotplayer, :state => @state, :message => "#{user} tried to see #{target}, which is not a player.") if !player?(target)
-      return Haps.new(:action => :private, :code => :targetdead, :state => @state, :message => "The seer, #{user}, tried to see #{target}, but the target is dead.") if @participants[target] == :dead
-      return Haps.new(:action => :private, :code => :seerself, :state => @state, :message => "The seer, #{user}, tried to see themselves.") if target == user
-      @seetarget = target
-      return Haps.new(:action => :private, :code => :confirmsee, :state => @state, :message => "The seer, #{user}, selected a target: #{target}.")
-    end
-    
-    def reveal
-      return Haps.new(:action => :private, :code => :notarget, :state => @state, :message => "No target to see") if @seetarget.empty?
-      return Haps.new(:action => :private, :code => :targetkilled, :target => @seetarget, :state => @state, :message => "The seer's target was killed during the night") if @participants[@seetarget] == :dead
-      return Haps.new(:action => :private, :code => :youkilled, :target => @seetarget, :state => @state, :message => "The seer was killed during the night") if @participants[@seer] == :dead
-      return Haps.new(:action => :private, :code => :sawwolf, :target => @seetarget, :state => @state, :message => "The seer's target was a wolf!") if @participants[@seetarget] == :wolf
-      return Haps.new(:action => :private, :code => :sawhuman, :target => @seetarget, :state => @state, :message => "The seer's target was a human") if @participants[@seetarget].class == Symbol
-    end
 
     def wolves_alive
       alive = []
@@ -212,13 +184,13 @@ module TWG
     end
 
     def assign_roles
-      
+
       # Convert all keys in @participants to strings, to make comparison (voting, etc) easier.
       # These will initially be Cinch::User objects for IRC.
       partasstring = {}
       @participants.keys.each { |part| partasstring[part.to_s] = :normal }
       @participants = partasstring
-      
+
       @live_wolves = (@wolf_ratio * @participants.length).to_i
       @live_norms = @participants.length - @live_wolves
       @game_wolves = @participants.keys.shuffle[0..(@live_wolves-1)].sort
@@ -226,16 +198,7 @@ module TWG
       @game_wolves.each do |wolf|
         @participants[wolf] = :wolf
       end
-      
-      if @enable_seer
-        @seer = @participants.keys.shuffle[0]
-        if not @game_wolves.include? @seer
-          @participants[@seer] = :seer
-        else
-          @seer = nil
-        end
-      end
-      
+
     end
 
     def apply_votes
