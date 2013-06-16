@@ -1,7 +1,10 @@
+require 'cinch'
 require 'twg/game'
+require 'twg/helpers'
 module TWG
-  class IRC
-    include Cinch::Plugin
+  class Core
+    include ::Cinch::Plugin
+    include ::TWG::Helpers
     listen_to :enter_night, :method => :enter_night
     listen_to :enter_day, :method => :enter_day
     listen_to :exit_night, :method => :exit_night
@@ -20,11 +23,12 @@ module TWG
     match "join", :method => :join
     match /join ([^ ]+)$/, :method => :forcejoin
 
-    attr_accessor :timer
+    attr_accessor :game
 
     def initialize(*args)
       super
-      shared[:game] = TWG::Game.new if shared[:game].nil?
+      @game = TWG::Game.new
+      shared[:game] = @game
       @timer = nil
       @allow_starts = false
       @authnames = {}
@@ -35,20 +39,10 @@ module TWG
       @authnames[user.to_s] == user.authname
     end
 
-    def cancel_dispatch(run = false)
-      return if @timer.nil?
-      return if @timer.stopped?
-      @timer.stop
-      return if not run
-      @timer.interval = 0
-      @timer.shots = 1
-      @timer.start
-    end
-
     def vote(m, mfor, reason)
-      unless shared[:game].nil?
+      unless @game.nil?
         return if not authn(m.user)
-        r = shared[:game].vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
+        r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
         if r.code == :confirmvote
           if m.channel?
             rmessage = "#{m.user} voted for %s" % Format(:bold, mfor)
@@ -88,9 +82,9 @@ module TWG
     
     def votes(m)
       return if !m.channel?
-      return if shared[:game].state != :day
+      return if @game.state != :day
       tally = {}
-      shared[:game].voted.each do |voter,votee|
+      @game.voted.each do |voter,votee|
         if tally[votee]
           tally[votee] << voter
         else
@@ -101,21 +95,20 @@ module TWG
         chanm "#{votee} has #{voters.count} vote#{voters.count > 1 ? "s" : nil} (#{voters.join(', ')})."
       end
     end
-    
+
     def opped(m, *args)
       @isopped ||= false
-      debug "Opped params: %s" % m.params.inspect 
       chan, mode, user = m.params
-      shared[:game] = TWG::Game.new if shared[:game].nil?
+      @game = TWG::Game.new if @game.nil?
       if chan == config["game_channel"] && mode == "+o" && user == bot.nick
         @isopped = true
-        unless [:night,:day].include?(shared[:game].state) || @signup_started == true
+        unless [:night,:day].include?(@game.state) || @signup_started == true
           wipe_slate
-          delaydispatch(15, :do_allow_starts)
+          hook_async(:do_allow_starts, 15)
         end
       elsif chan == config["game_channel"] && mode == "-o" && user == bot.nick
-        chanm Format(:bold, "Cancelling game! I have been deopped!") if shared[:game].state != :signup || (shared[:game].state == :signup && @signup_started == true)
-        shared[:game] = nil
+        chanm Format(:bold, "Cancelling game! I have been deopped!") if @game.state != :signup || (@game.state == :signup && @signup_started == true)
+        @game = nil
         @signup_started = false
         @isopped = false
         @allow_starts = false
@@ -130,11 +123,11 @@ module TWG
     def nickchange(m)
       oldname = m.user.last_nick.to_s
       newname = m.user.to_s
-      return if shared[:game].nil?
-      return if shared[:game].participants[oldname].nil?
-      return if shared[:game].participants[oldname] == :dead
+      return if @game.nil?
+      return if @game.participants[oldname].nil?
+      return if @game.participants[oldname] == :dead
       if not @authnames.delete(oldname).nil?
-        shared[:game].nickchange(oldname, newname)
+        @game.nickchange(oldname, newname)
         @authnames[newname] = m.user.authname
         chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
       end
@@ -151,28 +144,30 @@ module TWG
         end 
         return
       end
-      if shared[:game].nil?
-        shared[:game] = TWG::Game.new
+      if @game.nil?
+        @game = TWG::Game.new
       else
         if @signup_started == true
-          cancel_dispatch(true)
+          hook_cancel(:ten_seconds_left)
+          hook_expedite(:complete_startup)
           return
         end
       end
-      if shared[:game].state.nil? || shared[:game].state == :wolveswin || shared[:game].state == :humanswin
-        shared[:game].reset
+      if @game.state.nil? || @game.state == :wolveswin || @game.state == :humanswin
+        @game.reset
       end
-      if shared[:game].state == :signup
+      if @game.state == :signup
         unless m.user.authname.nil?
           wipe_slate
           @signup_started = true
           m.reply "TWG has been started by #{m.user}!"
-          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{shared[:game].min_part} players is required to play TWG."
+          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{@game.min_part} players is required to play TWG."
           m.reply "Say !start again to skip the wait when everybody has joined"
-          shared[:game].register(m.user.to_s)
+          @game.register(m.user.to_s)
           voice(m.user)
           @authnames[m.user.to_s] = m.user.authname
-          delaydispatch(config["game_timers"]["registration"] - 10, :ten_seconds_left, m)
+          hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
+          hook_async(:complete_startup, config["game_timers"]["registration"])
         else
           m.reply "you are unable to start a game as you are not authenticated to network services", true
         end
@@ -180,18 +175,18 @@ module TWG
     end
 
     def complete_startup(m)
-      return if shared[:game].nil?
-      return unless shared[:game].state == :signup
-      r = shared[:game].start
+      return if @game.nil?
+      return unless @game.state == :signup
+      r = @game.start
       @signup_started = false
 
       if r.code == :gamestart
-        chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), shared[:game].participants.keys.sort.join(', ')]
+        chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), @game.participants.keys.sort.join(', ')]
         chanm "You will shortly receive your role via private message"
         Channel(config["game_channel"]).mode('+m')
         hook_sync(:hook_roles_assigned)
         hook_async(:hook_notify_roles)
-        delaydispatch(10, :enter_night)
+        hook_async(:enter_night, 10)
       elsif r.code == :notenoughplayers
         chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
         wipe_slate
@@ -208,10 +203,10 @@ module TWG
         m.reply "unable to add you to the game, you are not identified with services", true
         return
       end
-      if !shared[:game].nil? && shared[:game].state == :signup
-        r = shared[:game].register(m.user.to_s)
+      if !@game.nil? && @game.state == :signup
+        r = @game.register(m.user.to_s)
         if r.code == :confirmplayer
-          m.reply "#{m.user} has joined the game (#{shared[:game].participants.length}/#{shared[:game].min_part}[minimum])"
+          m.reply "#{m.user} has joined the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
           Channel(config["game_channel"]).voice(m.user)
           @authnames[m.user.to_s] = m.user.authname
         end
@@ -222,36 +217,35 @@ module TWG
       return if not m.channel?
       return if not admin?(m.user)
       return if not @signup_started
-      return if shared[:game].nil?
-      return if shared[:game].state != :signup
+      return if @game.nil?
+      return if @game.state != :signup
       uobj = User(user)
       uobj.refresh
       if uobj.authname.nil?
         m.reply "Unable to add #{user} to the game - not identified with services", true
         return
       end
-      r = shared[:game].register(user)
+      r = @game.register(user)
       if r.code == :confirmplayer
-        m.reply "#{user} has been forced to join the game (#{shared[:game].participants.length}/#{shared[:game].min_part}[minimum])"
+        m.reply "#{user} has been forced to join the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
         Channel(config["game_channel"]).voice(uobj)
         @authnames[user] = uobj.authname
       end
     end
 
     def ten_seconds_left(m)
-      return if shared[:game].nil?
-      return unless shared[:game].state == :signup
-      chanm "10 seconds left to !join. #{shared[:game].participants.length} out of a minimum of #{shared[:game].min_part} players joined so far."
-      delaydispatch(10, :complete_startup, m)
+      return if @game.nil?
+      return unless @game.state == :signup
+      chanm "10 seconds left to !join. #{@game.participants.length} out of a minimum of #{@game.min_part} players joined so far."
     end
 
     def warn_vote_timeout(m, secsremain)
-      return if shared[:game].nil?
-      if shared[:game].state == :day
+      return if @game.nil?
+      if @game.state == :day
         notvoted = []
-        shared[:game].participants.each do |player,state|
+        @game.participants.each do |player,state|
           next if state == :dead
-          unless shared[:game].voted.keys.include?(player)
+          unless @game.voted.keys.include?(player)
             notvoted << player
           end
         end
@@ -266,18 +260,18 @@ module TWG
     end
 
     def enter_night(m)
-      return if shared[:game].nil?
-      chanm("A chilly mist descends, %s #{shared[:game].iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
-      shared[:game].state_transition_in
+      return if @game.nil?
+      chanm("A chilly mist descends, %s #{@game.iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
+      @game.state_transition_in
       solicit_wolf_votes 
-      delaydispatch(config["game_timers"]["night"], :exit_night, m)
+      hook_async(:exit_night, config["game_timers"]["night"])
     end
   
     def exit_night(m)
-      return if shared[:game].nil?
-      r = shared[:game].apply_votes
-      shared[:game].next_state
-      bot.handlers.dispatch(:seer_reveal, m, shared[:game].reveal)
+      return if @game.nil?
+      r = @game.apply_votes
+      @game.next_state
+      hook_async(:seer_reveal, 0, nil, @game.reveal)
       if r.code == :normkilled
         k = r.opts[:killed]
         chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. %s" % Format(:red, "#{k.capitalize}, a villager, is dead."))
@@ -287,27 +281,27 @@ module TWG
         chanm("Everybody wakes, bleary eyed. %s Nobody was murdered during the night!" % Format(:underline, "There doesn't appear to be a body!"))
       end
       unless check_victory_conditions
-        bot.handlers.dispatch(:enter_day, m, k)
+        hook_async(:enter_day, 0, nil, k)
       end
     end
 
     def enter_day(m,killed)
-      return if shared[:game].nil?
-      shared[:game].state_transition_in
+      return if @game.nil?
+      @game.state_transition_in
       solicit_human_votes(killed)
       warn_timeout = config["game_timers"]["day_warn"]
       warn_timeout = [warn_timeout] if warn_timeout.class != Array
       warn_timeout.each do |warnat|
         secsremain = config["game_timers"]["day"].to_i - warnat.to_i
-        delaydispatch(secsremain, :warn_vote_timeout, m, warnat.to_i)
+        hook_async(:warn_vote_timeout, secsremain, m, warnat.to_i)
       end
-      delaydispatch(config["game_timers"]["day"], :exit_day, m)
+      hook_async(:exit_day, config["game_timers"]["day"])
     end
 
     def exit_day(m)
-      return if shared[:game].nil?
-      r = shared[:game].apply_votes
-      shared[:game].next_state
+      return if @game.nil?
+      r = @game.apply_votes
+      @game.next_state
       k = r.opts[:killed]
       unless r.code == :novotes
         chanm "Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k)
@@ -325,14 +319,14 @@ module TWG
         devoice(k)
       end
       unless check_victory_conditions
-        bot.handlers.dispatch(:enter_night,m)
+        hook_async(:enter_night)
       end
     end
 
     def notify_roles(m)
-      return if shared[:game].nil?
-      shared[:game].participants.keys.each do |user|
-        case shared[:game].participants[user]
+      return if @game.nil?
+      @game.participants.keys.each do |user|
+        case @game.participants[user]
         when :normal
           userm(user, "You are a normal human being.")
         when :wolf
@@ -341,7 +335,7 @@ module TWG
           else
             userm(user, "You are a WOLF!")
           end
-          wolfcp = shared[:game].game_wolves.dup
+          wolfcp = @game.game_wolves.dup
           wolfcp.delete(user)
           if wolfcp.length > 1
             userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
@@ -359,65 +353,32 @@ module TWG
       shared[:admins].include?(user.authname)
     end
 
-    # TODO: replace delaydispatch with a hook_ method
-    def delaydispatch(secs, method, m = nil, *args)
-      @timer = Timer(secs, {:shots => 1}) do
-        bot.handlers.dispatch(method, m, *args)
-      end
-    end
-
-    def hook_raise(method, async=true, m=nil, *args)
-      debug "Calling #{async ? 'async' : 'sync'} hook: #{method.to_s}"
-      ta = bot.handlers.dispatch(method, m, *args)
-      debug "Hooked threads for #{method.to_s}: #{ta}"
-      return ta if async
-      return ta if not ta.respond_to?(:each)
-      debug "Joining threads for #{method.to_s}"
-      ta.each do |thread|
-        begin 
-          thread.join
-        rescue => e
-          debug e.inspect
-        end
-      end
-      debug "Hooked threads for #{method.to_s} complete"
-      ta
-    end
-
-    def hook_async(method, m=nil, *args)
-      hook_raise(method, true, m, *args)
-    end
-
-    def hook_sync(method, m=nil, *args)
-      hook_raise(method, false, m, *args)
-    end
-
     def check_victory_conditions
-      return if shared[:game].nil?
-      if shared[:game].state == :wolveswin
-        if shared[:game].live_wolves > 1
-          chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{shared[:game].live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
+      return if @game.nil?
+      if @game.state == :wolveswin
+        if @game.live_wolves > 1
+          chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{@game.live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
         else
-          chanm("With a bloodcurdling howl, hair begins sprouting from %s's every orifice. The remaining villagers don't stand a chance." % Format(:bold, shared[:game].wolves_alive[0]))
+          chanm("With a bloodcurdling howl, hair begins sprouting from %s's every orifice. The remaining villagers don't stand a chance." % Format(:bold, @game.wolves_alive[0]))
         end
-        if shared[:game].game_wolves.length == 1
-          chanm("Game over! The lone wolf %s wins!" % Format(:bold, shared[:game].wolves_alive[0]))
+        if @game.game_wolves.length == 1
+          chanm("Game over! The lone wolf %s wins!" % Format(:bold, @game.wolves_alive[0]))
         else
-          if shared[:game].live_wolves == shared[:game].game_wolves.length
-            chanm("Game over! The wolves (%s) win!" % Format(:bold, shared[:game].game_wolves.join(', ')))
-          elsif shared[:game].live_wolves > 1
-            chanm("Game over! The remaining wolves (%s) win!" % Format(:bold, shared[:game].wolves_alive.join(', ')))
+          if @game.live_wolves == @game.game_wolves.length
+            chanm("Game over! The wolves (%s) win!" % Format(:bold, @game.game_wolves.join(', ')))
+          elsif @game.live_wolves > 1
+            chanm("Game over! The remaining wolves (%s) win!" % Format(:bold, @game.wolves_alive.join(', ')))
           else
-            chanm("Game over! The last remaining wolf, %s, wins!" % Format(:bold, shared[:game].wolves_alive[0]))
+            chanm("Game over! The last remaining wolf, %s, wins!" % Format(:bold, @game.wolves_alive[0]))
           end
         end
         wipe_slate
         return true
-      elsif shared[:game].state == :humanswin
-        if shared[:game].game_wolves.length > 1
-          chanm("Game over! The wolves (%s) were unable to pull the wool over the humans' eyes." % Format(:bold, shared[:game].game_wolves.join(', ')))
+      elsif @game.state == :humanswin
+        if @game.game_wolves.length > 1
+          chanm("Game over! The wolves (%s) were unable to pull the wool over the humans' eyes." % Format(:bold, @game.game_wolves.join(', ')))
         else
-          chanm("Game over! The lone wolf %s was unable to pull the wool over the humans' eyes." % Format(:bold, shared[:game].game_wolves[0]))
+          chanm("Game over! The lone wolf %s was unable to pull the wool over the humans' eyes." % Format(:bold, @game.game_wolves[0]))
         end
         wipe_slate
         return true
@@ -435,24 +396,24 @@ module TWG
     end
     
     def solicit_votes
-      return if shared[:game].nil?
-      if shared[:game].state == :night
+      return if @game.nil?
+      if @game.state == :night
         solicit_wolf_votes
-      elsif shared[:game].state == :day
+      elsif @game.state == :day
         solicit_human_votes
       end
     end
 
     def solicit_wolf_votes
-      return if shared[:game].nil?
-      alive = shared[:game].wolves_alive
+      return if @game.nil?
+      alive = @game.wolves_alive
       if alive.length == 1
-        if shared[:game].game_wolves.length == 1
+        if @game.game_wolves.length == 1
           whatwereyou = "You are a lone wolf."
         else
           whatwereyou = "You are the last remaining wolf."
         end
-        userm(alive[0], "It is now NIGHT #{shared[:game].iteration}: #{whatwereyou} To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind.")
+        userm(alive[0], "It is now NIGHT #{@game.iteration}: #{whatwereyou} To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind.")
         return
       elsif alive.length == 2
         others = "Talk with your fellow wolf"
@@ -460,18 +421,18 @@ module TWG
         others = "Talk with your fellow wolves to decide who to kill"
       end
       alive.each do |wolf|
-        userm(wolf, "It is now NIGHT #{shared[:game].iteration}: To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind. #{others}") 
+        userm(wolf, "It is now NIGHT #{@game.iteration}: To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind. #{others}") 
       end
     end
 
     def solicit_human_votes(killed=:none)
-      return if shared[:game].nil?
+      return if @game.nil?
       if killed == :none
         blurb = "Talk to your fellow villagers about this unusual and eery lupine silence!"
       else
         blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
       end
-      chanm("It is now DAY #{shared[:game].iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
+      chanm("It is now DAY #{@game.iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
     end
 
     def chanm(m)
@@ -483,7 +444,7 @@ module TWG
     end
 
     def wipe_slate
-      shared[:game].reset
+      @game.reset
       @signup_started = false
       @timer = nil
       @gchan = Channel(config["game_channel"])
