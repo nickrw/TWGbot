@@ -6,14 +6,12 @@ module TWG
     attr_reader :live_wolves
     attr_reader :live_norms
     attr_reader :votes
-    attr_reader :voted
     attr_reader :game_wolves
     attr_reader :min_part
     attr_reader :iteration
 
-    def initialize(debug=false)
+    def initialize
       reset
-      @debug = debug
     end
 
     def reset
@@ -26,7 +24,6 @@ module TWG
       @live_wolves = 0
       @live_norms = 0
       @votes = {}
-      @voted = []
     end
 
     def start
@@ -67,29 +64,20 @@ module TWG
         @game_wolves.delete(oldnick)
         @game_wolves << newnick
       end
-      if @seetarget == oldnick
-        @seetarget = newnick
-      end
 
       # Replace votes for and by the player
-      tvoted = @voted.dup
-      tvoted.each do |voter,votee|
+      tvotes = @votes.dup
+      tvotes.each do |votee,voters|
         if votee == oldnick
-          record_vote(voter,newnick)
+          @voters[newnick] = voters
+          @voters[oldnick] = nil
         end
-        if voter == oldnick
-          @voted[newnick] = votee
-          @voted.delete(oldnick)
+        if voters.include?(oldnick)
+          @voters[votee].delete(oldnick)
+          @voters[votee] << newnick
         end
       end
-      tvoted = nil
-
-      # Tidy up the vote count for the old nick. This should be zero
-      # as looping through and using record_vote on the voted hash should
-      # have decremented it.
-      if @votes.keys.include?(oldnick)
-        @votes.delete(oldnick)
-      end
+      tvotes = nil
 
     end
 
@@ -111,26 +99,30 @@ module TWG
       voter_is = @participants[nick]
       votee_is = @participants[vfor]
       act = {:night => :nick, :day => :reply}
-      return Haps.new(:action => :none, :code => :notvotablestate, :state => @state, :message => "#{nick} tried to vote for #{vfor} during #{@state}") unless [:day, :night].include?(@state)
+      return {:code => :notvotablestate} if not [:day, :night].include?(@state)
       if ((@state == :night) && (type == :channel) || ((@state == :day) && (type == :private)))
-        return Haps.new(:action => :none, :code => :illegalvotetype, :state => @state, :message => "#{nick} tried a #{type} vote during #{@state}") 
+        return {:code => :illegalvotetype}
       end
-      return Haps.new(:action => :none, :code => :voternotplayer, :state => @state, :message => "#{nick} tried to vote but isn't playing") unless player?(nick)
-      return Haps.new(:action => :none, :code => :voterdead, :state => @state, :message => "#{nick} is dead but tried to vote for #{vfor}") if dead?(nick)
-      return Haps.new(:action => :reply, :code => :voteself, :state => @state, :message => "#{nick} tried to vote for themselves") if nick == vfor
-      return Haps.new(:action => :reply, :code => :voteenotplayer, :state => @state, :message => "#{nick} tried to vote for non-player: #{vfor}") unless player?(vfor)
-      return Haps.new(:action => :reply, :code => :voteedead, :state => @state, :message => "#{nick} tried to vote for dead player: #{vfor}") if dead?(vfor)
+      return {:code => :voternotplayer} if not player?(nick)
+      return {:code => :dead} if dead?(nick)
+      return {:code => :self} if nick == vfor
+      return {:code => :voteenotplayer} if not player?(vfor)
+      return {:code => :voteedead} if dead?(vfor)
       if @state == :night
-        return Haps.new(:action => :reply, :code => :notawolf, :state => @state, :message => "#{nick} is not a wolf but tried to vote at night") unless @game_wolves.include?(nick)
-        return Haps.new(:action => :reply, :code => :fellowwolf, :state => @state, :message => "#{nick} tried to vote for fellow wolf #{vfor}") if @game_wolves.include?(vfor)
+        return {:code => :notawolf} if not @game_wolves.include?(nick)
+        return {:code => :fellowwolf} if @game_wolves.include?(vfor)
       end
-      if @voted.include?(nick)
-        record_vote(nick,vfor)
-        return Haps.new(:action => :reply, :code => :changedvote, :state => @state, :message => "#{nick} changed their vote to #{vfor}") 
-      else
-        record_vote(nick,vfor)
-        return Haps.new(:action => :reply, :code => :confirmvote, :state => @state, :message => "#{nick} voted for #{vfor}")
-      end
+      previous = record_vote(nick,vfor)
+      return {:code => :confirmvote, :previous => previous}
+    end
+
+    def abstain(nick)
+      role = @participants[nick]
+      return role if role.nil? || role == :dead
+      return :notvotablestate if not [:day, :night].include?(@state)
+      return :invalid if @state == :night && role != :wolf
+      record_vote(nick, :abstain)
+      true
     end
 
     def wolves_alive
@@ -165,22 +157,33 @@ module TWG
       end
     end
 
+    # Returns nil for successful new vote.
+    # Returns name of previous vote for successful changed vote.
     def record_vote(nick,vfor)
-      if @voted[nick] and not @votes[@voted[nick]].nil?
-        @votes[@voted[nick]] -= 1
+      puts "Votes: #{@votes.inspect}"
+      old = nil
+      tvotes = @votes.dup
+      tvotes.each do |votee, voters|
+        if voters.include?(nick)
+          @votes[votee].delete(nick)
+          if @votes[votee].empty?
+            @votes.delete(votee)
+          end
+          old = votee
+          puts "Removing old vote (#{nick} -> #{votee})"
+          break
+        end
       end
-      @voted[nick] = vfor
-      if @votes[vfor].nil?
-        @votes[vfor] = 1
-      else
-        @votes[vfor] += 1
-      end
+      puts "Recording vote (#{nick} -> #{vfor})"
+      @votes[vfor] ||= Array.new
+      @votes[vfor] << nick
+      puts "Votes: #{@votes.inspect}"
+      return old
     end
 
     def clear_votes
       @voted = {}
       @votes = {}
-      @seetarget = ""
     end
 
     def assign_roles
@@ -201,31 +204,26 @@ module TWG
 
     end
 
-    def apply_votes
+    def apply_votes(perform_kill=true)
       highest = 0
       tiebreak = []
-      @votes.each do |votee, count|
-        if count > highest
+      @votes.each do |votee, voters|
+        if voters.count > highest
           tiebreak = [votee]
-          highest = count
-        elsif count == highest
+          highest = voters.count
+        elsif voters.count == highest
           tiebreak << votee
         end
       end
-      killme = nil
       if tiebreak.length > 1
-        killme = tiebreak[rand(tiebreak.length)]
-      elsif tiebreak.length == 1
-        killme = tiebreak[0]
+        tiebreak.delete(:abstain)
       end
-      return Haps.new(:action => :channel, :code => :novotes, :state => @state, :message => "No votes were made!") if killme.nil?
-      was = kill(killme)
-      case was
-        when :wolf
-          return Haps.new(:action => :channel, :code => :wolfkilled, :killed => killme, :state => @state, :message => "#{killme} has been killed at popular request")
-        else 
-          return Haps.new(:action => :channel, :code => :normkilled, :killed => killme, :state => @state, :message => "#{killme} has been killed at popular request")
-      end
+      return tiebreak if not perform_kill
+      killed = tiebreak.shuffle[0]
+      return nil if killed.nil?
+      return :abstain if killed == :abstain
+      role = kill(killed)
+      return [killed, role]
     end
 
     def kill(target)

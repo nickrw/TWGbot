@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'cinch'
 require 'twg/game'
 require 'twg/helpers'
@@ -19,6 +20,7 @@ module TWG
     listen_to :do_allow_starts, :method => :do_allow_starts
     match "start", :method => :start
     match /vote ([^ ]+)(.*)?$/, :method => :vote
+    match /abstain( .*)?$/, :method => :abstain
     match "votes", :method => :votes
     match "join", :method => :join
     match /join ([^ ]+)$/, :method => :forcejoin
@@ -39,61 +41,108 @@ module TWG
       @authnames[user.to_s] == user.authname
     end
 
-    def vote(m, mfor, reason)
-      unless @game.nil?
-        return if not authn(m.user)
-        r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
-        if r.code == :confirmvote
-          if m.channel?
-            rmessage = "#{m.user} voted for %s" % Format(:bold, mfor)
-          else
-            rmessage = "You have voted for #{mfor} to be killed tonight"
-          end
-        elsif r.code == :changedvote
-          if m.channel?
-            rmessage = "#{m.user} %s their vote to %s" % [Format(:bold, "changed"), Format(:bold, mfor)]
-          else
-            rmessage = "You have changed your vote to #{mfor}"
-          end
-        elsif r.code == :fellowwolf
-          rmessage = "You can't vote for one of your own kind!"
-        elsif r.code == :voteenotplayer
-          if m.channel?
-            rmessage = "#{m.user}: #{mfor} is not a player in this game"
-          else
-            rmessage = "#{mfor} is not a player in this game"
-          end
-        elsif r.code == :voteedead
-          if m.channel?
-            rmessage = "Good news #{m.user}, #{mfor} is already dead! "
-          else
-            rmessage = "#{mfor} is already dead"
-          end
-        elsif r.code == :voteself
-          if not m.channel?
-            rmessage = "Error ID - 10T"
-          end
-        end
-        if rmessage
-          m.reply rmessage
+    def abstain(m, reason)
+      return if @game.nil?
+      return if not authn(m.user)
+      return if not [:night, :day].include?(@game.state)
+      return if @game.state == :night && m.channel?
+      return if @game.state == :day && !m.channel?
+      if @game.abstain(m.user.to_s) == true
+        if @game.state == :night
+          m.reply "You have taken the Überwald League of Temperance's black ribbon - werewolf company."
+        else
+          m.reply "#{m.user.nick} has voted not to lynch"
         end
       end
     end
-    
+
+    def vote(m, mfor, reason)
+      return if @game.nil?
+      return if not authn(m.user)
+      r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
+      debug "Vote result: #{r.inspect}"
+
+      if m.channel?
+
+        case r[:code]
+        when :confirmvote
+          if r[:previous].nil? || r[:previous] == :abstain
+            m.reply "#{m.user} voted for %s" % Format(:bold, mfor)
+          else
+            m.reply "%s %s their vote from %s to %s" % [
+              m.user,
+              Format(:bold, "changed"),
+              r[:previous],
+              Format(:bold, mfor)
+            ]
+          end
+        when :voteenotplayer
+          m.reply "#{mfor} is not a player in this game", true
+        when :voteedead
+          m.reply "Good news #{m.user}, #{mfor} is already dead! "
+        end
+
+      else
+
+        case r[:code]
+        when :confirmvote
+          if r[:previous].nil?
+            m.reply "You have voted for #{mfor} to be killed tonight"
+          else
+            m.reply "You have changed your vote to #{mfor}"
+          end
+        when :fellowwolf
+          m.reply "You can't vote for one of your own kind!"
+        when :voteenotplayer
+          m.reply "#{mfor} is not a player in this game"
+        when :dead
+          m.reply "#{mfor} is already dead"
+        when :self
+          m.reply "Error ID - 10T"
+        end
+
+      end
+    end
+
     def votes(m)
       return if !m.channel?
       return if @game.state != :day
-      tally = {}
-      @game.voted.each do |voter,votee|
-        if tally[votee]
-          tally[votee] << voter
-        else
-          tally[votee] = [voter]
+      tiebreak = @game.apply_votes(false)
+      defer = nil
+      order = {}
+      @game.votes.each do |votee,voters|
+        next if votee == :abstain
+        order[voters.count] ||= []
+        order[voters.count] << votee_summary(votee, voters, tiebreak)
+      end
+      sorted = order.keys.sort { |x,y| y <=> x }
+      sorted.each do |i|
+        order[i].each do |s|
+          m.reply s
         end
       end
-      tally.each do |votee,voters|
-        chanm "#{votee} has #{voters.count} vote#{voters.count > 1 ? "s" : nil} (#{voters.join(', ')})."
+      if @game.votes.keys.include?(:abstain)
+        m.reply votee_summary(:abstain, @game.votes[:abstain], tiebreak)
       end
+    end
+
+    def votee_summary(votee, voters, tiebreak)
+      if votee == :abstain
+        message = "%d peaceful %s voted not to lynch (%s)." % [
+          voters.count,
+          voters.count > 1 ? "souls have" : "soul has",
+          voters.join(', ')
+        ]
+      else
+        message = "%s has %d %s (%s)." % [
+          votee,
+          voters.count,
+          voters.count > 1 ? "votes" : "vote",
+          voters.join(', ')
+        ]
+      end
+      message = Format(:italic, message) if tiebreak.include?(votee)
+      return message
     end
 
     def opped(m, *args)
@@ -242,16 +291,15 @@ module TWG
     def warn_vote_timeout(m, secsremain)
       return if @game.nil?
       if @game.state == :day
-        notvoted = []
-        @game.participants.each do |player,state|
-          next if state == :dead
-          unless @game.voted.keys.include?(player)
-            notvoted << player
+        elligible = players_of_role(:dead, true)
+        @game.votes.each do |votee, voted|
+          voted.each do |voter|
+            elligible.delete(voter)
           end
         end
         wmessage = Format(:bold, "Voting closes in #{secsremain} seconds! ")
-        if notvoted.count > 0
-          wmessage << "Yet to vote: #{notvoted.join(', ')}"
+        if elligible.count > 0
+          wmessage << "Yet to vote: #{elligible.join(', ')}"
         else
           wmessage << "Everybody has voted, but it's not too late to change your mind..." 
         end
@@ -272,16 +320,19 @@ module TWG
       r = @game.apply_votes
       hook_sync(:hook_votes_applied)
       @game.next_state
-      if r.code == :normkilled
-        k = r.opts[:killed]
-        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of #{k} lying on the ground. %s" % Format(:red, "#{k.capitalize}, a villager, is dead."))
-        devoice(k)
-      elsif r.code == :novotes
-        k = :none
+      killed = nil
+      if r.nil? || r == :abstain
         chanm("Everybody wakes, bleary eyed. %s Nobody was murdered during the night!" % Format(:underline, "There doesn't appear to be a body!"))
+      else
+        killed = r[0]
+        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %s lying on the ground. %s, a villager, is dead." % [
+              killed,
+              Format(:red, killed)
+        ])
+        devoice(killed)
       end
       unless check_victory_conditions
-        hook_async(:enter_day, 0, nil, k)
+        hook_async(:enter_day, 0, nil, killed)
       end
     end
 
@@ -303,20 +354,25 @@ module TWG
       r = @game.apply_votes
       hook_sync(:hook_votes_applied)
       @game.next_state
-      k = r.opts[:killed]
-      unless r.code == :novotes
-        chanm "Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k)
+      k = nil
+      role = nil
+      if r.nil?
+        chanm("Voting over! No votes were cast.")
+      elsif r == :abstain
+        chanm("Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?")
+      elsif r.class == Array
+        k = r[0]
+        role = r[1]
+        chanm("Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k))
         sleep 2
         chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The villagers examine the body...")
         sleep(config["game_timers"]["dramatic_effect"])
-      else
-        chanm("Voting over! No consensus could be reached.")
       end
-      if r.code == :normkilled
-        chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
-        devoice(k)
-      elsif r.code == :wolfkilled
+      if role == :wolf
         chanm("...and it starts to transform before their very eyes! A dead wolf lies before them.")
+        devoice(k)
+      else
+        chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
         devoice(k)
       end
       unless check_victory_conditions
@@ -426,9 +482,9 @@ module TWG
       end
     end
 
-    def solicit_human_votes(killed=:none)
+    def solicit_human_votes(killed=nil)
       return if @game.nil?
-      if killed == :none
+      if killed.nil?
         blurb = "Talk to your fellow villagers about this unusual and eery lupine silence!"
       else
         blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
