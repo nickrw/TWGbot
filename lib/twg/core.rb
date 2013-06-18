@@ -371,7 +371,7 @@ module TWG
       if role == :wolf
         chanm("...and it starts to transform before their very eyes! A dead wolf lies before them.")
         devoice(k)
-      else
+      elsif r != :abstain
         chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
         devoice(k)
       end
