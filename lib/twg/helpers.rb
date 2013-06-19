@@ -86,5 +86,13 @@ module TWG
       hook_cancel(method, true)
     end
 
+    def clean(str)
+      if str.class != String
+        raise ArgumentError, "Non-string variable passed to clean"
+      end
+      str = Cinch::Utilities::String.filter_string(str)
+      str.strip
+    end
+
   end
 end
