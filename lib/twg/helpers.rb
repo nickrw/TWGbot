@@ -26,9 +26,9 @@ module TWG
         if r <= odds
           s = p.shuffle[0]
           @game.participants[s] = role
-          info "Selected player: #{s} (#{s} <= #{odds})"
+          info "Selected player: #{s} (#{r} <= #{odds})"
         else
-          info "No player selected (#{s} > #{odds})"
+          info "No player selected (#{r} > #{odds})"
         end
       end
     end
