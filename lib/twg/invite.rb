@@ -27,7 +27,13 @@ module TWG
       # Check the bot can actually do invites in this channel
       chanmodes = m.channel.users[bot]
       if not chanmodes.include?('o')
-        m.reply "Can't invite players, I don't have channel ops"
+        m.reply "Can't invite players, I don't have channel ops", true
+        return
+      end
+
+      rl = ratelimit(:invite, 10)
+      if rl > 0
+        m.reply "The !invite command is rate-limited. Try again in #{rl} seconds.", true
         return
       end
 
@@ -38,7 +44,7 @@ module TWG
       # Check there is a user connected by this name
       user.refresh
       if not user.online?
-        m.reply "No user called #{n} online"
+        m.reply "No user called #{n} online", true
         return
       end
 
