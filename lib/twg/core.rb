@@ -33,17 +33,10 @@ module TWG
       shared[:game] = @game
       @timer = nil
       @allow_starts = false
-      @authnames = {}
-    end
-
-    def authn(user)
-      return true if not config["use_authname"]
-      @authnames[user.to_s] == user.authname
     end
 
     def abstain(m, reason)
       return if @game.nil?
-      return if not authn(m.user)
       return if not [:night, :day].include?(@game.state)
       return if @game.state == :night && m.channel?
       return if @game.state == :day && !m.channel?
@@ -58,7 +51,6 @@ module TWG
 
     def vote(m, mfor, reason)
       return if @game.nil?
-      return if not authn(m.user)
       r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
       debug "Vote result: #{r.inspect}"
 
@@ -175,11 +167,8 @@ module TWG
       return if @game.nil?
       return if @game.participants[oldname].nil?
       return if @game.participants[oldname] == :dead
-      if not @authnames.delete(oldname).nil?
-        @game.nickchange(oldname, newname)
-        @authnames[newname] = m.user.authname
-        chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
-      end
+      @game.nickchange(oldname, newname)
+      chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
     end
 
     def start(m)
@@ -206,20 +195,15 @@ module TWG
         @game.reset
       end
       if @game.state == :signup
-        unless m.user.authname.nil?
-          wipe_slate
-          @signup_started = true
-          m.reply "TWG has been started by #{m.user}!"
-          m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{@game.min_part} players is required to play TWG."
-          m.reply "Say !start again to skip the wait when everybody has joined"
-          @game.register(m.user.to_s)
-          voice(m.user)
-          @authnames[m.user.to_s] = m.user.authname
-          hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
-          hook_async(:complete_startup, config["game_timers"]["registration"])
-        else
-          m.reply "you are unable to start a game as you are not authenticated to network services", true
-        end
+        wipe_slate
+        @signup_started = true
+        m.reply "TWG has been started by #{m.user}!"
+        m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{@game.min_part} players is required to play TWG."
+        m.reply "Say !start again to skip the wait when everybody has joined"
+        @game.register(m.user.to_s)
+        voice(m.user)
+        hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
+        hook_async(:complete_startup, config["game_timers"]["registration"])
       end
     end
 
@@ -248,16 +232,11 @@ module TWG
     def join(m)
       return if !m.channel?
       return if !@signup_started
-      if m.user.authname.nil?
-        m.reply "unable to add you to the game, you are not identified with services", true
-        return
-      end
       if !@game.nil? && @game.state == :signup
         r = @game.register(m.user.to_s)
         if r.code == :confirmplayer
           m.reply "#{m.user} has joined the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
           Channel(config["game_channel"]).voice(m.user)
-          @authnames[m.user.to_s] = m.user.authname
         end
       end
     end
@@ -269,16 +248,11 @@ module TWG
       return if @game.nil?
       return if @game.state != :signup
       uobj = User(user)
-      uobj.refresh
-      if uobj.authname.nil?
-        m.reply "Unable to add #{user} to the game - not identified with services", true
-        return
-      end
+      return if not m.channel.users.keys.include(uobj)
       r = @game.register(user)
       if r.code == :confirmplayer
         m.reply "#{user} has been forced to join the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
         Channel(config["game_channel"]).voice(uobj)
-        @authnames[user] = uobj.authname
       end
     end
 
@@ -505,7 +479,6 @@ module TWG
       @signup_started = false
       @timer = nil
       @gchan = Channel(config["game_channel"])
-      @authnames = {}
       @gchan.mode('-m')
       deop = []
       devoice = []
