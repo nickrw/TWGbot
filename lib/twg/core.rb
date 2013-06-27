@@ -198,7 +198,7 @@ module TWG
         wipe_slate
         @signup_started = true
         m.reply "TWG has been started by #{m.user}!"
-        m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds, !help for more information. A minimum of #{@game.min_part} players is required to play TWG."
+        m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds. A minimum of #{@game.min_part} players is required to play TWG."
         m.reply "Say !start again to skip the wait when everybody has joined"
         @game.register(m.user.to_s)
         voice(m.user)
