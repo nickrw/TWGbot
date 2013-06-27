@@ -15,6 +15,7 @@ module TWG
     listen_to :complete_startup, :method => :complete_startup
     listen_to :hook_notify_roles, :method => :notify_roles
     listen_to :nick, :method => :nickchange
+    listen_to :join, :method => :channel_join
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
     listen_to :do_allow_starts, :method => :do_allow_starts
@@ -47,6 +48,13 @@ module TWG
           m.reply "#{m.user.nick} has voted not to lynch"
         end
       end
+    end
+
+    def channel_join(m)
+      return if @game.nil?
+      return if @game.participants[m.user.to_s].nil?
+      return if @game.participants[m.user.to_s] == :dead
+      voice(m.user)
     end
 
     def vote(m, mfor, reason)
