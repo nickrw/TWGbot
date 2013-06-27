@@ -55,8 +55,12 @@ module TWG
       if delay == 0
         hook_raise(method, true, m, *args)
       else
+        tconfig = {
+          :shots => 1,
+          :start_automatically => false
+        }
         shared[:timer] ||= Hash.new
-        shared[:timer][method] = Timer(delay, {:shots => 1}) do
+        shared[:timer][method] = Timer(delay, tconfig) do
           hook_raise(method, true, m, *args)
           shared[:timer][method] = nil
         end
