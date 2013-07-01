@@ -20,20 +20,20 @@ module TWG
 
       # Don't allow invite spamming
       if @recent_invitees.include?(n)
-        m.reply "#{n} has been invited to join the channel recently, try again later", true
+        m.reply @lang.t('invite.spam', :target => n), true
         return
       end
 
       # Check the bot can actually do invites in this channel
       chanmodes = m.channel.users[bot]
       if not chanmodes.include?('o')
-        m.reply "Can't invite players, I don't have channel ops", true
+        m.reply @lang.t('invite.noops'), true
         return
       end
 
       rl = ratelimit(:invite, 10)
       if rl > 0
-        m.reply "The !invite command is rate-limited. Try again in #{rl} seconds.", true
+        m.reply @lang.t('invite.ratelimit', :secs => rl), true
         return
       end
 
@@ -44,14 +44,14 @@ module TWG
       # Check there is a user connected by this name
       user.refresh
       if not user.online?
-        m.reply "No user called #{n} online", true
+        m.reply @lang.t('invite.nouser', :target => n), true
         return
       end
 
       # Invite the user and add their name to the spam list
       m.channel.invite(n)
       @recent_invitees << n
-      m.reply "I have invited #{n} to join the channel", true
+      m.reply @lang.t('invite.confirm', :target => n), true
 
       # Schedule removal of the name from the spam list
       hook_async(:hook_delete_invitee, 3600, nil, n)

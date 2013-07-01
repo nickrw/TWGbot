@@ -131,3 +131,9 @@ default:
         l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
         l2: "%{vigilante}'s single silver bullet was wasted on %{target} - a fellow villager."
     over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
+  invite:
+    spam: "%{target} has been invited to join the channel recently, try again later."
+    noops: "Can't invite players, I don't have channel ops."
+    ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."
+    nouser: "No user called %{target} online."
+    confirm: "I have invited %{target} to join the channel."
