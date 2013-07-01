@@ -24,7 +24,7 @@ module TWG
       reset
       @seer = seer
       return if @seer.nil?
-      User(@seer).send "It is now NIGHT %s: say !see <nickname> to me to reveal their role." % @game.iteration.to_s
+      User(@seer).send @lang.t('seer.solicit', :night => @game.iteration.to_s)
     end
 
     def seer_reveal(m)
@@ -33,20 +33,20 @@ module TWG
       return if @seer.nil?
       return if @target.nil?
       if seer != @seer
-        User(@seer).send "While dreaming vividly about %s you get viciously torn to pieces. Your magic 8 ball didn't see that one coming!" % @target
+        User(@seer).send @lang.t('seer.killed', :target => @target)
         reset
         return
       end
       t = @game.participants[@target]
       case t
         when :dead
-          User(@seer).send "You have a vision of %s's body, twisted, broken and bloody. A wolf got there before you." % @target
+          User(@seer).send @lang.t('seer.reveal.dead', :target => @target)
         when :wolf
-          User(@seer).send "You have a dream about %s wearing a new fur coat. You've found a WOLF." % @target
+          User(@seer).send @lang.t('seer.reveal.wolf', :target => @target)
         when :vigilante
-          User(@seer).send "You have a dream about %s shooting. It looks like %s is a fellow villager." % [@target, @target]
+          User(@seer).send @lang.t('seer.reveal.vigilante', :target => @target)
         else
-          User(@seer).send "You have a dream about %s shouting. It looks like %s is a fellow villager." % [@target, @target]
+          User(@seer).send @lang.t('seer.reveal.normal', :target => @target)
       end
       reset
     end
@@ -55,7 +55,7 @@ module TWG
       return if @game.nil?
       s = seer
       return if s.nil?
-      User(s).send "You are the SEER. Each night you can have the role of a player of your choice revealed. Choose carefully, once the inner eye has selected a target it cannot be swayed."
+      User(s).send @lang.t('seer.role')
     end
 
     def see(m, target)
@@ -66,30 +66,30 @@ module TWG
       return if s != m.user.nick
 
       if @game.state != :night
-        m.reply "You're wide awake - this is no time for visions!"
+        m.reply @lang.t('seer.awake')
         return
       end
 
       t = @game.participants[target]
       if t.nil?
-        m.reply "#{target} isn't a player in this game"
+        m.reply @lang.t('seer.target.nosuch', :target => target)
         return
       end
 
       if target == s
-        m.reply "Surely you know what you are... try again."
+        m.reply @lang.t('seer.target.self')
         return
       end
 
       if t == :dead
-        m.reply "#{target} is dead, try again."
+        m.reply @lang.t('seer.target.dead', :target => target)
         return
       end
 
       if @target.nil?
-        m.reply "#{target}'s identity will be revealed to you as you wake."
+        m.reply @lang.t('seer.target.confirm', :target => target)
       else
-        m.reply "You have changed the target of tonight's vision to #{target}."
+        m.reply @lang.t('seer.target.change', :target => target)
       end
 
       @target = target

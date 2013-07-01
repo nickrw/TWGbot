@@ -15,8 +15,8 @@ module TWG
       return if @game.nil?
       v = vigilante
       return if v.nil?
-      User(v).send "You are the VIGILANTE. You have perfected the technology of gunpowder, but you only have enough silver for one bullet."
-      User(v).send "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day."
+      User(v).send @lang.t('vigilante.role.l1')
+      User(v).send @lang.t('vigilante.role.l2')
       info "Role notification sent to #{v}"
     end
 
@@ -34,19 +34,24 @@ module TWG
       hook_cancel(:exit_day)
 
       if v != target
-        m.reply "%s pulls out a gun and shoots %s" % [m.user.nick, Format(:red, target)]
+        m.reply @lang.t('vigilante.shoot.other', {
+          :vigilante => m.user.to_s,
+          :target    => target
+        })
         @game.participants[v] = :normal
       else
-        m.reply "%s pulls out a gun and %s" % [m.user.nick, Format(:red, "commits suicide")]
+        m.reply @lang.t('vigilante.shoot.self', {
+          :vigilante => m.user.to_s
+        })
       end
       r = @game.kill(target)
       @core.devoice(target)
 
       sleep 10
       if v != target
-        m.reply "The villagers, despite their shock at the sudden discovery of gunpowder and ballistics, shuffle forward to look at #{target}'s fallen body..."
+        m.reply @lang.t('vigilante.reaction.other', :target => target)
       else
-        m.reply "The villagers had known that #{target} was feeling a bit down in the dumps, but had always dismissed it as hormones."
+        m.reply @lang.t('vigilante.reaction.self', :target => target)
       end
       sleep 5
 
@@ -55,23 +60,23 @@ module TWG
         debug "Error! Valid player was sent to kill, but got nil back"
         debug "#{target.inspect}"
       when :vigilante
-        m.reply "%s's single silver bullet was put to waste in its maker's skull instead of a wolf." % m.user.nick
+        m.reply @lang.t('vigilante.reveal.self', :vigilante => m.user.to_s)
       when :wolf
-        m.reply "... and jump back in horror as #{target} lets out a buttock-clenching death-howl!"
-        m.reply "%s's single silver bullet found its true home. %s was a wolf!" % [m.user.nick, Format(:bold, target)]
+        m.reply @lang.t('vigilante.reveal.wolf.l1', :target => target)
+        m.reply @lang.t('vigilante.reveal.wolf.l2', :target => target, :vigilange => m.user.to_s)
       when :seer
-        m.reply "... and a tinkling crash cuts through the silence as a crystal ball rolls from #{target}'s sleeve."
-        m.reply "%s just shot the seer! What rotten luck." % m.user.nick
+        m.reply @lang.t('vigilante.reveal.seer.l1', :target => target)
+        m.reply @lang.t('vigilante.reveal.seer.l2', :vigilange => m.user.to_s)
       else
         brave = players_of_role(:dead, true).shuffle[0]
-        m.reply "... the brave #{brave} steps forward and rolls #{target} over with their toe, but nothing happens."
-        m.reply "%s's single silver bullet was wasted on %s - a fellow villager." % [m.user.nick, Format(:bold, target)]
+        m.reply @lang.t('vigilante.reveal.normal.l1', :target => target, :brave => brave)
+        m.reply @lang.t('vigilante.reveal.normal.l2', :target => target, :vigilante => m.user.to_s)
       end
 
       sleep 3
       @game.next_state
       unless @core.check_victory_conditions
-        m.reply "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
+        m.reply @lang.t('vigilante.over')
         hook_async(:enter_night)
       end
 

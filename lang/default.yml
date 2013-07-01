@@ -1,0 +1,133 @@
+default:
+  description: "Bog standard werewolf game"
+  lang:
+    advertise: "While no game is running, and during signup for a game, use the !langs command to see a list of available themes / languages."
+    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    notfound: "No language pack named '%{lang}' available."
+    loaded: "Now using language pack: %{desc}"
+  general:
+    plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
+    noops: "I require channel ops before starting a game."
+    ready: "TWG bot is now up and running! Say !start to start a new game."
+    deopped: "Cancelling game - I have been deopped!"
+    rename: "Player %{oldnick} is now known as %{nick}"
+  start:
+    start: "TWG has been started by %{nick}!"
+    registration: "Registration is now open, say !join to join the game within %{limit} seconds. A minimum of %{players} players is required to play TWG."
+    skipmessage: "Say !start again to skip the wait when everybody has joined"
+    joined: "%{player} has joined the game (%{number}/%{min})"
+    forcejoined: "%{player} has been forced to join the game (%{number}/%{min})"
+    almostready: "%{secs} seconds left to !join. %{number} out of a minimum of %{min} players joined so far."
+    starting: "Game starting! Players are: %{players}"
+    rolesoon: "You will shortly receive your role via private message"
+    enoughplayers: "Not enough players to start a game, sorry. You can !start another if you find more players."
+    error: "An unexpected error occurred, the game could not be started."
+  roles:
+    normal:
+      - "You are a normal human being."
+      - "There's nothing remarkable about you."
+      - "You're a pretty standard 9-5 villager."
+      - "You're not special."
+    wolf:
+      one: "You are a lone WOLF!"
+      other: "You are a WOLF in a pack with: %{wolves}"
+  day:
+    enter:
+      solicit:
+        nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        kill:
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s untimely demise. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+    exit:
+      novotes: "Voting over! No votes were cast."
+      abstain: "Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?"
+      lynch: "Voting over! The baying mob has spoken - %{killed} must die!"
+      suspense: "Everybody turns slowly towards %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
+      result:
+        wolf: "...and it starts to transform before their very eyes! A dead wolf lies before them."
+        normal: "...but can't see anything unusual, looks like you might have turned upon one of your own."
+    almostready:
+      yet: "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
+      everybody: "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
+  night:
+    enter: "A chilly mist descends, it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+    solicit:
+      one: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind."
+      other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
+    exit:
+      body: "A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %{killed} lying on thr ground. %{killed}, a villager, is dead."
+      nobody: "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
+  vote:
+    noplayer: "%{votee} is not a player in this game"
+    day:
+      vote: "%{voter} voted for %{votee}"
+      changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
+      abstain: "%{voter} has voted not to lynch"
+      dead:
+        - "Good news %{voter}, %{votee} is already dead!"
+        - "%{voter} has volunteered to dig %{votee}'s grave."
+    night:
+      vote: "You have voted for %{votee} to be killed tonight"
+      changed: "You have changed your vote to %{votee}"
+      abstain: "You have taken the Überwalt League of Temperance (werewolf division) black ribbon"
+      dead: "%{votee} is already dead"
+      samerole: "You can't vote for one of your own kind!"
+      self: "Error ID - 10T"
+  votes:
+    abstain:
+      one: "%{count} peaceful soul has voted not to lynch (%{players})"
+      other: "%{count} peaceful souls have voted not to lynch (%{players})"
+    message:
+      one: "%{votee} has %{count} vote (%{voters})"
+      other: "%{votee} has %{count} votes (%{voters})"
+  victory:
+    wolfreveal:
+      one: "With a bloodcurdling howl, hair beings sprouting from %{wolf}'s every orifice. The remaining villagers don't stand a chance."
+      other: "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
+    wolf: "Game over! The lone wolf %{wolf} wins!"
+    wolves:
+      one: "Game over! The last remaining wolf, %{wolves} wins!"
+      other: "Game over! The remaining wolves (%{wolves} win!"
+      all: "Game over! The wolves (%{wolves} win!"
+    human:
+      one: "Game over! The lone wolf %{wolves} was unable to pull the wool over the humans' eyes."
+      other: "Game over! The wolves (%{wolves}) were unable to pull the wool over the humans' eyes."
+  seer:
+    role: "You are the SEER. Each night you can have the role of a player of your choice revealed."
+    solicit: "It is now NIGHT %{night}: say !see <nickname> to me to reveal their role."
+    awake: "You're wide awake - this is no time for visions!"
+    killed: "While dreaming vividly about %{target} you get viciously torn to pieces. Your magic 8 ball didn't see that one coming!"
+    target:
+      confirm: "%{target}'s identity will be revealed to you as you wake."
+      change: "You have changed the target of tonight's vision to %{target}."
+      nosuch: "%{target} isn't a player in this game."
+      dead: "%{target} is dead, pay attention."
+      self: "Surely you know what you are... try again."
+    reveal:
+      dead: "You have a vision of %{targets}'s body, twisted, broken and bloody. A wolf got there before you."
+      wolf: "You have a dream about %{target} wearing a new fur coat. You've found a WOLF."
+      vigilante: "You have a dream about %{target} shooting. It looks like %{target} is a fellow villager."
+      normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow villager."
+  vigilante:
+    role:
+      l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, but you only have enough silver for one bullet."
+      l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day."
+    shoot:
+      self: "%{vigilante} pulls out a gun and commits suicide"
+      other: "%{vigilante} pulls out a gun and shoots %{target}"
+    reaction:
+      self: "The villagers, despite their shock at the sudden discovery of gunpowder and ballistics, shuffle forward to look at %{target}'s fallen body..."
+      other: "The villagers had known that %{target}  was feeling a bit down in the dumps, but had always dismissed it as hormones."
+    reveal:
+      self: "%{vigilante}'s single silver bullet was put to waste in its maker's skull instead of a wolf."
+      wolf:
+        l1: "... and jump back in horror as %{target} lets out a buttock-clenching death-howl!"
+        l2: "%{vigilante}'s single silver bullet found its true home. %{target} was a wolf!"
+      seer:
+        l1: "... and a tinkling crash cuts through the silence as a crystal ball rolls from %{target}'s sleeve."
+        l2: "%{vigilante} just shot the seer! What rotten luck."
+      normal:
+        l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
+        l2: "%{vigilante}'s single silver bullet was wasted on %{target} - a fellow villager."
+    over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"

@@ -2,6 +2,7 @@
 require 'cinch'
 require 'twg/game'
 require 'twg/helpers'
+require 'twg/lang'
 module TWG
   class Core
     include ::Cinch::Plugin
@@ -25,15 +26,52 @@ module TWG
     match "votes", :method => :votes
     match "join", :method => :join
     match /join ([^ ]+)$/, :method => :forcejoin
+    match "langs", :method => :langlist
+    match /lang ([^ ]+)$/, :method => :selectlang
 
     attr_accessor :game
+    attr_accessor :lang
 
     def initialize(*args)
       super
       @game = TWG::Game.new
+      lang = config["default_lang"] ||= :default
+      @lang = TWG::Lang.new(lang)
       shared[:game] = @game
       @timer = nil
       @allow_starts = false
+    end
+
+    def langlist(m)
+      return if !m.channel?
+      return if m.channel != config["game_channel"]
+      return if not @allow_starts
+      case @game.state
+      when nil, :signup, :wolveswin, :humanswin
+      else
+        return
+      end
+      m.reply @lang.t 'lang.packs'
+      @lang.list.each do |pack, desc|
+        message = "#{pack}: #{desc}"
+        if @lang.pack == pack
+          message = Format(:italic, message)
+        end
+        m.reply message
+      end
+    end
+
+    def selectlang(m, lang)
+      return if !m.channel?
+      return if m.channel != config["game_channel"]
+      return if not @allow_starts
+      return if @signup_started
+      r = @lang.select(lang.to_sym)
+      if r.nil?
+        m.reply @lang.t('lang.notfound', {:lang => lang})
+      else
+        m.reply @lang.t('lang.loaded', {:desc => r})
+      end
     end
 
     def abstain(m, reason)
@@ -43,9 +81,9 @@ module TWG
       return if @game.state == :day && !m.channel?
       if @game.abstain(m.user.to_s) == true
         if @game.state == :night
-          m.reply "You have taken the Überwald League of Temperance's black ribbon - werewolf company."
+          m.reply @lang.t('vote.night.abstain')
         else
-          m.reply "#{m.user.nick} has voted not to lynch"
+          m.reply @lang.t('vote.day.abstain', {:voter => m.user.to_s})
         end
       end
     end
@@ -60,26 +98,30 @@ module TWG
     def vote(m, mfor, reason)
       return if @game.nil?
       r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
-      debug "Vote result: #{r.inspect}"
 
       if m.channel?
 
         case r[:code]
         when :confirmvote
           if r[:previous].nil? || r[:previous] == :abstain
-            m.reply "#{m.user} voted for %s" % Format(:bold, mfor)
+            m.reply @lang.t('vote.day.vote', {
+              :voter => m.user.to_s,
+              :votee => Format(:bold, mfor)
+            })
           else
-            m.reply "%s %s their vote from %s to %s" % [
-              m.user,
-              Format(:bold, "changed"),
-              r[:previous],
-              Format(:bold, mfor)
-            ]
+            m.reply @lang.t('vote.day.changed', {
+              :voter     => m.user.to_s,
+              :origvotee => r[:previous],
+              :votee     => Format(:bold, mfor)
+            })
           end
         when :voteenotplayer
-          m.reply "#{mfor} is not a player in this game", true
+          m.reply @lang.t('vote.noplayer', {:votee => mfor})
         when :voteedead
-          m.reply "Good news #{m.user}, #{mfor} is already dead! "
+          m.reply @lang.t('vote.day.dead', {
+            :voter => m.user.to_s,
+            :votee => mfor
+          })
         end
 
       else
@@ -87,18 +129,18 @@ module TWG
         case r[:code]
         when :confirmvote
           if r[:previous].nil?
-            m.reply "You have voted for #{mfor} to be killed tonight"
+            m.reply @lang.t('vote.night.vote', {:votee => mfor})
           else
-            m.reply "You have changed your vote to #{mfor}"
+            m.reply @lang.t('vote.night.changed', {:votee => mfor})
           end
         when :fellowwolf
-          m.reply "You can't vote for one of your own kind!"
+          m.reply @lang.t('vote.night.samerole')
         when :voteenotplayer
-          m.reply "#{mfor} is not a player in this game"
+          m.reply @lang.t('vote.noplayer', {:votee => mfor})
         when :dead
-          m.reply "#{mfor} is already dead"
+          m.reply @lang.t('vote.night.dead')
         when :self
-          m.reply "Error ID - 10T"
+          m.reply @lang.t('vote.night.self')
         end
 
       end
@@ -128,18 +170,16 @@ module TWG
 
     def votee_summary(votee, voters, tiebreak)
       if votee == :abstain
-        message = "%d peaceful %s voted not to lynch (%s)." % [
-          voters.count,
-          voters.count > 1 ? "souls have" : "soul has",
-          voters.join(', ')
-        ]
+        message = @lang.t('votes.abstain', {
+          :count => voters.count,
+          :players => voters.join(', ')
+        })
       else
-        message = "%s has %d %s (%s)." % [
-          votee,
-          voters.count,
-          voters.count > 1 ? "votes" : "vote",
-          voters.join(', ')
-        ]
+        message = @lang.t('votes.message', {
+          :votee => votee,
+          :count => voters.count,
+          :voters => voters.join(', ')
+        })
       end
       message = Format(:italic, message) if tiebreak.include?(votee)
       return message
@@ -156,7 +196,9 @@ module TWG
           hook_async(:do_allow_starts, 15)
         end
       elsif chan == config["game_channel"] && mode == "-o" && user == bot.nick
-        chanm Format(:bold, "Cancelling game! I have been deopped!") if @game.state != :signup || (@game.state == :signup && @signup_started == true)
+        if @game.state != :signup || (@game.state == :signup && @signup_started == true)
+          chanm @lang.t 'general.deopped'
+        end
         @game = nil
         @signup_started = false
         @isopped = false
@@ -165,7 +207,8 @@ module TWG
     end
 
     def do_allow_starts(m)
-      chanm "TWG bot is now up and running! Say !start to start a new game."
+      chanm @lang.t 'general.ready'
+      chanm @lang.t 'lang.advertise'
       @allow_starts = true
     end
 
@@ -176,7 +219,10 @@ module TWG
       return if @game.participants[oldname].nil?
       return if @game.participants[oldname] == :dead
       @game.nickchange(oldname, newname)
-      chanm("Player %s is now known as %s" % [Format(:bold, m.user.last_nick), Format(:bold, m.user.to_s)])
+      chanm @lang.t('general.rename', {
+        :oldnick => Format(:bold, m.user.last_nick),
+        :nick    => Format(:bold, m.user.to_s)
+      })
     end
 
     def start(m)
@@ -184,9 +230,9 @@ module TWG
       return if m.channel != config["game_channel"]
       if !@allow_starts
         if @isopped
-          m.reply "I'm not ready yet, #{m.user.to_s}. Give me a few seconds."
+          m.reply @lang.t('general.plzhold', {:nick => m.user.to_s})
         else
-          m.reply "I require channel ops before starting a game"
+          m.reply @lang.t 'general.noops'
         end 
         return
       end
@@ -205,9 +251,12 @@ module TWG
       if @game.state == :signup
         wipe_slate
         @signup_started = true
-        m.reply "TWG has been started by #{m.user}!"
-        m.reply "Registration is now open, say !join to join the game within #{config["game_timers"]["registration"]} seconds. A minimum of #{@game.min_part} players is required to play TWG."
-        m.reply "Say !start again to skip the wait when everybody has joined"
+        m.reply @lang.t('start.start', {:nick => m.user.to_s})
+        m.reply @lang.t('start.registration', {
+          :limit   => config["game_timers"]["registration"].to_s,
+          :players => @game.min_part.to_s
+        })
+        m.reply @lang.t('start.skipmessage')
         @game.register(m.user.to_s)
         voice(m.user)
         hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
@@ -222,17 +271,19 @@ module TWG
       @signup_started = false
 
       if r.code == :gamestart
-        chanm "%s Players are: %s" % [Format(:bold, "Game starting!"), @game.participants.keys.sort.join(', ')]
-        chanm "You will shortly receive your role via private message"
+        chanm @lang.t('start.starting', {
+          :players => @game.participants.keys.sort.join(', ')
+        })
+        chanm @lang.t('start.rolesoon')
         Channel(config["game_channel"]).mode('+m')
         hook_sync(:hook_roles_assigned)
         hook_async(:hook_notify_roles)
         hook_async(:enter_night, 10)
       elsif r.code == :notenoughplayers
-        chanm "Not enough players to start a game, sorry guys. You can !start another if you find more players."
+        chanm @lang.t('start.enoughplayers')
         wipe_slate
       else
-        chanm Format(:red, "An unexpected error occured, the game could not be started.")
+        chanm Format(:red, @lang.t('start.error'))
         wipe_slate
       end
     end
@@ -243,7 +294,10 @@ module TWG
       if !@game.nil? && @game.state == :signup
         r = @game.register(m.user.to_s)
         if r.code == :confirmplayer
-          m.reply "#{m.user} has joined the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
+          m.reply @lang.t('start.joined', {
+            :number => @game.participants.length.to_s,
+            :min    => @game.min_part.to_s
+          })
           Channel(config["game_channel"]).voice(m.user)
         end
       end
@@ -259,7 +313,10 @@ module TWG
       return if not m.channel.users.keys.include(uobj)
       r = @game.register(user)
       if r.code == :confirmplayer
-        m.reply "#{user} has been forced to join the game (#{@game.participants.length}/#{@game.min_part}[minimum])"
+        m.reply @lang.t('start.forcejoined', {
+          :number => @game.participants.length.to_s,
+          :min    => @game.min_part.to_s
+        })
         Channel(config["game_channel"]).voice(uobj)
       end
     end
@@ -267,7 +324,11 @@ module TWG
     def ten_seconds_left(m)
       return if @game.nil?
       return unless @game.state == :signup
-      chanm "10 seconds left to !join. #{@game.participants.length} out of a minimum of #{@game.min_part} players joined so far."
+      chanm @lang.t('start.almostready', {
+        :secs   => '10',
+        :number => @game.participants.length.to_s,
+        :min    => @game.min_part.to_s
+      })
     end
 
     def warn_vote_timeout(m, secsremain)
@@ -279,19 +340,25 @@ module TWG
             elligible.delete(voter)
           end
         end
-        wmessage = Format(:bold, "Voting closes in #{secsremain} seconds! ")
         if elligible.count > 0
-          wmessage << "Yet to vote: #{elligible.join(', ')}"
+          chanm @lang.t('day.almostready.yet', {
+            :secs      => secsremain,
+            :absentees => elligible.join(', ')
+          })
         else
-          wmessage << "Everybody has voted, but it's not too late to change your mind..." 
+          chanm @lang.t('day.almostready.everybody', {
+            :secs => secsremain
+          })
         end
-        chanm(wmessage)
       end
     end
 
     def enter_night(m)
       return if @game.nil?
-      chanm("A chilly mist descends, %s #{@game.iteration}. Villagers, sleep soundly. Wolves, you have #{config["game_timers"]["night"]} seconds to decide who to rip to shreds." % Format(:underline, "it is now NIGHT"))
+      chanm @lang.t('night.enter', {
+        :night => @game.iteration.to_s,
+        :secs => config["game_timers"]["night"].to_s
+      })
       @game.state_transition_in
       solicit_wolf_votes
       hook_async(:exit_night, config["game_timers"]["night"])
@@ -304,13 +371,12 @@ module TWG
       @game.next_state
       killed = nil
       if r.nil? || r == :abstain
-        chanm("Everybody wakes, bleary eyed. %s Nobody was murdered during the night!" % Format(:underline, "There doesn't appear to be a body!"))
+        chanm @lang.t('night.exit.nobody')
       else
         killed = r[0]
-        chanm("A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %s lying on the ground. %s, a villager, is dead." % [
-              killed,
-              Format(:red, killed)
-        ])
+        chanm @lang.t('night.exit.body', {
+          :killed => killed
+        })
         devoice(killed)
       end
       unless check_victory_conditions
@@ -339,22 +405,26 @@ module TWG
       k = nil
       role = nil
       if r.nil?
-        chanm("Voting over! No votes were cast.")
+        chanm @lang.t('day.exit.novotes')
       elsif r == :abstain
-        chanm("Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?")
+        chanm @lang.t('day.exit.abstain')
       elsif r.class == Array
         k = r[0]
         role = r[1]
-        chanm("Voting over! The baying mob has spoken - %s must die!" % Format(:bold, k))
+        chanm @lang.t('day.exit.lynch', {
+          :killed => k
+        })
         sleep 2
-        chanm("Everybody turns slowly towards #{k}, who backs into a corner. With a quick flurry of pitchforks #{k} is no more. The villagers examine the body...")
+        chanm @lang.t('day.exit.suspense', {
+          :killed => k
+        })
         sleep(config["game_timers"]["dramatic_effect"])
       end
       if role == :wolf
-        chanm("...and it starts to transform before their very eyes! A dead wolf lies before them.")
+        chanm @lang.t('day.exit.result.wolf')
         devoice(k)
       elsif r != :abstain
-        chanm("...but can't see anything unusual, looks like you might have turned upon one of your own.")
+        chanm @lang.t('day.exit.result.normal')
         devoice(k)
       end
       unless check_victory_conditions
@@ -367,22 +437,14 @@ module TWG
       @game.participants.keys.each do |user|
         case @game.participants[user]
         when :normal
-          userm(user, "You are a normal human being.")
+          userm(user, @lang.t('roles.normal'))
         when :wolf
-          if user == "michal"
-            userm(user, "Holy shit you're finally a WOLF!")
-          else
-            userm(user, "You are a WOLF!")
-          end
           wolfcp = @game.game_wolves.dup
           wolfcp.delete(user)
-          if wolfcp.length > 1
-            userm(user, "Your fellow wolves are: #{wolfcp.join(', ')}")
-          elsif wolfcp.length == 1
-            userm(user, "Your fellow wolf is: #{wolfcp[0]}")
-          elsif wolfcp.length == 0
-            userm(user, "You are the only wolf in this game.")
-          end
+          userm(user, @lang.t('roles.wolf', {
+            :count => @game.game_wolves.count,
+            :wolves => wolfcp.join(', ')
+          }))
         end
       end
     end
@@ -395,30 +457,26 @@ module TWG
     def check_victory_conditions
       return if @game.nil?
       if @game.state == :wolveswin
-        if @game.live_wolves > 1
-          chanm "With a bloodcurdling howl, hair begins sprouting from every orifice of the #{@game.live_wolves} triumphant wolves. The remaining villagers don't stand a chance." 
-        else
-          chanm("With a bloodcurdling howl, hair begins sprouting from %s's every orifice. The remaining villagers don't stand a chance." % Format(:bold, @game.wolves_alive[0]))
-        end
+        chanm @lang.t('victory.wolfreveal', {
+          :count => @game.live_wolves,
+          :wolf  => @game.wolves_alive[0]
+        })
         if @game.game_wolves.length == 1
-          chanm("Game over! The lone wolf %s wins!" % Format(:bold, @game.wolves_alive[0]))
+          chanm @lang.t('victory.wolf', {:wolf => @game.wolves_alive[0]})
         else
           if @game.live_wolves == @game.game_wolves.length
-            chanm("Game over! The wolves (%s) win!" % Format(:bold, @game.game_wolves.join(', ')))
-          elsif @game.live_wolves > 1
-            chanm("Game over! The remaining wolves (%s) win!" % Format(:bold, @game.wolves_alive.join(', ')))
+            chanm @lang.t('victory.wolves.all', {:wolves => @game.game_wolves.join(', ')})
           else
-            chanm("Game over! The last remaining wolf, %s, wins!" % Format(:bold, @game.wolves_alive[0]))
+            chanm @lang.t('victory.wolves', {
+              :count  => @game.wolves_alive.count,
+              :wolves => @game.wolves_alive.join(', ')
+            })
           end
         end
         wipe_slate
         return true
       elsif @game.state == :humanswin
-        if @game.game_wolves.length > 1
-          chanm("Game over! The wolves (%s) were unable to pull the wool over the humans' eyes." % Format(:bold, @game.game_wolves.join(', ')))
-        else
-          chanm("Game over! The lone wolf %s was unable to pull the wool over the humans' eyes." % Format(:bold, @game.game_wolves[0]))
-        end
+        chanm @lang.t('victory.human', {:wolves => @game.game_wolves.join(', ')})
         wipe_slate
         return true
       else
@@ -433,7 +491,7 @@ module TWG
     def voice(uname)
       Channel(config["game_channel"]).voice(uname)
     end
-    
+
     def solicit_votes
       return if @game.nil?
       if @game.state == :night
@@ -446,32 +504,30 @@ module TWG
     def solicit_wolf_votes
       return if @game.nil?
       alive = @game.wolves_alive
-      if alive.length == 1
-        if @game.game_wolves.length == 1
-          whatwereyou = "You are a lone wolf."
-        else
-          whatwereyou = "You are the last remaining wolf."
-        end
-        userm(alive[0], "It is now NIGHT #{@game.iteration}: #{whatwereyou} To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind.")
-        return
-      elsif alive.length == 2
-        others = "Talk with your fellow wolf"
-      else
-        others = "Talk with your fellow wolves to decide who to kill"
-      end
+      message = @lang.t('night.solicit', {
+        :count => alive.length,
+        :night => @game.iteration
+      })
       alive.each do |wolf|
-        userm(wolf, "It is now NIGHT #{@game.iteration}: To choose the object of your bloodlust, say !vote <nickname> to me. You can !vote again if you change your mind. #{others}") 
+        userm(wolf, message)
       end
     end
 
     def solicit_human_votes(killed=nil)
       return if @game.nil?
       if killed.nil?
-        blurb = "Talk to your fellow villagers about this unusual and eery lupine silence!"
+        message = @lang.t('day.enter.solicit.nokill', {
+          :day  => @game.iteration,
+          :secs => config["game_timers"]["day"].to_s
+        })
       else
-        blurb = "Talk to your fellow villagers about #{killed}'s untimely demise!"
+        message = @lang.t('day.enter.solicit.kill', {
+          :day    => @game.iteration,
+          :secs   => config["game_timers"]["day"].to_s,
+          :killed => killed
+        })
       end
-      chanm("It is now DAY #{@game.iteration}: #{blurb} You have #{config["game_timers"]["day"]} seconds to vote on who to lynch by saying !vote nickname. If you change your mind, !vote again.")
+      chanm message
     end
 
     def chanm(m)
