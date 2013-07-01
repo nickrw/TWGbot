@@ -46,7 +46,13 @@ module TWG
       when String
         return tr
       when Array
-        return tr.shuffle.first
+        begin
+          # I18n doesn't interpolate if key returns an array
+          # Pick a random array element and interpolate it.
+          return I18n.interpolate(tr.shuffle.first, kwargs)
+        rescue I18n::MissingInterpolationArgument => e
+          return "Translation error: #{e.message}"
+        end
       else
         return "Translation error: unexpected class returned: #{tr.class}"
       end

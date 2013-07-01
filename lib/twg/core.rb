@@ -65,7 +65,11 @@ module TWG
       return if !m.channel?
       return if m.channel != config["game_channel"]
       return if not @allow_starts
-      return if @signup_started
+      case @game.state
+      when nil, :signup, :wolveswin, :humanswin
+      else
+        return
+      end
       r = @lang.select(lang.to_sym)
       if r.nil?
         m.reply @lang.t('lang.notfound', {:lang => lang})
@@ -295,6 +299,7 @@ module TWG
         r = @game.register(m.user.to_s)
         if r.code == :confirmplayer
           m.reply @lang.t('start.joined', {
+            :player => m.user.to_s,
             :number => @game.participants.length.to_s,
             :min    => @game.min_part.to_s
           })
@@ -476,7 +481,10 @@ module TWG
         wipe_slate
         return true
       elsif @game.state == :humanswin
-        chanm @lang.t('victory.human', {:wolves => @game.game_wolves.join(', ')})
+        chanm @lang.t('victory.human', {
+          :wolves => @game.game_wolves.join(', '),
+          :count  => @game.game_wolves.count
+        })
         wipe_slate
         return true
       else

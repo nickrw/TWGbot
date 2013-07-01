@@ -34,7 +34,7 @@ default:
   day:
     enter:
       solicit:
-        nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s untimely demise. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
@@ -56,7 +56,7 @@ default:
       one: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind."
       other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
     exit:
-      body: "A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %{killed} lying on thr ground. %{killed}, a villager, is dead."
+      body: "A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a villager, is dead."
       nobody: "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
   vote:
     noplayer: "%{votee} is not a player in this game"
@@ -117,8 +117,8 @@ default:
       self: "%{vigilante} pulls out a gun and commits suicide"
       other: "%{vigilante} pulls out a gun and shoots %{target}"
     reaction:
-      self: "The villagers, despite their shock at the sudden discovery of gunpowder and ballistics, shuffle forward to look at %{target}'s fallen body..."
-      other: "The villagers had known that %{target}  was feeling a bit down in the dumps, but had always dismissed it as hormones."
+      self: "The villagers had known that %{target}  was feeling a bit down in the dumps, but had always dismissed it as hormones."
+      other: "The villagers, despite their shock at the sudden discovery of gunpowder and ballistics, shuffle forward to look at %{target}'s fallen body..."
     reveal:
       self: "%{vigilante}'s single silver bullet was put to waste in its maker's skull instead of a wolf."
       wolf:
