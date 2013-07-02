@@ -105,7 +105,7 @@ default:
       dead: "%{target} is dead, pay attention."
       self: "Surely you know what you are... try again."
     reveal:
-      dead: "You have a vision of %{targets}'s body, twisted, broken and bloody. A wolf got there before you."
+      dead: "You have a vision of %{target}'s body, twisted, broken and bloody. A wolf got there before you."
       wolf: "You have a dream about %{target} wearing a new fur coat. You've found a WOLF."
       vigilante: "You have a dream about %{target} shooting. It looks like %{target} is a fellow villager."
       normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow villager."
