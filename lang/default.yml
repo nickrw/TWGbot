@@ -36,9 +36,9 @@ default:
       solicit:
         nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s untimely demise. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
     exit:
       novotes: "Voting over! No votes were cast."
       abstain: "Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?"
