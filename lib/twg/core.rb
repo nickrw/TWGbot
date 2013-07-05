@@ -316,7 +316,7 @@ module TWG
       return if @game.nil?
       return if @game.state != :signup
       uobj = User(user)
-      return if not m.channel.users.keys.include(uobj)
+      return if not m.channel.users.keys.include?(uobj)
       r = @game.register(user)
       if r.code == :confirmplayer
         m.reply @lang.t('start.forcejoined', {
