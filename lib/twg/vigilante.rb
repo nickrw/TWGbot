@@ -63,10 +63,10 @@ module TWG
         m.reply @lang.t('vigilante.reveal.self', :vigilante => m.user.to_s)
       when :wolf
         m.reply @lang.t('vigilante.reveal.wolf.l1', :target => target)
-        m.reply @lang.t('vigilante.reveal.wolf.l2', :target => target, :vigilangte => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.wolf.l2', :target => target, :vigilante => m.user.to_s)
       when :seer
         m.reply @lang.t('vigilante.reveal.seer.l1', :target => target)
-        m.reply @lang.t('vigilante.reveal.seer.l2', :vigilangte => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.seer.l2', :vigilante => m.user.to_s)
       else
         brave = players_of_role(:dead, true).shuffle[0]
         m.reply @lang.t('vigilante.reveal.normal.l1', :target => target, :brave => brave)
