@@ -70,7 +70,7 @@ module TWG
       tvotes.each do |votee,voters|
         if votee == oldnick
           @votes[newnick] = voters
-          @votes[oldnick] = nil
+          @votes.delete(oldnick)
         end
         if voters.include?(oldnick)
           @votes[votee].delete(oldnick)
@@ -164,6 +164,7 @@ module TWG
       old = nil
       tvotes = @votes.dup
       tvotes.each do |votee, voters|
+        next if voters.nil?
         if voters.include?(nick)
           @votes[votee].delete(nick)
           if @votes[votee].empty?
@@ -208,6 +209,7 @@ module TWG
       highest = 0
       tiebreak = []
       @votes.each do |votee, voters|
+        next if voters.nil?
         if voters.count > highest
           tiebreak = [votee]
           highest = voters.count

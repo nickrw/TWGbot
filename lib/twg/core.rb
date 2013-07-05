@@ -157,6 +157,7 @@ module TWG
       defer = nil
       order = {}
       @game.votes.each do |votee,voters|
+        next if voters.nil?
         next if votee == :abstain
         order[voters.count] ||= []
         order[voters.count] << votee_summary(votee, voters, tiebreak)
