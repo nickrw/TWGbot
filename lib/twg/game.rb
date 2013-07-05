@@ -69,12 +69,12 @@ module TWG
       tvotes = @votes.dup
       tvotes.each do |votee,voters|
         if votee == oldnick
-          @voters[newnick] = voters
-          @voters[oldnick] = nil
+          @votes[newnick] = voters
+          @votes[oldnick] = nil
         end
         if voters.include?(oldnick)
-          @voters[votee].delete(oldnick)
-          @voters[votee] << newnick
+          @votes[votee].delete(oldnick)
+          @votes[votee] << newnick
         end
       end
       tvotes = nil
