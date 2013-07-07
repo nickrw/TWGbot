@@ -3,6 +3,7 @@ require 'cinch'
 require 'twg/game'
 require 'twg/helpers'
 require 'twg/lang'
+require 'twg/loader'
 module TWG
   class Core
     include ::Cinch::Plugin
@@ -19,27 +20,39 @@ module TWG
     listen_to :join, :method => :channel_join
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
-    listen_to :do_allow_starts, :method => :do_allow_starts
-    match "start", :method => :start
-    match /vote ([^ ]+)(.*)?$/, :method => :vote
-    match /abstain( .*)?$/, :method => :abstain
-    match "votes", :method => :votes
-    match "join", :method => :join
-    match /join ([^ ]+)$/, :method => :forcejoin
-    match "langs", :method => :langlist
-    match /lang ([^ ]+)$/, :method => :selectlang
+    listen_to :hook_allow_starts, :method => :allow_starts
 
-    attr_accessor :game
     attr_accessor :lang
+    attr_accessor :game
+    attr_accessor :signup_started
 
     def initialize(*args)
       super
       @game = TWG::Game.new
-      lang = config["default_lang"] ||= :default
-      @lang = TWG::Lang.new(lang)
+      default_lang = config["default_lang"] ||= :default
+      @@lang ||= TWG::Lang.new(default_lang)
+      @lang = @@lang
+
+      commands = {
+        @lang.t('command.start') => :start,
+        Regexp.new(@lang.t('command.vote') + " ([^ ]+)(.*)?$") => :vote,
+        Regexp.new(@lang.t('command.abstain') + "( .*)?$") => :abstain,
+        @lang.t('command.votes') => :votes,
+        @lang.t('command.join') => :join,
+        Regexp.new(@lang.t('command.join') + " ([^ ]+)$") => :forcejoin,
+        @lang.t('command.langs') => :langlist,
+        Regexp.new(@lang.t('command.lang') + " ([^ ]+)$") => :selectlang
+      }
+
+      commands.each do |pattern,method|
+        self.class.match(pattern, :method => method)
+      end
+      __register_matchers
+
       shared[:game] = @game
       @timer = nil
       @allow_starts = false
+      check_ready
     end
 
     def langlist(m)
@@ -74,7 +87,11 @@ module TWG
       if r.nil?
         m.reply @lang.t('lang.notfound', {:lang => lang})
       else
-        m.reply @lang.t('lang.loaded', {:desc => r})
+        i = bot.plugins.find_index { |x| x.class == TWG::Loader }
+        if i.nil?
+          bot.plugins.register_plugin(TWG::Loader)
+        end
+        hook_async(:hook_reload_all)
       end
     end
 
@@ -92,11 +109,41 @@ module TWG
       end
     end
 
+    def opped?
+      begin
+        ch = Channel(config["game_channel"])
+      rescue NoMethodError
+        return false
+      end
+      return false if ch.users.nil?
+      return false if not ch.users.keys.include?(bot)
+      ch.users[bot].include?('o')
+    end
+
+    def check_ready
+      begin
+        ch = Channel(config["game_channel"])
+      rescue NoMethodError
+        return
+      end
+      return if ch.users.nil?
+      return if not ch.users.keys.include?(bot)
+      return if not opped?
+      return if @signup_started
+      return if [:night,:day].include?(@game.state)
+      wipe_slate
+      hook_async(:hook_allow_starts)
+    end
+
     def channel_join(m)
-      return if @game.nil?
-      return if @game.participants[m.user.to_s].nil?
-      return if @game.participants[m.user.to_s] == :dead
-      voice(m.user)
+      if m.user.to_s == bot.nick
+        check_ready
+      else
+        return if @game.nil?
+        return if @game.participants[m.user.to_s].nil?
+        return if @game.participants[m.user.to_s] == :dead
+        voice(m.user)
+      end
     end
 
     def vote(m, mfor, reason)
@@ -191,27 +238,21 @@ module TWG
     end
 
     def opped(m, *args)
-      @isopped ||= false
       chan, mode, user = m.params
       @game = TWG::Game.new if @game.nil?
       if chan == config["game_channel"] && mode == "+o" && user == bot.nick
-        @isopped = true
-        unless [:night,:day].include?(@game.state) || @signup_started == true
-          wipe_slate
-          hook_async(:do_allow_starts, 15)
-        end
+        check_ready
       elsif chan == config["game_channel"] && mode == "-o" && user == bot.nick
         if @game.state != :signup || (@game.state == :signup && @signup_started == true)
           chanm @lang.t 'general.deopped'
         end
         @game = nil
         @signup_started = false
-        @isopped = false
         @allow_starts = false
       end
     end
 
-    def do_allow_starts(m)
+    def allow_starts(m)
       chanm @lang.t 'general.ready'
       chanm @lang.t 'lang.advertise'
       @allow_starts = true
@@ -234,7 +275,7 @@ module TWG
       return if !m.channel?
       return if m.channel != config["game_channel"]
       if !@allow_starts
-        if @isopped
+        if opped?
           m.reply @lang.t('general.plzhold', {:nick => m.user.to_s})
         else
           m.reply @lang.t 'general.noops'
@@ -453,11 +494,6 @@ module TWG
           }))
         end
       end
-    end
-
-    def admin?(user)
-      user.refresh
-      shared[:admins].include?(user.authname)
     end
 
     def check_victory_conditions

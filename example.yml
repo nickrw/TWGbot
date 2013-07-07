@@ -15,7 +15,9 @@ servers:
     channels:
       - "##twgbot"
     plugins:
-      - 
+      -
+        class: "TWG::Loader"
+      -
         class: "TWG::Core"
         options:
             game_channel: "##twgbot"

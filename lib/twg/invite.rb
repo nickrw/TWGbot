@@ -1,13 +1,16 @@
+require 'twg/helpers'
 require 'twg/plugin'
 
 module TWG
   class Invite < TWG::Plugin
     include Cinch::Plugin
     listen_to :hook_delete_invitee, :method => :delete_invitee
-    match /invite ([^ ]+)$/, :method => :invite
 
     def initialize(*args)
       super
+      command = Regexp.new(@lang.t('invite.command') + " ([^ ]+)$")
+      self.class.match(command, :method => :invite)
+      __register_matchers
       # A "spam list" kept in memory to prevent someone repeatedly inviting
       # the same person over and over. Names stay in the list for an hour.
       @recent_invitees = Array.new

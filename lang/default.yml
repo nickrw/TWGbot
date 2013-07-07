@@ -1,10 +1,17 @@
 default:
   description: "Bog standard werewolf game"
+  command:
+    start: "start"
+    vote: "vote"
+    votes: "votes"
+    abstain: "abstain"
+    join: "join"
+    lang: "lang"
+    langs: "langs"
   lang:
-    advertise: "While no game is running, and during signup for a game, use the !langs command to see a list of available themes / languages."
+    advertise: "While no game is running say !langs to see a list of available themes / languages."
     packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
     notfound: "No language pack named '%{lang}' available."
-    loaded: "Now using language pack: %{desc}"
   general:
     plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
     noops: "I require channel ops before starting a game."
@@ -94,6 +101,7 @@ default:
       one: "Game over! The lone wolf %{wolves} was unable to pull the wool over the humans' eyes."
       other: "Game over! The wolves (%{wolves}) were unable to pull the wool over the humans' eyes."
   seer:
+    command: "see"
     role: "You are the SEER. Each night you can have the role of a player of your choice revealed."
     solicit: "It is now NIGHT %{night}: say !see <nickname> to me to reveal their role."
     awake: "You're wide awake - this is no time for visions!"
@@ -110,6 +118,7 @@ default:
       vigilante: "You have a dream about %{target} shooting. It looks like %{target} is a fellow villager."
       normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow villager."
   vigilante:
+    command: "shoot"
     role:
       l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, but you only have enough silver for one bullet."
       l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day."
@@ -132,6 +141,7 @@ default:
         l2: "%{vigilante}'s single silver bullet was wasted on %{target} - a fellow villager."
     over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
   invite:
+    command: "invite"
     spam: "%{target} has been invited to join the channel recently, try again later."
     noops: "Can't invite players, I don't have channel ops."
     ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."

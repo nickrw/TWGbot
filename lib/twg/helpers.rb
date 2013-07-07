@@ -119,5 +119,10 @@ module TWG
       return 0
     end
 
+    def admin?(user)
+      user.refresh
+      shared[:admins].include?(user.authname)
+    end
+
   end
 end

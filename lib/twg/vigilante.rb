@@ -5,7 +5,17 @@ module TWG
     include Cinch::Plugin
     listen_to :hook_roles_assigned, :method => :pick_vigilante
     listen_to :hook_notify_roles, :method => :notify_roles
-    match /shoot ([^ ]+)(.*)?$/, :method => :shoot
+
+    def self.description
+      "Special role which can kill any player during the day (single use)"
+    end
+
+    def initialize(*args)
+      super
+      command = Regexp.new(@lang.t('vigilante.command') + " ([^ ]+)(.*)?$")
+      self.class.match(command, :method => :shoot)
+      __register_matchers
+    end
 
     def pick_vigilante(m)
       pick_special(:vigilante)

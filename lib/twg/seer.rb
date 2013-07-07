@@ -8,10 +8,16 @@ module TWG
     listen_to :hook_votes_applied,  :method => :seer_reveal
     listen_to :enter_night,         :method => :solicit_seer_choice
     listen_to :nick,                :method => :nickchange
-    match /see ([^ ]+)$/,           :method => :see
+
+    def self.description
+      "Special role which can reveal other players' roles at night"
+    end
 
     def initialize(*args)
       super
+      command = Regexp.new(@lang.t('seer.command') + " ([^ ]+)$")
+      self.class.match(command, :method => :see)
+      __register_matchers
       reset
     end
 
