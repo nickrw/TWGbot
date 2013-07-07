@@ -86,7 +86,7 @@ module TWG
         return
       else
         begin
-          klass = Object.const_get('TWG::' + plugin.capitalize)
+          klass = TWG.const_get(plugin.capitalize)
         rescue NameError
           m.reply "No plugin named #{plugin} found"
           return
