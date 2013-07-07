@@ -121,18 +121,20 @@ module TWG
     end
 
     def check_ready
-      begin
-        ch = Channel(config["game_channel"])
-      rescue NoMethodError
-        return
+      synchronize(:check_ready) do
+        begin
+          ch = Channel(config["game_channel"])
+        rescue NoMethodError
+          return
+        end
+        return if ch.users.nil?
+        return if not ch.users.keys.include?(bot)
+        return if not opped?
+        return if @signup_started
+        return if [:night,:day].include?(@game.state)
+        wipe_slate
+        hook_sync(:hook_allow_starts)
       end
-      return if ch.users.nil?
-      return if not ch.users.keys.include?(bot)
-      return if not opped?
-      return if @signup_started
-      return if [:night,:day].include?(@game.state)
-      wipe_slate
-      hook_async(:hook_allow_starts)
     end
 
     def channel_join(m)
@@ -253,9 +255,13 @@ module TWG
     end
 
     def allow_starts(m)
-      chanm @lang.t 'general.ready'
-      chanm @lang.t 'lang.advertise'
-      @allow_starts = true
+      synchronize(:allow_starts) do
+        if not @allow_starts
+          chanm @lang.t 'general.ready'
+          chanm @lang.t 'lang.advertise'
+          @allow_starts = true
+        end
+      end
     end
 
     def nickchange(m)
