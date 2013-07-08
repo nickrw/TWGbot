@@ -367,6 +367,7 @@ module TWG
       r = @game.register(user)
       if r.code == :confirmplayer
         m.reply @lang.t('start.forcejoined', {
+          :player => user,
           :number => @game.participants.length.to_s,
           :min    => @game.min_part.to_s
         })
