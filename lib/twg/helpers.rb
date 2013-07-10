@@ -60,9 +60,10 @@ module TWG
           :start_automatically => false
         }
         shared[:timer] ||= Hash.new
-        shared[:timer][method] = Timer(delay, tconfig) do
+        shared[:timer][method] ||= Array.new
+        shared[:timer][method] << Timer(delay, tconfig) do
           hook_raise(method, true, m, *args)
-          shared[:timer][method] = nil
+          shared[:timer][method].delete(self)
         end
       end
     end
@@ -74,16 +75,19 @@ module TWG
     def hook_cancel(method, run = false)
       info "Cancelling timer for hook #{method}"
       shared[:timer] ||= Hash.new
-      t = shared[:timer][method]
-      shared[:timer][method] = nil
-      return if t.nil?
-      return if t.stopped?
-      t.stop
-      return if not run
-      info "Scheduling immediate execution of cancelled hook #{method}"
-      t.interval = 0
-      t.shots = 1
-      t.start
+      shared[:timer][method] ||= Array.new
+      timers = shared[:timer][method].dup
+      timers.each do |t|
+        shared[:timer][method].delete(t)
+        next if t.nil?
+        next if t.stopped?
+        t.stop
+        next if not run
+        info "Scheduling immediate execution of cancelled hook #{method} - #{t}"
+        t.interval = 0
+        t.shots = 1
+        t.start
+      end
     end
 
     def hook_expedite(method)
