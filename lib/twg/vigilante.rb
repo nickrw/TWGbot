@@ -56,6 +56,7 @@ module TWG
       end
       r = @game.kill(target)
       @core.devoice(target)
+      @game.next_state
 
       sleep 10
       if v != target
@@ -84,7 +85,6 @@ module TWG
       end
 
       sleep 3
-      @game.next_state
       unless @core.check_victory_conditions
         m.reply @lang.t('vigilante.over')
         hook_async(:enter_night)
