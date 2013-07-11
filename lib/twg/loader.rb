@@ -1,5 +1,4 @@
 require 'twg/core'
-require 'twg/invite'
 require 'twg/seer'
 require 'twg/vigilante'
 
@@ -17,12 +16,6 @@ module TWG
 
     def initialize(*args)
       super
-      @mine = [
-        TWG::Core,
-        TWG::Invite,
-        TWG::Seer,
-        TWG::Vigilante
-      ]
       @pluggable = {
         'seer' => TWG::Seer,
         'vigilante' => TWG::Vigilante
@@ -81,16 +74,17 @@ module TWG
         m.reply "Confirm", true
         return
       elsif plugin.nil? && type.nil?
-        load_all
+        pload TWG::Core
         m.reply "Confirm", true
         return
       else
         begin
-          klass = TWG.const_get(plugin.capitalize)
-        rescue NameError
+          klass = name2klass(plugin)
+        rescue
           m.reply "No plugin named #{plugin} found"
           return
         end
+        debug klass.to_s
         begin
           case type
           when 're'
@@ -99,18 +93,27 @@ module TWG
               return
             end
           when 'un'
-            if unload_one(klass)
-              m.reply "Plugin unloaded: #{plugin}", true
+            if klass == TWG::Loader
+              m.reply "Cannot unload the Loader plugin"
               return
             end
+            if unload_one(klass)
+              m.reply "Plugin unloaded: #{plugin}", true
+            else
+              m.reply "Unable to unload plugin: #{plugin}", true
+            end
+            return
           else
             if load_one(klass)
               m.reply "Plugin loaded: #{plugin}", true
-              return
+            else
+              m.reply "Plugin already loaded: #{plugin}", true
             end
+            return
           end
         rescue => e
           m.reply "Error: #{e.message}"
+          debug e.backtrace
           return
         end
       end
@@ -129,7 +132,9 @@ module TWG
     end
 
     def reload_one(klass)
+      kstr = klass
       unload_one(klass)
+      klass = load_plugin_from_file(kstr)
       load_one(klass)
     end
 
@@ -147,6 +152,7 @@ module TWG
       bot.plugins.each do |plugin|
         klass = plugin.class
         next if klass == TWG::Core
+        next if klass == TWG::Loader
         next if not mine?(klass)
         eligable << plugin
         unloaded << klass
@@ -158,46 +164,115 @@ module TWG
       unloaded.unshift(TWG::Core)
 
       punload eligable
+
+      fake_plugins_str = []
+      fake_plugins = [TWG::Plugin, TWG::Lang, TWG::Game, TWG::Helpers]
+      fake_plugins.each { |pl| fake_plugins_str << pl.to_s }
+      fake_plugins_str.reverse!
+      unloaded.each { |pl| fake_plugins_str << pl.to_s }
+      destroy_plugin(unloaded)
+      destroy_plugin(fake_plugins)
+      load_plugin_from_file(fake_plugins_str)
+
       pload unloaded
 
     end
 
+    # Unloads all TWG:: plugins, except the Loader
     def unload_all
-      all_plugins.each do |plugin|
+      @last_unload = []
+      loaded_safe.each do |plugin|
         unload_one plugin
+        @last_unload << plugin
       end
       unload_one TWG::Core
     end
 
-    def load_all
-      pload [TWG::Core] + all_plugins
-    end
-
     private
 
-    def mine?(klass)
-      @mine.include?(klass)
+    def name2klass(plugin_name)
+      plugin_name.strip!
+      if not plugin_name =~ /^TWG::/
+        plugin = 'TWG::' + plugin_name.capitalize
+      end
+      begin
+        TWG.const_get(plugin)
+      rescue
+        load_plugin_from_file(plugin)
+      end
     end
 
-    def all_plugins
-      mine = @mine.dup
+    def load_plugin_from_file(klass)
+      if klass.class == Array
+        klass.each { |kl| load_plugin_from_file(kl) }
+        return
+      end
+      if klass.class != String
+        klass_string = klass.to_s
+      else
+        klass_string = klass
+      end
+      filepart = klass_string.sub(/^TWG::/,'').downcase
+      filename = File.join(@dir, filepart + '.rb')
+      debug "Loading file: #{filename}"
+      if not File.exist?(filename)
+        raise ArgumentError, "Plugin does not exist"
+      end
+      load filename
+      TWG.const_get(filepart.capitalize)
+    end
+
+    def destroy_plugin(klass)
+      if klass.class == Array
+        klass.each { |kl| destroy_plugin(kl) }
+      else
+        # FIXME
+        # Blacklist TWG::Core from being destroyed as it would break
+        # config options given through cinchize, and the @@lang class variable
+        # on the core would be forgotten, rendering TWG::Loader useless for
+        # reloading all the plugins when the language changes.
+        #
+        # Perhaps this should be broken out into a TWG::Config plugin which the
+        # loader can't touch?
+        return true if klass == TWG::Core
+        const = klass.to_s.sub(/^TWG::/, '').to_sym
+        TWG.__send__(:remove_const, const)
+        debug "Destroyed plugin object: TWG::#{const}"
+      end
+    end
+
+    def loaded
+      plugins = []
+      bot.plugins.each do |pl|
+        plugins << pl.class if pl.class.to_s =~ /^TWG::/
+      end
+      plugins
+    end
+
+    def mine?(klass)
+      loaded.include?(klass)
+    end
+
+    def loaded_safe
+      mine = loaded
       mine.delete(TWG::Core)
+      mine.delete(TWG::Loader)
       mine
     end
 
     def pload(klasses)
       klasses = [klasses] if klasses.class != Array
       klasses.each do |klass|
+        if klass.class == String
+          klass = name2klass(klass)
+        end
         if klass.class != Class
           raise ArgumentError, "#pload expects Class or Array[Class]"
         end
-        if not mine?(klass)
-          raise ArgumentError, "Twg::Loader can't handle plugin of type #{klass}"
-        end
         if not loaded?(klass)
           debug "Loading plugin: #{klass}"
-          load File.join(@dir, klass.to_s.sub(/^TWG::/,'').downcase + '.rb')
-          bot.plugins.register_plugin(klass)
+          rklass = load_plugin_from_file(klass)
+          bot.plugins.register_plugin(rklass)
           debug "Loaded plugin: #{klass}"
         else
           debug "Already loaded, noop: #{klass}"
@@ -209,23 +284,26 @@ module TWG
       plugins = [plugins] if plugins.class != Array
       plugins.each do |plugin|
         klass = plugin.class
-        if not mine?(klass)
-          raise ArgumentError,"Twg::Loader can't handle plugin of type #{klass}"
-        end
         if loaded?(klass)
           debug "Unloading plugin: #{klass}"
           bot.plugins.unregister_plugin(plugin)
-          klass.hooks.clear
-          klass.matchers.clear
-          klass.listeners.clear
-          klass.timers.clear
-          klass.ctcps.clear
-          klass.react_on = :message
-          klass.plugin_name = nil
-          klass.help = nil
-          klass.prefix = nil
-          klass.suffix = nil
-          klass.required_options.clear
+          if klass == TWG::Loader
+            kstr = klass.to_s
+            destroy_plugin(klass)
+            klass = kstr
+          else
+            klass.hooks.clear
+            klass.matchers.clear
+            klass.listeners.clear
+            klass.timers.clear
+            klass.ctcps.clear
+            klass.react_on = :message
+            klass.plugin_name = nil
+            klass.help = nil
+            klass.prefix = nil
+            klass.suffix = nil
+            klass.required_options.clear
+          end
           debug "Unloaded plugin: #{klass}"
         else
           debug "Plugin not loaded, noop: #{klass}"
@@ -234,8 +312,7 @@ module TWG
     end
 
     def loaded?(klass)
-      i = bot.plugins.find_index { |x| x.class == klass }
-      not i.nil?
+      loaded.include?(klass)
     end
 
     def game_idle?
