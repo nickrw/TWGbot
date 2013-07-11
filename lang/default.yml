@@ -94,9 +94,9 @@ default:
       other: "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
     wolf: "Game over! The lone wolf %{wolf} wins!"
     wolves:
-      one: "Game over! The last remaining wolf, %{wolves} wins!"
-      other: "Game over! The remaining wolves (%{wolves} win!"
-      all: "Game over! The wolves (%{wolves} win!"
+      one: "Game over! The last remaining wolf %{wolves} wins!"
+      other: "Game over! The remaining wolves (%{wolves}) win!"
+      all: "Game over! The wolves (%{wolves}) win!"
     human:
       one: "Game over! The lone wolf %{wolves} was unable to pull the wool over the humans' eyes."
       other: "Game over! The wolves (%{wolves}) were unable to pull the wool over the humans' eyes."
