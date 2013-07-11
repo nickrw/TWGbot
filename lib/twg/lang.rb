@@ -1,4 +1,5 @@
 require 'i18n'
+require 'i18n/backend/pluralization'
 require 'twg/langexception'
 
 module TWG
@@ -9,7 +10,9 @@ module TWG
 
     def initialize(pack = :default)
       @gemroot = File.expand_path '../../..', __FILE__
+      I18n.default_locale = :default
       I18n.exception_handler = TWG::LangException.new
+      I18n::Backend::Simple.send(:include, I18n::Backend::Pluralization)
       select pack
     end
 
@@ -17,11 +20,12 @@ module TWG
       locs = list
       return nil if not locs.keys.include?(pack)
       @pack = pack
+      I18n.locale = pack
       locs[pack]
     end
 
     def list
-      I18n.load_path = Dir[File.join(@gemroot, 'lang', '*.yml')]
+      I18n.load_path = Dir[File.join(@gemroot, 'lang', '*.{yml,rb}')]
       locs = {}
       I18n.available_locales.each do |loc|
         begin
