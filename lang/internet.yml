@@ -1,4 +1,4 @@
-default:
+internet:
   description: "The internet!"
   command:
     start: "start"
@@ -15,14 +15,14 @@ default:
   general:
     plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
     noops: "I require channel ops before starting a game."
-    ready: "TWG bot is now up and running! Say !start to start a new game."
+    ready: "Internet bot is now up and running! Say !start to start a new game."
     deopped: "Cancelling game - I have been deopped!"
     rename: "Player %{oldnick} is now known as %{nick}"
   start:
     start: "%{nick} has received the internet in a small black box."
     registration: "Registration is now open, say !join to hop onto the internet within %{limit} seconds. A minimum of %{players} players is required."
     skipmessage: "Say !start again to skip the wait when everybody has joined"
-    joined: "%{player} has opened his browser (%{number}/%{min})"
+    joined: "%{player} has opened their browser (%{number}/%{min})"
     forcejoined: "%{player} has been forced to open a private browsing session (%{number}/%{min})"
     almostready: "%{secs} seconds left to !join. %{number} out of a minimum of %{min} players joined so far."
     starting: "Game starting! Our intrepid internet explorers are: %{players}"
@@ -63,20 +63,20 @@ default:
       one: "It is now NIGHT %{night}: To choose who you'd like to troll by saying !vote <nickname> to me. You can !vote again if you change your mind."
       other: "It is now NIGHT %{night}: To choose who you'd like to troll say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your 4chan posse a target will be chosen at random from your tied votes."
     exit:
-      body: "Reports start coming in on twitter about some horrible trolling. Everyone clicks on the posted links to find %{killed} has experience some mildly upsetting trolling. %{killed} is taken away to hospital, suffering from mild shocck."
-      nobody: "Browsing cats starts to get tiresome, so everyone retires to bed. Surprisingly, no trolling today!"
+      body: "Reports start coming in on twitter about some horrible trolling. Everyone clicks on the posted links to find %{killed} has experienced some moderately upsetting trolling. %{killed} is taken away to hospital, suffering from mild shock."
+      nobody: "Twitter is getting boring, you've seen hundreds of cats and /r/politics is getting tiresome. Surprisingly, no trolling has occurred today!"
   vote:
     noplayer: "%{votee} is not a player in this game"
     day:
       vote: "%{voter} voted to ban %{votee}"
       changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
-      abstain: "%{voter} has voted not to ban"
+      abstain: "%{voter} has voted for free speech"
       dead:
         - "%{votee}'s is still in hospital, recovering from mild shock."
     night:
       vote: "You have voted for %{votee} to be banned tonight"
       changed: "You have changed your vote to %{votee}"
-      abstain: "You are a thoroughly nice chap for not trolling!"
+      abstain: "How thoroughly nice of you for not trolling!"
       dead: "%{votee} is already banned"
       samerole: "You can't vote for a fellow troll!"
       self: "That'd be silly, yes?"
@@ -89,7 +89,7 @@ default:
       other: "%{votee} has %{count} votes (%{voters})"
   victory:
     wolfreveal:
-      one: "Oh great. The troll win this time :( %{wolf}'s tells all his 4chan buddies about his escapades."
+      one: "Oh great. The troll wins this time :( %{wolf} posts to 4chan about their escapades."
       other: "Oh great. The trolls win this time. 4chan is aflame with news of their escapades."
     wolf: "Game over! The lone troll %{wolf} wins!"
     wolves:
@@ -106,34 +106,34 @@ default:
     awake: "You're still in bed. This is no time for hacking!"
     killed: "Whilst poking around %{target}'s account you get seriously trolled. This is bad. You are most upset."
     target:
-      confirm: "Load up the VB6 GUI hacking tools, we will get into %{target}'s account easily. We already have his IP address: 127.0.0.1"
+      confirm: "Load up the VB6 GUI hacking tools, we will get into %{target}'s account easily. We already have their IP address: 127.0.0.1"
       change: "You have changed your target to %{target}."
-      nosuch: "%{target} isn't a player in this game."
-      dead: "%{target} is in hospital."
+      nosuch: "%{target} doesn't have an internet connection. Luddite."
+      dead: "%{target} is in hospital with mild shock."
       self: "Surely you know what you are... try again."
     reveal:
-      dead: "Whilst hacking %{target}'s, you spot that he has been trolled. Damn, can't be him then."
+      dead: "Whilst hacking %{target}, you spot that he has been trolled. Damn, can't be him then."
       wolf: "You're in! Just need to navigate the mainframe... we've found some bytes.. oh wow, incriminating Skype messages from %{target}. You've found a TROLL."
       vigilante: "You're in! Oh damn, you find that %{target} is also part of the hivemind. It looks like %{target} is a normal cat lover."
       normal: "You're in! Navigating the backends, surfing the APIs... oh, nothing on %{target} it seems. It looks like %{target} is a normal cat lover."
   vigilante:
     command: "ddos"
     role:
-      l1: "You are the VIGILANTE. You have a seriously big botnet available to you, but your mate will only let you use it as a favour."
-      l2: "Once during any DAY you can say !ddos <player> (in the channel, not privately) to immediately take that player offline."
+      l1: "You are the VIGILANTE. Your good mate h4x0rUK has a seriously big botnet available. As a favour, he has said he will let you use it!"
+      l2: "Once during any DAY you can say !ddos <player> (in the channel, not privately) to immediately take that person offline."
     shoot:
-      self: "%{vigilante} goes nuts and unplugs his ethernet cable"
-      other: "%{vigilante} loads up his botnet and starts to DDOS %{target}"
+      self: "%{vigilante} goes nuts and unplugs his/her ethernet cable"
+      other: "%{vigilante} loads up a botnet and starts to DDOS %{target}"
     reaction:
-      self: "Everyone knows that %{target} will be back online soon. Poor guy, he needs to sunlight."
+      self: "Everyone knows that %{target} will be back online soon. Poor %{target} needs to get some sunlight."
       other: "%{target} has been knocked offline! But was he/she the troll..?"
     reveal:
-      self: "%{vigilante}'s goes outside for an ice cream."
+      self: "%{vigilante} goes outside for an ice cream."
       wolf:
-        l1: "... it looks like they were! Someone is complaining on 4chan about a DDOS attack!"
+        l1: "... it looks like they were! Anonymous is complaining on 4chan about a DDOS attack!"
         l2: "%{vigilante}'s DDOS found it's target. What a lucky guess! %{target} was the troll"
       seer:
-        l1: "... it looks like they weren't :( %{target}'s is complaining on a hackers forum about a DDOS attack."
+        l1: "... it looks like they weren't :( %{target} is complaining on a hackers forum about a DDOS attack."
         l2: "%{vigilante} just DDOSed the crap out of a helpful hacker! How unpleasant."
       normal:
         l1: "... %{brave} has a look to see if the trolling has activity has stopped.. %{target} is completely offline."
