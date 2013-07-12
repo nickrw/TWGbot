@@ -1,5 +1,6 @@
 internet:
   description: "The internet!"
+  author: "nj"
   command:
     start: "start"
     vote: "vote"
@@ -71,8 +72,7 @@ internet:
       vote: "%{voter} voted to ban %{votee}"
       changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
       abstain: "%{voter} has voted for free speech"
-      dead:
-        - "%{votee}'s is still in hospital, recovering from mild shock."
+      dead: "%{votee}'s is still in hospital, recovering from mild shock."
     night:
       vote: "You have voted for %{votee} to be banned tonight"
       changed: "You have changed your vote to %{votee}"
