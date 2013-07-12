@@ -1,0 +1,148 @@
+internet:
+  description: "The internet!"
+  author: "nj"
+  command:
+    start: "start"
+    vote: "vote"
+    votes: "votes"
+    abstain: "abstain"
+    join: "join"
+    lang: "lang"
+    langs: "langs"
+  lang:
+    advertise: "While no game is running say !langs to see a list of available themes / languages."
+    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    notfound: "No language pack named '%{lang}' available."
+  general:
+    plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
+    noops: "I require channel ops before starting a game."
+    ready: "Internet bot is now up and running! Say !start to start a new game."
+    deopped: "Cancelling game - I have been deopped!"
+    rename: "Player %{oldnick} is now known as %{nick}"
+  start:
+    start: "%{nick} has received the internet in a small black box."
+    registration: "Registration is now open, say !join to hop onto the internet within %{limit} seconds. A minimum of %{players} players is required."
+    skipmessage: "Say !start again to skip the wait when everybody has joined"
+    joined: "%{player} has opened their browser (%{number}/%{min})"
+    forcejoined: "%{player} has been forced to open a private browsing session (%{number}/%{min})"
+    almostready: "%{secs} seconds left to !join. %{number} out of a minimum of %{min} players joined so far."
+    starting: "Game starting! Our intrepid internet explorers are: %{players}"
+    rolesoon: "You will shortly receive your role via private message"
+    enoughplayers: "Not enough players to start a game, sorry. You can !start another if you find more players."
+    error: "An unexpected error occurred, the game could not be started."
+  roles:
+    normal:
+      - "You are a bog standard internet user. You are looking a cute cats."
+      - "You've found a funny video on youtube. How normal."
+      - "Your reddit karma is very average."
+      - "You're happily chatting away on IRC, congratulations."
+    wolf:
+      one: "You are a lone 4chan TROLL! Make sure you stay anonymous."
+      other: "You are a 4chan troll in a posse with: %{wolves}"
+  day:
+    enter:
+      solicit:
+        nokill: "It is now DAY %{day}: Talk to your fellow internet users about the lack of spam and trolling last night! You have %{secs} seconds to vote on who to ban from the internet by saying !vote <nickname>. If you change your mind, !vote again."
+        kill:
+          - "It is now DAY %{day}: Private message your internet buddies about %{killed}'s reddit account being hacked. You have %{secs} seconds to vote on who to ban by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Private message your internet buddies about %{killed}'s facebook profile being defaced. You have %{secs} seconds to vote on who to ban by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Private message your internet buddies about %{killed} being signed up for farmville. You have %{secs} seconds to vote on who to ban by saying !vote <nickname>. If you change your mind, !vote again."
+    exit:
+      novotes: "Voting over! No votes were cast."
+      abstain: "Voting over! The internet collective voted for peace... But at what cost?"
+      lynch: "Voting over! The people have decided %{killed} must be permanently banned!"
+      suspense: "The admins find %{killed}'s account, and press the ban button. They wait to hear trollish outrage on 4chan..."
+      result:
+        wolf: "...and a new post is made! Someone is complaining on 4chan about being banned. We got him!"
+        normal: "...but it's all quiet. What have we done :( Everyone voices their distaste on twitter."
+    almostready:
+      yet: "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
+      everybody: "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
+  night:
+    enter: "It is now NIGHT %{night}. Internet users happily browse cats and funny gifs, but unbeknownst to them, trolls are out there to upset them! Trolls, you have %{secs} seconds to decide who to attack."
+    solicit:
+      one: "It is now NIGHT %{night}: To choose who you'd like to troll by saying !vote <nickname> to me. You can !vote again if you change your mind."
+      other: "It is now NIGHT %{night}: To choose who you'd like to troll say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your 4chan posse a target will be chosen at random from your tied votes."
+    exit:
+      body: "Reports start coming in on twitter about some horrible trolling. Everyone clicks on the posted links to find %{killed} has experienced some moderately upsetting trolling. %{killed} is taken away to hospital, suffering from mild shock."
+      nobody: "Twitter is getting boring, you've seen hundreds of cats and /r/politics is getting tiresome. Surprisingly, no trolling has occurred today!"
+  vote:
+    noplayer: "%{votee} is not a player in this game"
+    day:
+      vote: "%{voter} voted to ban %{votee}"
+      changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
+      abstain: "%{voter} has voted for free speech"
+      dead: "%{votee}'s is still in hospital, recovering from mild shock."
+    night:
+      vote: "You have voted for %{votee} to be banned tonight"
+      changed: "You have changed your vote to %{votee}"
+      abstain: "How thoroughly nice of you for not trolling!"
+      dead: "%{votee} is already banned"
+      samerole: "You can't vote for a fellow troll!"
+      self: "That'd be silly, yes?"
+  votes:
+    abstain:
+      one: "%{count} lovely internet user has decided to browse reddit instead (%{players})"
+      other: "%{count} lovely internet users have decided to browse reddit instead (%{players})"
+    message:
+      one: "%{votee} has %{count} vote (%{voters})"
+      other: "%{votee} has %{count} votes (%{voters})"
+  victory:
+    wolfreveal:
+      one: "Oh great. The troll wins this time :( %{wolf} posts to 4chan about their escapades."
+      other: "Oh great. The trolls win this time. 4chan is aflame with news of their escapades."
+    wolf: "Game over! The lone troll %{wolf} wins!"
+    wolves:
+      one: "Game over! The last remaining troll %{wolves} wins!"
+      other: "Game over! The remaining trolls (%{wolves}) win!"
+      all: "Game over! The trolls (%{wolves}) win!"
+    human:
+      one: "Game over! The lone troll %{wolves} has been found and banned. Back to creating memes!"
+      other: "Game over! The trolls (%{wolves}) have been found and banned. Back to reddit!"
+  seer:
+    command: "hack"
+    role: "You are the HACKER. Each night you can hack into someones Facebook account to see what they've been up to."
+    solicit: "It is now NIGHT %{night}: say !hack <nickname> to me to have a poke around."
+    awake: "You're still in bed. This is no time for hacking!"
+    killed: "Whilst poking around %{target}'s account you get seriously trolled. This is bad. You are most upset."
+    target:
+      confirm: "Load up the VB6 GUI hacking tools, we will get into %{target}'s account easily. We already have their IP address: 127.0.0.1"
+      change: "You have changed your target to %{target}."
+      nosuch: "%{target} doesn't have an internet connection. Luddite."
+      dead: "%{target} is in hospital with mild shock."
+      self: "Surely you know what you are... try again."
+    reveal:
+      dead: "Whilst hacking %{target}, you spot that he has been trolled. Damn, can't be him then."
+      wolf: "You're in! Just need to navigate the mainframe... we've found some bytes.. oh wow, incriminating Skype messages from %{target}. You've found a TROLL."
+      vigilante: "You're in! Oh damn, you find that %{target} is also part of the hivemind. It looks like %{target} is a normal cat lover."
+      normal: "You're in! Navigating the backends, surfing the APIs... oh, nothing on %{target} it seems. It looks like %{target} is a normal cat lover."
+  vigilante:
+    command: "ddos"
+    role:
+      l1: "You are the VIGILANTE. Your good mate h4x0rUK has a seriously big botnet available. As a favour, he has said he will let you use it!"
+      l2: "Once during any DAY you can say !ddos <player> (in the channel, not privately) to immediately take that person offline."
+    shoot:
+      self: "%{vigilante} goes nuts and unplugs his/her ethernet cable"
+      other: "%{vigilante} loads up a botnet and starts to DDOS %{target}"
+    reaction:
+      self: "Everyone knows that %{target} will be back online soon. Poor %{target} needs to get some sunlight."
+      other: "%{target} has been knocked offline! But was he/she the troll..?"
+    reveal:
+      self: "%{vigilante} goes outside for an ice cream."
+      wolf:
+        l1: "... it looks like they were! Anonymous is complaining on 4chan about a DDOS attack!"
+        l2: "%{vigilante}'s DDOS found it's target. What a lucky guess! %{target} was the troll"
+      seer:
+        l1: "... it looks like they weren't :( %{target} is complaining on a hackers forum about a DDOS attack."
+        l2: "%{vigilante} just DDOSed the crap out of a helpful hacker! How unpleasant."
+      normal:
+        l1: "... %{brave} has a look to see if the trolling has activity has stopped.. %{target} is completely offline."
+        l2: "Damn, the trolling is still happening. %{vigilante}'s DDOS attack was wasted on %{target} - a normal cat lover."
+    over: "The internet users decide to watch some TV on BBC iPlayer and add a status update to Twitter"
+  invite:
+    command: "invite"
+    spam: "%{target} has been invited to join the channel recently, try again later."
+    noops: "Can't invite players, I don't have channel ops."
+    ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."
+    nouser: "No user called %{target} online."
+    confirm: "I have invited %{target} to join the channel."
