@@ -32,7 +32,7 @@ internet:
     error: "An unexpected error occurred, the game could not be started."
   roles:
     normal:
-      - "You are a bog standard internet user. You are looking a cute cats."
+      - "You are a bog standard internet user. You are looking at cute cats."
       - "You've found a funny video on youtube. How normal."
       - "Your reddit karma is very average."
       - "You're happily chatting away on IRC, congratulations."
@@ -72,7 +72,7 @@ internet:
       vote: "%{voter} voted to ban %{votee}"
       changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
       abstain: "%{voter} has voted for free speech"
-      dead: "%{votee}'s is still in hospital, recovering from mild shock."
+      dead: "%{votee} is still in hospital, recovering from mild shock."
     night:
       vote: "You have voted for %{votee} to be banned tonight"
       changed: "You have changed your vote to %{votee}"
