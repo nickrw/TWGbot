@@ -3,7 +3,7 @@ options:
   dir_mode: normal
   dir: "cinchize"
 servers:
-  mensearch:
+  freenode:
     server: irc.freenode.net
     port: 6667
     nick: egtwgbot
