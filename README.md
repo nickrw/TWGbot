@@ -11,18 +11,32 @@ clone, but a rewrite for learning purposes in ruby, and it has grown ever since.
    [1]: https://en.wikipedia.org/wiki/Mafia_(party_game)
    [2]: http://javatwg.sourceforge.net/
 
+Table of contents
+=================
+
+* [How to play](#how-to-play)
+  * [Night and Day](#night-and-day)
+  * [Victory conditions](#victory-conditions)
+  * [Roles](#roles)
+* [Languages and Themes](#languages-and-themes)
+* [Contributing a language pack](#contributing-a-language-pack)
+  * [Getting started](#getting-started)
+  * [More advanced](#more-advanced)
+* [Running the bot](#running-the-bot)
+  * [Configuration](#configuration)
+
 How to play
 ===========
 
 Someone in the IRC channel says "!start" to kick off registration for a new
 game. Those who want to take part have 5 minutes (by default) to say "!join". 
-Once the game starts the bot will randomly assign [roles](#Roles) and notify all 
+Once the game starts the bot will randomly assign [roles](#roles) and notify all 
 of the players via private message.
 
 Once everybody has their role the first phase of the game begins: Night One.
 
 Night and Day
-=============
+-------------
 
 The game is broken up into two phases. Simply put:
 
@@ -46,7 +60,7 @@ If you are unclear on how the voting / abstaining / tie system works, use the
 and italicise the tied players, or the abstain line if the abstain is in effect.
 
 Victory conditions
-==================
+------------------
 
 Victory conditions are assessed at the end of each day phase.
 
@@ -59,7 +73,7 @@ victory conditions. Abstaining will therefore be fatal in a 3-player final day,
 but not in a 4-player final day.
 
 Roles
-=====
+-----
 
 These two are the basic roles in every game.
 
@@ -178,7 +192,7 @@ The set up:
     mkdir cinchize
 
 At this point you want to edit cinchize.yml to get the bot to connect to your
-preferred IRC network. See the [Configuration](#Configuration) section below for
+preferred IRC network. See the [Configuration](#configuration) section below for
 more information about the TWG-specific plugin options.
 
 Once the configuration is to your liking, run:
