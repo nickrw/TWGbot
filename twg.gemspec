@@ -8,10 +8,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.1'
   s.files = Dir['{lib,lang}/**/*']
 
-  # cinch 2.0.4 release version is not actually sufficient, you must build
-  # the cinch gem from master https://github.com/cinchrb/cinch due to reliance
-  # on 62931f96e4b82027ad9ca6cc2de91b5a6b064f35
-  s.add_dependency 'cinch', '>= 2.0.4'
+  s.add_dependency 'cinch', '>= 2.0.5'
   s.add_dependency 'cinchize'
   s.add_dependency 'i18n'
 end
