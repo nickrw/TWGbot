@@ -17,6 +17,7 @@ module TWG
     end
 
     def select(pack)
+      I18n.reload!
       locs = list
       return nil if not locs.keys.include?(pack)
       @pack = pack
