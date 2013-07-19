@@ -30,8 +30,8 @@ module TWG
       super
       @game = TWG::Game.new
       default_lang = config["default_lang"] ||= :default
-      @@lang ||= TWG::Lang.new(default_lang)
-      @lang = @@lang
+      @@lang ||= default_lang
+      @lang = TWG::Lang.new(@@lang)
 
       commands = {
         @lang.t('command.start') => :start,
@@ -87,6 +87,7 @@ module TWG
       if r.nil?
         m.reply @lang.t('lang.notfound', {:lang => lang})
       else
+        @@lang = lang.to_sym
         i = bot.plugins.find_index { |x| x.class == TWG::Loader }
         if i.nil?
           bot.plugins.register_plugin(TWG::Loader)
