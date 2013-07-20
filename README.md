@@ -162,6 +162,18 @@ More advanced
   speaks the key. This can be used to make the bot seem a little less
   monotonous, as it won't necessarily say the same things constantly.
 
+  For example:
+
+        cheese: "I like cheese"
+
+  The bot will always say "I like cheese" for that key
+
+        cheese:
+          - "I like cheddar"
+          - "I like wensleydale"
+
+  The bot will pick randomly between these two different cheeses each time.
+
 * Interpolation variable ("So and so %{player} did X") can be used multiple 
   times within a string, and they may also be omitted.
 
