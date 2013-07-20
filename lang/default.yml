@@ -27,46 +27,90 @@ default:
     almostready: "%{secs} seconds left to !join. %{number} out of a minimum of %{min} players joined so far."
     starting: "Game starting! Players are: %{players}"
     rolesoon: "You will shortly receive your role via private message"
-    enoughplayers: "Not enough players to start a game, sorry. You can !start another if you find more players."
-    error: "An unexpected error occurred, the game could not be started."
+    enoughplayers:
+      - "Not enough players to start a game, sorry. You can !start another if you find more players."
+      - "Not enough players to start a game, sorry. You could !start another if you had some friends."
+    error:
+      - "An unexpected error occurred, the game could not be started."
+      - "Well shit, something has gone wrong."
   roles:
     normal:
       - "You are a normal human being."
       - "There's nothing remarkable about you."
       - "You're a pretty standard 9-5 villager."
       - "You're not special."
+      - "You seem pretty ordinary."
+      - "You were too cheap to shell out for the extras. Basic-model villager only."
     wolf:
-      one: "You are a lone WOLF!"
+      one:
+        - "You are a lone WOLF."
+        - "You're a pretty lonely WOLF."
+        - "My what big teeth you have."
+        - "You are a freakish monster with elongated hind legs and hair everywhere. Ew."
       other: "You are a WOLF in a pack with: %{wolves}"
   day:
     enter:
       solicit:
         nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Gossip with your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
     exit:
-      novotes: "Voting over! No votes were cast."
+      novotes:
+        - "Voting over! No votes were cast."
+        - "Voting over! No votes were cast. I don't know why I even bother."
       abstain: "Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?"
-      lynch: "Voting over! The baying mob has spoken - %{killed} must die!"
-      suspense: "Everybody turns slowly towards %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
+      lynch:
+        - "Voting over! The baying mob has spoken - %{killed} will die!"
+        - "Voting over! The terrifying mob has spoken - %{killed} must die!"
+        - "Voting over! A screaming mob wants %{killed} dead!"
+      suspense:
+        - "Everybody turns slowly toward %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
+        - "Everybody turns toward %{killed}. The end is quick and not painless - %{killed} is dead. The villagers examine the body..."
+        - "%{killed} tries to flee, leaving a suspicious puddle behind. The spry mob are too quick - %{killed} is dead. A trusted physician examines the body..."
       result:
-        wolf: "...and it starts to transform before their very eyes! A dead wolf lies before them."
-        normal: "...but can't see anything unusual, looks like you might have turned upon one of your own."
+        wolf:
+          - "...and it starts to transform before their very eyes! A dead wolf lies before them."
+          - "...and it tranforms into a vicious killing machine with terrifying teeth and claws! Well done, you found a wolf."
+          - "...and it shrinks into the form of a cute puppy! Congratulations!"
+        normal:
+          - "...but can't see anything unusual, looks like you might have turned upon one of your own."
+          - "...but everything seems to be in order. Whoops."
+          - "...but the corpse looks normal - you lynched one of your own number."
+          - "...but the corpse looks about as normal as you villgers get."
     almostready:
-      yet: "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
-      everybody: "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
+      yet:
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (sort yourselves out)"
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (pay more attention)"
+      everybody:
+        - "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
+        - "Voting closes in %{secs} seconds! Everybody has voted, but it definitely isn't too late to change your mind..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. Don't forget you can always change your vote..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. It's definitely not too late to reconsider..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. Don't even think about changing your vote."
   night:
-    enter: "A chilly mist descends, it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+    enter:
+      - "A chilly mist descends, it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Villagers, go to bed. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+      - "It is now NIGHT %{night}. It is a bit overcast, tsk. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to pounce upon."
+      - "It is now NIGHT %{night}. It's unseasonably warm. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide who to claw apart."
     solicit:
       one: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind."
       other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
     exit:
-      body: "A bloodcurdling scream is heard throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a villager, is dead."
-      nobody: "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
+      body:
+        - "A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a villager, is dead."
+        - "A bloodcurdling scream breaks the monotony. People saunter over, yawning, to see half of %{killed}'s body on the ground. %{killed}, a villager, is dead."
+        - "A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a villager, is dead."
+      nobody:
+        - "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
+        - "Everybody wakes, well rested. After some scouting around there's no sign of a body. Nobody was murdered during the night!"
   vote:
-    noplayer: "%{votee} is not a player in this game"
+    noplayer:
+      - "%{votee} is not a player in this game."
+      - "%{votee} is not a player in this game. Keep up."
     day:
       vote: "%{voter} voted for %{votee}"
       changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
@@ -74,6 +118,8 @@ default:
       dead:
         - "Good news %{voter}, %{votee} is already dead!"
         - "%{voter} has volunteered to dig %{votee}'s grave."
+        - "%{voter} sneaks into %{votee}'s house and rifles through %{votee}'s possessions."
+        - "%{voter} checks %{votee}'s will, to see if they left anything good behind. Nope."
     night:
       vote: "You have voted for %{votee} to be killed tonight"
       changed: "You have changed your vote to %{votee}"
