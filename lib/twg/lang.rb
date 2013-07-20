@@ -8,7 +8,8 @@ module TWG
 
     attr_reader :pack
 
-    def initialize(pack = :default)
+    def initialize(pack = :default, fallback = :default)
+      @fallback = fallback
       @gemroot = File.expand_path '../../..', __FILE__
       I18n.default_locale = :default
       I18n.exception_handler = TWG::LangException.new
@@ -41,15 +42,12 @@ module TWG
 
     def t(key, kwargs={})
 
-      begin
-        tr = I18n.translate key, kwargs.merge({:locale => @pack})
-      rescue I18n::MissingInterpolationArgument => e
-        return "Translation error: #{e.message}"
-      end
+      tr = safe_translate(key, kwargs.merge({:locale => @pack}))
 
       case tr
       when String
         return tr
+
       when Array
         begin
           # I18n doesn't interpolate if key returns an array
@@ -58,10 +56,31 @@ module TWG
         rescue I18n::MissingInterpolationArgument => e
           return "Translation error: #{e.message}"
         end
+
       else
         return "Translation error: unexpected class returned: #{tr.class}"
+
       end
 
+    end
+
+    private
+
+    def safe_translate(key, kwargs={})
+      kwargs[:locale] ||= @fallback
+      begin
+        tr = I18n.translate key, kwargs
+        return tr
+      rescue I18n::MissingTranslationData => e
+        if kwargs[:locale] != @fallback
+          kwargs[:locale] = @fallback
+          return safe_translate(key, kwargs)
+        else
+          return "Translation error: #{e.message}"
+        end
+      rescue I18n::MissingInterpolationArgument => e
+        return "Translation error: #{e.message}"
+      end
     end
 
   end

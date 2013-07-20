@@ -153,6 +153,8 @@ Getting started
    setup so interested parties can subscribe to notifications of new games
    starting.
 6. Start changing the rest of the entries to match your language/theme.
+7. If you aren't changing a partiular key, delete it! The bot will fall back to
+   the default language for any key not present in your pack.
 
 More advanced
 -------------
