@@ -478,7 +478,7 @@ module TWG
       if role == :wolf
         chanm @lang.t('day.exit.result.wolf')
         devoice(k)
-      elsif r != :abstain
+      elsif !r.nil? && r != :abstain
         chanm @lang.t('day.exit.result.normal')
         devoice(k)
       end
