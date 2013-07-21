@@ -91,8 +91,12 @@ internet:
       l1: "You are the DDOSER. Your good mate h4x0rUK has a seriously big botnet available. As a favour, he has said he will let you use it!"
       l2: "Once during any DAY you can say !ddos <player> (in the channel, not privately) to immediately take that person offline."
     shoot:
-      self: "%{vigilante} goes nuts and unplugs his/her ethernet cable"
-      other: "%{vigilante} loads up a botnet and starts to DDOS %{target}"
+      self:
+        success: "%{vigilante} goes nuts and unplugs his/her ethernet cable"
+        fail: "%{vigilante} destroys their computer in a fit of rage, but unfortunately it is covered by a comprehensive insurance policy and replaced immediately."
+      other:
+        success: "%{vigilante} loads up a botnet and starts to DDOS %{target}"
+        fail: "%{vigilante} loads up a botnet and starts to DDOS %{target}... but nothing happens! %{target} must have a Cisco Anomaly Guard."
     reaction:
       self: "Everyone knows that %{target} will be back online soon. Poor %{target} needs to get some sunlight."
       other: "%{target} has been knocked offline! But was he/she the troll..?"
