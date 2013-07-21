@@ -119,6 +119,10 @@ another special role has already been assigned (other than a wolf).
   * The role of the selected player is revealed to the channel.
   * The Day is ended, without a lunch. Votes for that day's lynch are discarded.
 
+  One third of players are immune to the vigilante's attack. These players are
+  chosen randomly at the start of the game from the entire set of players so can
+  be of any role (including the vigilante).
+
   Normally the vigilante never survives the following Night as the villagers 
   know that the vigilante can't be the wolf.
 

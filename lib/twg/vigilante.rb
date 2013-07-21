@@ -20,6 +20,9 @@ module TWG
     def pick_vigilante(m)
       odds = config["odds_per_player"] ||= 5
       pick_special(:vigilante, odds)
+      bp_count = (@game.participants.count / 3) - 1
+      @bulletproof = @game.participants.keys.shuffle[0..bp_count]
+      debug "Selected bulletproof players: #{@bulletproof.join(', ')}"
     end
 
     def notify_roles(m)
@@ -41,23 +44,40 @@ module TWG
       return if @game.participants[target].nil?
       return if @game.participants[target] == :dead
 
+      if @bulletproof.include?(target)
+        @game.participants[v] = :normal
+
+        if v != target
+          m.reply @lang.t('vigilante.shoot.other.fail', {
+            :vigilante => m.user.to_s,
+            :target    => target
+          })
+        else
+          m.reply @lang.t('vigilante.shoot.self.fail', {
+            :vigilante => m.user.to_s
+          })
+        end
+
+        return
+      end
+
       hook_cancel(:warn_vote_timeout)
       hook_cancel(:exit_day)
+      r = @game.kill(target)
+      @game.participants[v] = :normal
+      @core.devoice(target)
+      @game.next_state
 
       if v != target
-        m.reply @lang.t('vigilante.shoot.other', {
+        m.reply @lang.t('vigilante.shoot.other.success', {
           :vigilante => m.user.to_s,
           :target    => target
         })
-        @game.participants[v] = :normal
       else
-        m.reply @lang.t('vigilante.shoot.self', {
+        m.reply @lang.t('vigilante.shoot.self.success', {
           :vigilante => m.user.to_s
         })
       end
-      r = @game.kill(target)
-      @core.devoice(target)
-      @game.next_state
 
       sleep 10
       if v != target

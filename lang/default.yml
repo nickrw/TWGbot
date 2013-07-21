@@ -166,13 +166,17 @@ default:
   vigilante:
     command: "shoot"
     role:
-      l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, but you only have enough silver for one bullet."
-      l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day."
+      l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, though your metalworking skills aren't up to much."
+      l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day. "
     shoot:
-      self: "%{vigilante} pulls out a gun and commits suicide"
-      other: "%{vigilante} pulls out a gun and shoots %{target}"
+      self:
+        success: "%{vigilante} pulls out a gun and commits suicide"
+        fail: "%{vigilante} pulls out a gun and tries to commit suicide but the bullet jams in the barrel. Shoddy manufacturing."
+      other:
+        success: "%{vigilante} pulls out a gun and shoots %{target}"
+        fail: "%{vigilante} pulls out a gun and tries to shoot %{target}, but the bullet bounces harmlessly off %{target}'s pocket-watch."
     reaction:
-      self: "The villagers had known that %{target}  was feeling a bit down in the dumps, but had always dismissed it as hormones."
+      self: "The villagers had known that %{target} was feeling a bit down in the dumps, but had always dismissed it as hormones."
       other: "The villagers, despite their shock at the sudden discovery of gunpowder and ballistics, shuffle forward to look at %{target}'s fallen body..."
     reveal:
       self: "%{vigilante}'s single silver bullet was put to waste in its maker's skull instead of a wolf."
