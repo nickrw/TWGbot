@@ -22,7 +22,8 @@ module TWG
     end
 
     def pick_seer(m)
-      pick_special(:seer, 6)
+      odds = config["odds_per_player"] ||= 6
+      pick_special(:seer, odds)
     end
 
     def solicit_seer_choice(m)

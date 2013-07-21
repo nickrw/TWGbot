@@ -18,7 +18,8 @@ module TWG
     end
 
     def pick_vigilante(m)
-      pick_special(:vigilante)
+      odds = config["odds_per_player"] ||= 5
+      pick_special(:vigilante, odds)
     end
 
     def notify_roles(m)
