@@ -63,12 +63,12 @@ default:
       abstain: "Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?"
       lynch:
         - "Voting over! The baying mob has spoken - %{killed} will die!"
-        - "Voting over! The terrifying mob has spoken - %{killed} must die!"
+        - "Voting over! The glorious mob reaches agreement - %{killed} must die!"
         - "Voting over! A screaming mob wants %{killed} dead!"
       suspense:
         - "Everybody turns slowly toward %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
         - "Everybody turns toward %{killed}. The end is quick and not painless - %{killed} is dead. The villagers examine the body..."
-        - "%{killed} tries to flee, leaving a suspicious puddle behind. The spry mob are too quick - %{killed} is dead. A trusted physician examines the body..."
+        - "%{killed} tries to flee, leaving a suspicious puddle behind. The spry mob is too quick - %{killed} is dead. A trusted physician examines the body..."
       result:
         wolf:
           - "...and it starts to transform before their very eyes! A dead wolf lies before them."
@@ -150,7 +150,9 @@ default:
     command: "see"
     role: "You are the SEER. Each night you can have the role of a player of your choice revealed."
     solicit: "It is now NIGHT %{night}: say !see <nickname> to me to reveal their role."
-    awake: "You're wide awake - this is no time for visions!"
+    awake:
+      - "You're wide awake - this is no time for visions!"
+      - "You're wide awake - you're not a shift worker!"
     killed: "While dreaming vividly about %{target} you get viciously torn to pieces. Your magic 8 ball didn't see that one coming!"
     target:
       confirm: "%{target}'s identity will be revealed to you as you wake."
