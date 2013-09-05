@@ -200,7 +200,17 @@ More advanced
 Running the bot
 ===============
 
-The set up:
+TWGbot depends on a [pull request][1] that was merged into cinch (the ruby IRC
+framework it uses) to operate correctly. Because the feature consituted a
+minor API change for cinch it will not be included in a release version until
+Cinch 2.1. Cinch must be built and installed from master before installing twg.
+
+    git clone https://github.com/cinchrb/cinch.git
+    cd cinch
+    gem build cinch.gemspec
+    gem install --no-ri --no-rdoc cinch*.gem
+
+Then build and install TWG:
 
     git clone https://github.com/nickrw/TWGbot.git
     cd TWGbot
@@ -219,6 +229,8 @@ Once the configuration is to your liking, run:
 
 Where *freenode* is the network you specified in cinchize.yml (it is the key on
 line 6 in example.yml).
+
+   [1]: https://github.com/cinchrb/cinch/pull/121
 
 Configuration
 -------------
