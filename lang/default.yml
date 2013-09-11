@@ -78,7 +78,7 @@ default:
           - "...but can't see anything unusual, looks like you might have turned upon one of your own."
           - "...but everything seems to be in order. Whoops."
           - "...but the corpse looks normal - you lynched one of your own number."
-          - "...but the corpse looks about as normal as you villgers get."
+          - "...but the corpse looks about as normal as you villagers get."
     almostready:
       yet:
         - "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
