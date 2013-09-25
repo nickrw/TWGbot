@@ -61,10 +61,11 @@ module TWG
         }
         shared[:timer] ||= Hash.new
         shared[:timer][method] ||= Array.new
-        shared[:timer][method] << Timer(delay, tconfig) do
+        @tobject = Timer(delay, tconfig) do
           hook_raise(method, true, m, *args)
-          shared[:timer][method].delete(self)
+          shared[:timer][method].delete(@tobject)
         end
+        shared[:timer][method] << @tobject
       end
     end
 
