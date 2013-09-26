@@ -41,13 +41,24 @@ default:
       - "You're not special."
       - "You seem pretty ordinary."
       - "You were too cheap to shell out for the extras. Basic-model villager only."
+      - "Villager."
+      - "Normo."
+      - "Human, I swear."
+      - "You could pass for human, I guess."
+      - "Hugh Man, sir."
+      - "Species: Villager"
+      - "such human                villager             wow            so humblest"
+      - "I expect you want me to tell you that you're a WOLF. But you're not. You're a villager."
     wolf:
       one:
         - "You are a lone WOLF."
         - "You're a pretty lonely WOLF."
         - "My what big teeth you have."
         - "You are a freakish monster with elongated hind legs and hair everywhere. Ew."
-      other: "You are a WOLF in a pack with: %{wolves}"
+        - "Desire for human flesh: ✅. ; Four legs: ✅. ; Furry: ✅."
+      other:
+        - "You are a WOLF in a pack with: %{wolves}"
+        - "You are a WOLF! You're not the only one either! Say hi to %{wolves}"
   day:
     enter:
       solicit:
@@ -136,8 +147,12 @@ default:
       other: "%{votee} has %{count} votes (%{voters})"
   victory:
     wolfreveal:
-      one: "With a bloodcurdling howl, hair beings sprouting from %{wolf}'s every orifice. The remaining villagers don't stand a chance."
-      other: "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
+      one:
+        - "With a bloodcurdling howl, hair beings sprouting from %{wolf}'s every orifice. The remaining villagers don't stand a chance."
+        - "%{wolf} turns to face the remaining villagers, wearing only a gleeful smile. A very dangerous, pointy smile. Ya'll dead."
+      other:
+        - "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
+        - "The %{count} wolves grin toothily at each other. Such a pitiful lynch mob could never hope to take on multiple honking great wolves."
     wolf: "Game over! The lone wolf %{wolf} wins!"
     wolves:
       one: "Game over! The last remaining wolf %{wolves} wins!"
