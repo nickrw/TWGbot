@@ -160,7 +160,6 @@ module TWG
     # Returns nil for successful new vote.
     # Returns name of previous vote for successful changed vote.
     def record_vote(nick,vfor)
-      puts "Votes: #{@votes.inspect}"
       old = nil
       tvotes = @votes.dup
       tvotes.each do |votee, voters|
@@ -171,14 +170,11 @@ module TWG
             @votes.delete(votee)
           end
           old = votee
-          puts "Removing old vote (#{nick} -> #{votee})"
           break
         end
       end
-      puts "Recording vote (#{nick} -> #{vfor})"
       @votes[vfor] ||= Array.new
       @votes[vfor] << nick
-      puts "Votes: #{@votes.inspect}"
       return old
     end
 
