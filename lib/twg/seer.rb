@@ -3,11 +3,11 @@ require 'twg/plugin'
 module TWG
   class Seer < TWG::Plugin
     include Cinch::Plugin
-    listen_to :hook_roles_assigned, :method => :pick_seer
-    listen_to :hook_notify_roles,   :method => :notify_roles
-    listen_to :hook_votes_applied,  :method => :seer_reveal
-    listen_to :enter_night,         :method => :solicit_seer_choice
-    listen_to :nick,                :method => :nickchange
+    listen_to :hook_roles_assigned,       :method => :pick_seer
+    listen_to :hook_notify_roles,         :method => :notify_roles
+    listen_to :hook_night_votes_applied,  :method => :seer_reveal
+    listen_to :enter_night,               :method => :solicit_seer_choice
+    listen_to :nick,                      :method => :nickchange
 
     def self.description
       "Special role which can reveal other players' roles at night"

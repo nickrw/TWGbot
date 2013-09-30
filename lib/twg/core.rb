@@ -414,6 +414,7 @@ module TWG
 
     def enter_night(m)
       return if @game.nil?
+      hook_sync(:hook_pre_enter_night, nil, config)
       chanm @lang.t('night.enter', {
         :night => @game.iteration.to_s,
         :secs => config["game_timers"]["night"].to_s
@@ -421,12 +422,14 @@ module TWG
       @game.state_transition_in
       solicit_wolf_votes
       hook_async(:exit_night, config["game_timers"]["night"])
+      hook_sync(:hook_post_enter_night, nil, config)
     end
 
     def exit_night(m)
       return if @game.nil?
+      hook_sync(:hook_pre_exit_night)
       r = @game.apply_votes
-      hook_sync(:hook_votes_applied)
+      hook_sync(:hook_night_votes_applied)
       @game.next_state
       killed = nil
       if r.nil? || r == :abstain
@@ -459,7 +462,7 @@ module TWG
     def exit_day(m)
       return if @game.nil?
       r = @game.apply_votes
-      hook_sync(:hook_votes_applied)
+      hook_sync(:hook_day_votes_applied)
       @game.next_state
       k = nil
       role = nil

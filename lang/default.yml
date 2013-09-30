@@ -207,6 +207,30 @@ default:
         l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
         l2: "%{vigilante}'s single silver bullet was wasted on %{target} - a fellow villager."
     over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
+  witch:
+    command: "save"
+    role: "You are a WITCH!"
+    save: "You got there just in time"
+    prepare: "It is now NIGHT %{night}. Once the wolf vote is over you will have only 10 seconds to decide if you want to save the victim (by saying '!save')"
+    tensecs: "It's almost dawn - get ready!"
+    choose:
+      one: "You hear noises coming from %{target}'s cabin."
+      other: "You hear noises coming from the cabins of: %{target}"
+      instruct:
+        one: "Say '!save' if you wish to save this player, quickly!"
+        other: "Say '!save <playername>' to choose which player to visit. Either could by the real target. Saying '!save on its own will pick randomly."
+    choosedanger:
+      one: "You hear noises coming from %{target}'s cabin, and get the horrible feeling something is creeping up on you too."
+      other: "You hear noises coming from the cabins of: %{target}, and get the horrible feeling something is creeping up on you too."
+      instruct:
+        one: "Say '!save' if you wish to save this player. There's a 50/50 chance you're going to die first."
+        other: "Say '!save <playername>' to choose which player to save. Either could by the real target, and so could you. Saying '!save on its own will pick randomly."
+    nottarget: "'%{player}' isn't in danger here! Do you not understand the gravity of the situation?"
+    unambiguous: "Phew. You got there just in time to clean up %{target}'s many lacerations."
+    ambiguous:
+      success: "Phew. You chose to run towards %{player}, and that's exactly where the furry death went too."
+      fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
+      failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
   invite:
     command: "invite"
     spam: "%{target} has been invited to join the channel recently, try again later."

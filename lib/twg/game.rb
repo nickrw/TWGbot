@@ -103,8 +103,6 @@ module TWG
 
     # Receives and process a vote from the outside world
     def vote(nick,vfor,type)
-      voter_is = @participants[nick]
-      votee_is = @participants[vfor]
       act = {:night => :nick, :day => :reply}
       return {:code => :notvotablestate} if not [:day, :night].include?(@state)
       if ((@state == :night) && (type == :channel) || ((@state == :day) && (type == :private)))
@@ -116,7 +114,7 @@ module TWG
       return {:code => :voteenotplayer} if not player?(vfor)
       return {:code => :voteedead} if dead?(vfor)
       if @state == :night
-        return {:code => :notawolf} if not @game_wolves.include?(nick)
+        return {:code => :notawolf} if not @game_wolves.include?(nick) || (nick.class == Symbol)
         return {:code => :fellowwolf} if @game_wolves.include?(vfor)
       end
       previous = record_vote(nick,vfor)
@@ -186,7 +184,6 @@ module TWG
     end
 
     def clear_votes
-      @voted = {}
       @votes = {}
     end
 
@@ -245,6 +242,7 @@ module TWG
     end
 
     def player?(name)
+      return true if name.class == Symbol #Symbols are used by plugins as actors
       @participants.keys.include?(name)
     end
 
