@@ -43,8 +43,12 @@ module TWG
       ta.each do |thread|
         begin
           thread.join
-        rescue => e
+        rescue StandardError => e
           debug e.inspect
+        rescue TWG::PluginOverrideException => e
+          # A hooked thread wants to override its parent
+          debug "Exiting current thread due to PluginOverrideException"
+          Thread.current.exit
         end
       end
       info "Hooked threads for #{method.to_s} complete"

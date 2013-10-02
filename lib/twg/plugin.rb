@@ -21,4 +21,10 @@ module TWG
     end
 
   end
+
+  # This exception can be raised when a plugin wants its *parent* thread to
+  # exit. This should be used in methods which expected to be executed via 
+  # hook_sync only.
+  class PluginOverrideException < Exception ; end
+
 end

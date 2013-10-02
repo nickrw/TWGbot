@@ -425,11 +425,11 @@ module TWG
       hook_sync(:hook_post_enter_night, nil, config)
     end
 
-    def exit_night(m)
+    def exit_night(m,opts=nil)
       return if @game.nil?
-      hook_sync(:hook_pre_exit_night)
+      hook_sync(:hook_pre_exit_night,m,opts)
       r = @game.apply_votes
-      hook_sync(:hook_night_votes_applied)
+      hook_sync(:hook_night_votes_applied,m,opts)
       @game.next_state
       killed = nil
       if r.nil? || r == :abstain
