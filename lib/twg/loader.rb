@@ -40,6 +40,7 @@ module TWG
     def toggle_plugin(m, plugin)
       if not m.channel?
         m.reply "Toggle plugins in the public channel, not private message"
+        return
       end
       if not game_idle?
         m.reply "Cannot load/unload plugins while a game or game signup is in progress"
