@@ -84,8 +84,8 @@ mexican:
       other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
     exit:
       body:
-        - "Ay caramba! A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a , is dead."
-        - "Ay caramba! A bloodcurdling scream breaks the monotony. People saunter over, yawning, to see half of %{killed}'s body on the ground. %{killed}, a villager, is dead."
+        - "Ay caramba! A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a chamaco, is dead."
+        - "Ay caramba! A bloodcurdling scream breaks the monotony. People saunter over, yawning, to see half of %{killed}'s body on the ground. %{killed}, an aldeano , is dead."
         - "Ay caramba! A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a villager, is dead."
       nobody:
         - "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
