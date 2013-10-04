@@ -21,6 +21,7 @@ mexican:
     rename: "Player %{oldnick} is now known as %{nick}"
   start:
     start: "'Tijuana Nights' has been started by %{nick}! Say !andale to join the fun."
+    registration: "Registration is now open, say !andale to join the game within %{limit} seconds. A minimum of %{players} pendejos is required to play Tijuana Nights."
     joined: "%{player} has joined the fun (%{number}/%{min})"
     forcejoined: "%{player} has been forced to join the fun (%{number}/%{min})"
     starting: "Fun starting! Players are: %{players}"
@@ -162,7 +163,7 @@ mexican:
     reaction:
       other: "The villagers, despite their shock at the sudden discovery of swords and ridiculous outfits, shuffle forward to look at %{target}'s fallen body..."
     reveal:
-      self: "%{vigilante}'s single silver bullet was put to waste in its maker's skull instead of a chupacabra."
+      self: "%{vigilante}'s sword was put to waste in its maker's heart instead of a chupacabra."
       wolf:
         l1: "... and jump back in horror as %{target} lets out a buttock-clenching death-scream!"
         l2: "%{vigilante}'s sword found its true home. %{target} was a chupacabra!"
