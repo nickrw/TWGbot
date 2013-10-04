@@ -16,7 +16,6 @@ module TWG
 
     def resign(m)
       return if @game.nil?
-      wolves = players_of_role(:wolf)
       player = m.user.to_s
       role = @game.participants[player]
       return if role.nil?
@@ -34,10 +33,9 @@ module TWG
       end
 
       # Let plugins which introduce non-core roles handle anything that
-      # might be required from their character dying.
-      if not [:normal, :wolf].include?(role)
-        hook_async(:hook_special_resignation, 0, nil, player)
-      end
+      # might be required from their character dying, and also handle a player
+      # leaving the game that might be a target of a special character's action
+      hook_async(:hook_player_resignation, 0, nil, player)
 
       @game.kill(player)
       chansay('resign.announce', :player => player)
