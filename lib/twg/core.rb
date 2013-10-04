@@ -55,6 +55,10 @@ module TWG
       check_ready
     end
 
+    def coreconfig
+      config
+    end
+
     def langlist(m)
       return if !m.channel?
       return if m.channel != config["game_channel"]

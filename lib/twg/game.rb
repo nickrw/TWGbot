@@ -53,6 +53,13 @@ module TWG
       end
     end
 
+    def deregister(nick)
+      return false if @state != :signup
+      return false if not @participants.keys.include?(nick)
+      @participants.delete(nick)
+      return true
+    end
+
     def nickchange(oldnick, newnick)
 
       # replace player

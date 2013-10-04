@@ -214,3 +214,7 @@ default:
     ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."
     nouser: "No user called %{target} online."
     confirm: "I have invited %{target} to join the channel."
+  resign:
+    command: "resign"
+    announce: "%{player} has committed suicide rather than harm a soul in the village."
+    unjoined: "%{player} has left the game (%{count}/%{min})"
