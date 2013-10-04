@@ -34,7 +34,7 @@ module TWG
       User(@seer).send @lang.t('seer.solicit', :night => @game.iteration.to_s)
     end
 
-    def seer_reveal(m)
+    def seer_reveal(m,opts)
       return if @game.nil?
       return if @game.state != :night
       return if @seer.nil?
