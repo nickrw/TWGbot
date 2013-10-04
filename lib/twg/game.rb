@@ -24,6 +24,7 @@ module TWG
       @live_wolves = 0
       @live_norms = 0
       @votes = {}
+      @votelock = false
     end
 
     def start
@@ -101,10 +102,20 @@ module TWG
       @state
     end
 
+    def lock
+      @votelock = true
+      return true
+    end
+
+    def unlock
+      @votelock = false
+      return true
+    end
+
     # Receives and process a vote from the outside world
     def vote(nick,vfor,type)
-      act = {:night => :nick, :day => :reply}
       return {:code => :notvotablestate} if not [:day, :night].include?(@state)
+      return {:code => :votelocked} if @votelock && (nick.class != Symbol)
       if ((@state == :night) && (type == :channel) || ((@state == :day) && (type == :private)))
         return {:code => :illegalvotetype}
       end
@@ -151,6 +162,7 @@ module TWG
     def state_transition_out
       return @state if [:humanswin, :wolveswin].include?(@state)
       victory = check_victory_condition
+      unlock
       if not victory.nil?
         victory
       elsif [:day, :signup].include?(@state)

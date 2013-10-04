@@ -52,6 +52,7 @@ module TWG
     def witch_get_set(m)
       return if @game.nil?
       return if @witch.nil?
+      unlock
       User(@witch).send @lang.t('witch.tensecs', :night => @game.iteration.to_s)
     end
 
@@ -61,6 +62,20 @@ module TWG
       return if args.include?(:witch)
 
       return if @game.nil?
+
+      # Prevent normal votes from going through
+      # Unlocking is performed automatically when the game advances to the
+      # next state and is not necessary here. Any vote rigging done by 
+      # #witch_save is exempt from the lock.
+      @game.lock
+
+      # Inform the wolves that voting is over
+      # and that further votes will be ignored
+      wolves = players_of_role(:wolf)
+      wolves.each do |wolf|
+        User(wolf).send(@lang.t('witch.wolfvoteover')) #I18N TODO
+      end
+
       if @witch.nil?
         sleep 10
         return
@@ -85,8 +100,6 @@ module TWG
         reset
         return
       end
-
-      langsuffix = @target.include?(@witch) ? ".andyou" : ""
 
       if @target.include?(@witch)
 
@@ -135,15 +148,13 @@ module TWG
           # The witch took failed, or no, action
           hook_async(:exit_night,0,nil,:witch)
         else
-          r = @game.apply_votes
+          @game.apply_votes
           hook_sync(:hook_night_votes_applied,nil,:witch)
           @game.next_state
           if target.empty? && w != witchwas
-            debug "Say to channel that the with made it all ok"
-            #chanm @lang.t('witch.night.exit.success', {
-            #  :saved => @saved
-            #})
-            # TODO i18n
+            chansay('witch.channelsuccess', # I18N TODO
+              :saved => @saved
+            )
           end
           unless @core.check_victory_conditions
             hook_async(:enter_day, 0, nil, nil)
