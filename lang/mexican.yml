@@ -1,0 +1,175 @@
+mexican:
+  description: "Arriba arriba! Tijuana Nights: el Chupacabras."
+  author: "phpeach with some help from verin and jesperht"
+  command:
+    start: "start"
+    vote: "vote"
+    votes: "cachetadas"
+    abstain: "siesta"
+    join: "andale"
+    lang: "lang"
+    langs: "langs"
+  lang:
+    advertise: "While no game is running say !langs to see a list of available themes / languages."
+    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    notfound: "No language pack named '%{lang}' available."
+  general:
+    plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
+    noops: "I require channel ops before starting a game."
+    ready: "TWG bot is now up and running! Say !start to start a new game."
+    deopped: "Cancelling game - I have been deopped!"
+    rename: "Player %{oldnick} is now known as %{nick}"
+  start:
+    start: "'Tijuana Nights' has been started by %{nick}! Say !andale to join the fun."
+    joined: "%{player} has joined the fun (%{number}/%{min})"
+    forcejoined: "%{player} has been forced to join the fun (%{number}/%{min})"
+    starting: "Fun starting! Players are: %{players}"
+  roles:
+    normal:
+      - "De profesión: Mariachi. You know, There are other songs other than 'La cucaracha'."
+      - "Bonito sombrero amigo!"
+      - "Chachalaca."
+      - "Chavo ordinario."
+      - "You're a chaka. Go home!"
+      - "Pendejo ordinario."
+      - "Standard chamaco."
+    wolf:
+      one:
+        - "You are a lone CHUPACABRA."
+        - "You're a pretty lonely CHUPACABRA."
+        - "My what big fangs you have."
+        - "You are a freakish monster with sharp spines and quils running down your back. Eeeewwww!"
+        - "Desire for sheeple blood."
+      other:
+        - "You are a CHUPACABRA in a bloodsuckers club with: %{wolves}"
+        - "You are a CHUPACABRA! You're not the only one either! Say hi to %{wolves}"
+  day:
+    enter:
+      solicit:
+        nokill: "It is now DAY %{day}: Talk to your fellow aldeanos about this unusual silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        kill:
+          - "It is now DAY %{day}: Gossip with your fellow aldeanos about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to kick by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow aldeanos about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow aldeanos about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+    exit:
+      novotes:
+        - "Lynching over! No votes were cast."
+        - "Voting over! No votes were cast. I don't know why I even bother."
+      abstain: "Voting over! Too busy having a siesta to lynch anyone... ლ(ಠ益ಠლ) At what cost?"
+      lynch:
+        - "Voting over! The baying flock has spoken - %{killed} will die!"
+        - "Voting over! The glorious herd reaches agreement - %{killed} must die!"
+        - "Voting over! A screaming flock wants %{killed} dead!"
+      suspense:
+        - "Everybody turns slowly toward %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
+        - "Everybody turns toward %{killed}. The end is quick and not painless - %{killed} is dead. The villagers examine the body..."
+        - "%{killed} tries to flee, leaving a suspicious puddle behind. The spry mob is too quick - %{killed} is dead. A trusted physician examines the body..."
+      result:
+        wolf:
+          - "...and it starts to transform before their very eyes! A dead chupacabra lies before them."
+          - "...and it tranforms into a vicious killing machine with terrifying teeth and claws! Well done, you found a chupacabra."
+        normal:
+          - "...but can't see anything unusual, looks like you might have turned upon one of your own."
+          - "...but everything seems to be in order. Whoops."
+          - "...but the corpse looks normal - you lynched one of your own number. You can keep their orphan burro."
+          - "...but the corpse looks about as normal as you villagers get."
+  night:
+    enter:
+      - "A chilly mist descends through the Chihuahuan desert, it is now NIGHT %{night}. Aldeanos sleep soundly. Chupacabras, you have %{secs} seconds to decide who to rip to shreds."
+      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Villagers, go to bed. Chupacabras, you have %{secs} seconds to decide who to rip to shreds."
+      - "It is now NIGHT %{night}. It is a bit overcast, tsk. Villagers, sleep soundly. Chupacabras, you have %{secs} seconds to decide who to pounce upon."
+      - "It is now NIGHT %{night}. It's unseasonably warm. Villagers, try to go to bed. Chupacabras, you have %{secs} seconds to decide who to claw apart."
+    solicit:
+      one: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind."
+      other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
+    exit:
+      body:
+        - "Ay caramba! A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a , is dead."
+        - "Ay caramba! A bloodcurdling scream breaks the monotony. People saunter over, yawning, to see half of %{killed}'s body on the ground. %{killed}, a villager, is dead."
+        - "Ay caramba! A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a villager, is dead."
+      nobody:
+        - "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
+        - "Everybody wakes, well rested. After some scouting around there's no sign of a body. Nobody was murdered during the night!"
+  vote:
+    day:
+      vote: "%{voter} slaps %{votee} with the back of their hand."
+      changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
+      abstain: "%{voter} has decided to have a siesta"
+      dead:
+        - "Good news %{voter}, %{votee} is already dead!"
+        - "%{voter} sneaks into %{votee}'s house and rifles through %{votee}'s possessions. Not even a poncho you could wear."
+        - "%{voter} checks %{votee}'s will, to see if they left anything good behind. A skinny burro that you'll have to feed now, poor animal."
+    night:
+      vote: "You have voted for %{votee} to be killed tonight, delicioso!"
+      changed: "You have changed your vote to %{votee}"
+      abstain: "You're not convinced the human flesh is as good as goat's for enchiladas. Understandable."
+      dead: "%{votee} is already dead"
+      samerole: "You can't vote for one of your own kind!"
+      self: "Error ID - 10T"
+  votes:
+    abstain:
+      one: "%{count} lazy mexican has gone to have a siesta (%{players})"
+      other: "%{count} lazy mexicans are snoring under their sombreros (%{players})"
+    message:
+      one: "%{votee} might be slapped %{count} time (%{voters})"
+      other: "%{votee} might be slapped %{count} times (%{voters})"
+  victory:
+    wolfreveal:
+      one:
+        - "With a bloodcurdling scream, %{wolf}'s eyes start to glow... Making the villagers nauseus - they don't stand a chance."
+        - "%{wolf} turns to face the remaining villagers, wearing only a gleeful smile. A very dangerous, pointy smile. Ya'll dead."
+      other:
+        - "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
+        - "The %{count} wolves grin toothily at each other. Such a pitiful lynch mob could never hope to take on multiple honking great wolves."
+    wolf: "Game over! The lone chupacabra %{wolf} wins!"
+    wolves:
+      one: "Se acabó! The last remaining chupacabra %{wolves} wins!"
+      other: "Se acabó! The remaining bloodsuckers (%{wolves}) win!"
+      all: "Se acabó! The chupacabras (%{wolves}) win!"
+    human:
+      one: "Game over! The lone chupacabra %{wolves} was unable to vanish on time!"
+      other: "Game over! The chupacabras (%{wolves}) were unable to vanish on time."
+  seer:
+    command: "see"
+    role: "You are the SHAMAN. Each night, you have a good bite of your Peyote and the real nature of the goat of your choice will be revealed."
+    solicit: "It is now NIGHT %{night}: say !see <nickname> to me to reveal their role."
+    awake:
+      - "You're not high enough - this is no time for visions!"
+      - "You're not high enough - next time make sure you take more Peyote!"
+    killed: "While dreaming vividly about %{target} you get viciously torn to pieces. You took too much Peyote to see that coming!"
+    target:
+      confirm: "%{target}'s identity will be revealed to you as you wake."
+      change: "You have changed the target of tonight's vision to %{target}."
+    reveal:
+      dead: "You have a vision of %{target}'s body, twisted, broken and bloody. A chupacabra got there before you."
+      wolf: "You have a dream about %{target} wearing a new fur coat. You've found a CHUPACABRA."
+      vigilante: "You have a dream about %{target} carving a Z in a tree. It looks like %{target} is a fellow villager."
+      normal: 
+        - "You have a dream about %{target} drinking Tequila. It looks like %{target} is a fellow villager."
+        - "You have a dream about %{target} eating tacos. It looks like %{target} is a fellow villager."
+  vigilante:
+    command: "strike"
+    role:
+      l1: "You are EL ZORRO. You wear a cool mask and a nice sombrero, though your sword technique has to be improved. Also, what's with the cape?"
+      l2: "Once during any DAY you can say !strike <player> (in the channel, not privately) to immediately kill that player and end the day. "
+    shoot:
+      self:
+        success: "%{vigilante} pulls out a sword and commits suicide."
+        fail: "%{vigilante} pulls out a sword and tries to commit suicide but some pendejo changed it for a wood stick and now it's pretty useless."
+      other:
+        success: "%{vigilante} pulls out a sword and strikes %{target}"
+        fail: "%{vigilante} pulls out a sword and tries to strike %{target}, but the sword gets stuck in the scabbard, so %{target} is safe."
+    reaction:
+      other: "The villagers, despite their shock at the sudden discovery of swords and ridiculous outfits, shuffle forward to look at %{target}'s fallen body..."
+    reveal:
+      self: "%{vigilante}'s single silver bullet was put to waste in its maker's skull instead of a chupacabra."
+      wolf:
+        l1: "... and jump back in horror as %{target} lets out a buttock-clenching death-scream!"
+        l2: "%{vigilante}'s sword found its true home. %{target} was a chupacabra!"
+      seer:
+        l1: "... and a jingle sound cuts through the silence as divinity horns and bells fall from %{target}'s poncho."
+        l2: "%{vigilante} just stroke the shaman! What rotten luck."
+      normal:
+        l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
+        l2: "%{vigilante}'s sword was wasted on %{target} - a fellow villager."
+    over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
