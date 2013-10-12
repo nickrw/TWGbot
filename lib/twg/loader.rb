@@ -1,6 +1,4 @@
 require 'twg/core'
-require 'twg/seer'
-require 'twg/vigilante'
 
 module TWG
   class Loader
@@ -16,16 +14,14 @@ module TWG
 
     def initialize(*args)
       super
-      @pluggable = {
-        'seer' => TWG::Seer,
-        'vigilante' => TWG::Vigilante
-      }
+      @pluggable = ['seer', 'vigilante', 'witch']
       @dir = File.expand_path '..', __FILE__
     end
 
     def list_plugins(m)
       m.reply "The following TWG plugins are available:"
-      @pluggable.each do |pname,klass|
+      @pluggable.each do |pname|
+        klass = name2klass(pname)
         message = "#{pname}: #{klass.description} "
         if loaded?(klass)
           message += Format(:green, "(enabled)")
@@ -46,7 +42,12 @@ module TWG
         m.reply "Cannot load/unload plugins while a game or game signup is in progress"
         return
       end
-      klass = @pluggable[plugin]
+      klass = nil
+      plugin.downcase!
+      if @pluggable.include?(plugin)
+        klass = name2klass(plugin)
+        debug "Identified plugin class to toggle: #{klass.to_s}"
+      end
       if not klass.nil?
         begin
           if loaded?(klass)
@@ -162,18 +163,36 @@ module TWG
       if not core.nil?
         eligable.push(core)
       end
-      unloaded.unshift(TWG::Core)
 
       punload eligable
+      unloaded.unshift(TWG::Core)
+
+      fake_plugins = [TWG::Plugin, TWG::Lang, TWG::LangException, TWG::Game, TWG::Helpers]
+      other_constants = []
+
+      TWG.constants.each do |constant|
+        c = TWG.const_get(constant)
+        next if unloaded.include?(c)
+        next if fake_plugins.include?(c)
+        next if c == TWG::Loader
+        other_constants << c
+      end
 
       fake_plugins_str = []
-      fake_plugins = [TWG::Plugin, TWG::Lang, TWG::Game, TWG::Helpers]
       fake_plugins.each { |pl| fake_plugins_str << pl.to_s }
       fake_plugins_str.reverse!
       unloaded.each { |pl| fake_plugins_str << pl.to_s }
+      other_constants_str = []
+      other_constants.each { |pl| other_constants_str << pl.to_s }
+      other_constants_str.reverse!
       destroy_plugin(unloaded)
+      destroy_plugin(other_constants)
       destroy_plugin(fake_plugins)
-      load_plugin_from_file(fake_plugins_str)
+      begin
+        load_plugin_from_file(fake_plugins_str)
+        load_plugin_from_file(other_constants_str)
+      rescue ArgumentError
+      end
 
       pload unloaded
 
@@ -193,13 +212,18 @@ module TWG
 
     def name2klass(plugin_name)
       plugin_name.strip!
-      if not plugin_name =~ /^TWG::/
-        plugin = 'TWG::' + plugin_name.capitalize
+      if plugin_name =~ /^TWG::/
+        plugin_fq = plugin_name
+        plugin = plugin_name.sub(/^TWG::/,'').capitalize
+      else
+        plugin_fq = 'TWG::' + plugin_name.capitalize
+        plugin = plugin_name.capitalize
       end
       begin
         TWG.const_get(plugin)
       rescue
-        load_plugin_from_file(plugin)
+        debug "Couldn't find object: #{plugin_fq}"
+        load_plugin_from_file(plugin_fq)
       end
     end
 
@@ -213,14 +237,15 @@ module TWG
       else
         klass_string = klass
       end
-      filepart = klass_string.sub(/^TWG::/,'').downcase
+      constpart = klass_string.sub(/^TWG::/,'')
+      filepart = constpart.downcase
       filename = File.join(@dir, filepart + '.rb')
       debug "Loading file: #{filename}"
       if not File.exist?(filename)
         raise ArgumentError, "Plugin does not exist"
       end
       load filename
-      TWG.const_get(filepart.capitalize)
+      TWG.const_get(constpart)
     end
 
     def destroy_plugin(klass)
