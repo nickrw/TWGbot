@@ -62,7 +62,7 @@ default:
   day:
     enter:
       solicit:
-        nokill: "It is now DAY %{day}: Talk to your fellow villagers about this unusual and eery lupine silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        nokill: "It is now DAY %{day}: You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
           - "It is now DAY %{day}: Gossip with your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
@@ -209,10 +209,13 @@ default:
     over: "The villagers all agree that a bit of a sit down and an early bedtime is in order after the day's exciting events"
   witch:
     command: "save"
-    role: "You are a WITCH!"
-    save: "You got there just in time"
+    role: "You are a WITCH! You will find out who has been attacked by a wolf each night, and can choose to save them once during the game."
     prepare: "It is now NIGHT %{night}. Once the wolf vote is over you will have only 10 seconds to decide if you want to save the victim (by saying '!save')"
     tensecs: "It's almost dawn - get ready!"
+    wolfvoteover: "Time's up! voting is now closed."
+    peaceful: "You've been listening closely for any wolfish activity, but it's been peaceful all night."
+    comingforyou: "Hold on. Wait. What was that noise? It sounds like it might... oh. Oh no. No no no."
+    toolate: "The door to your humble villager cabin bursts open. What's on the menu tonight? You. You are."
     choose:
       one: "You hear noises coming from %{target}'s cabin."
       other: "You hear noises coming from the cabins of: %{target}"
@@ -231,6 +234,8 @@ default:
       success: "Phew. You chose to run towards %{player}, and that's exactly where the furry death went too."
       fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
       failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
+    channelsuccess: "Everyone wakes and gathers at the village green to find out who has been viciously savaged during the night. It seems like %{saved} might have been taken, until they wander in late, with a bit of a limp and a black eye."
+    privatesuccess: "You were attacked by a wolf last night. All was lost. You were walking towards the light when suddenly you hear %{witch}'s voice. %{witch} saved you!"
   invite:
     command: "invite"
     spam: "%{target} has been invited to join the channel recently, try again later."

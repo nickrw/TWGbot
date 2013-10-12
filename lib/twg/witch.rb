@@ -52,7 +52,6 @@ module TWG
     def witch_get_set(m)
       return if @game.nil?
       return if @witch.nil?
-      unlock
       User(@witch).send @lang.t('witch.tensecs', :night => @game.iteration.to_s)
     end
 
@@ -73,7 +72,7 @@ module TWG
       # and that further votes will be ignored
       wolves = players_of_role(:wolf)
       wolves.each do |wolf|
-        User(wolf).send(@lang.t('witch.wolfvoteover')) #I18N TODO
+        User(wolf).send(@lang.t('witch.wolfvoteover'))
       end
 
       if @witch.nil?
@@ -91,11 +90,11 @@ module TWG
       end
 
       if @target.count == 1 && @target.include?(@witch)
-        User(@witch).send @lang.t('witch.peaceful') #I18N TODO
+        User(@witch).send @lang.t('witch.peaceful')
         sleep 5
-        User(@witch).send @lang.t('witch.comingforyou') #I18N TODO
+        User(@witch).send @lang.t('witch.comingforyou')
         sleep 3
-        User(@witch).send @lang.t('witch.toolate') #I18N TODO
+        User(@witch).send @lang.t('witch.toolate')
         sleep 2
         reset
         return
@@ -152,14 +151,18 @@ module TWG
           hook_sync(:hook_night_votes_applied,nil,:witch)
           @game.next_state
           if target.empty? && w != witchwas
-            chansay('witch.channelsuccess', # I18N TODO
+            chansay('witch.channelsuccess',
               :saved => @saved
             )
+            User(@saved).send(@lang.t('witch.privatesuccess',
+              :witch => witchwas
+            ))
           end
           unless @core.check_victory_conditions
             hook_async(:enter_day, 0, nil, nil)
           end
         end
+        reset
       end
     end
 
@@ -184,7 +187,6 @@ module TWG
           target = @target[0]
           @saved = target
           demote
-          reset
           m.reply @lang.t('witch.unambiguous',
                           :target => target
                          )
@@ -214,7 +216,6 @@ module TWG
             @game.clear_votes
             @saved = save
             demote
-            reset
             m.reply @lang.t('witch.ambiguous.success', :player => save)
           else
             # Rig the votes so it won't be a tiebreak when #apply_votes gets
@@ -225,7 +226,6 @@ module TWG
             end
             @game.vote(:witch, kill, :night)
             demote
-            reset
             m.reply @lang.t(lstr, :save => save, :target => kill)
           end
 
@@ -237,7 +237,7 @@ module TWG
     def nickchange(m)
       oldname = m.user.last_nick.to_s
       newname = m.user.to_s
-      @seer = witch if @seer == witch
+      @witch = newname if @witch == oldname
       if @target.class == Array
         if @target.include?(oldname)
           @target.delete(oldname)
@@ -260,6 +260,7 @@ module TWG
       if w && @game.participants[w] == :witch
         @game.participants[w] = :normal
       end
+      @witch = nil
     end
 
     def reset
