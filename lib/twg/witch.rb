@@ -26,7 +26,7 @@ module TWG
 
     def pick_witch(m)
       reset
-      odds = config["odds_per_player"] ||= 100 #FIXME
+      odds = config["odds_per_player"] ||= 5
       pick_special(:witch, odds)
     end
 
