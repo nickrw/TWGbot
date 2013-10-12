@@ -45,7 +45,13 @@ module TWG
       # change, given that we have changed the balance.
       if [:wolveswin, :humanswin].include?(@game.check_victory_condition)
         # cancel any pending state change hooks which would continue the game
-        [:enter_night, :exit_night, :enter_day, :exit_day].each do |hook|
+        [
+          :enter_night,
+          :exit_night,
+          :enter_day,
+          :exit_day,
+          :warn_vote_timeout
+         ].each do |hook|
           hook_cancel(hook)
         end
         # Advanced the game state and trigger the core's victory condition
