@@ -552,15 +552,6 @@ module TWG
       Channel(config["game_channel"]).voice(uname)
     end
 
-    def solicit_votes
-      return if @game.nil?
-      if @game.state == :night
-        solicit_wolf_votes
-      elsif @game.state == :day
-        solicit_human_votes
-      end
-    end
-
     def solicit_wolf_votes
       return if @game.nil?
       alive = @game.wolves_alive
