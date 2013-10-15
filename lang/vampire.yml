@@ -74,7 +74,7 @@ vampire:
           - "...it bursts into flames. You have killed the vampire."
         normal:
           - "...but nothing unusual happens and the body begins to bleed warm red blood; you have killed a fellow survivor."
-          - "...but all that is found is a belly full of fish and chips. This is no vampire.
+          - "...but all that is found is a belly full of fish and chips. This is no vampire."
     almostready:
       yet:
         - "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
@@ -204,7 +204,7 @@ vampire:
     wolfvoteover: "Time's up! voting is now closed."
     peaceful: "You've been listening closely for any vampire activity, but it's been peaceful all night."
     comingforyou: "Hold on. Wait. What was that noise? It sounds like it might... oh. Oh no. No no no."
-    toolate: "The white sheet drapped across the pews is ripped apart. What's on the menu tonight? You. You are."
+    toolate: "The white sheet draped across the pews is ripped apart. What's on the menu tonight? You. You are."
     choose:
       one: "You hear noises coming from where %{target} is sleeping."
       other: "You hear some very odd noises coming from %{target}"
