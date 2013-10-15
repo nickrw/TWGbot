@@ -198,16 +198,16 @@ vampire:
     over: "The survivors all agree that a bit of a sit down, a glass of sherry and an early bedtime is in order after the day's exciting events"
   witch:
     command: "save"
-    role: "You are a WITCH! You will find out who has been attacked by a vampire each night, and can choose to save them once during the game."
+    role: "You are a PRIEST! Each night divine intervention allows you to find out who has been attacked by a vampire, you can save someone only once during the game."
     prepare: "It is now NIGHT %{night}. Once the vampire vote is over you will have only 10 seconds to decide if you want to save the victim (by saying '!save')"
     tensecs: "It's almost dawn - get ready!"
     wolfvoteover: "Time's up! voting is now closed."
-    peaceful: "You've been listening closely for any vampire activity, but it's been peaceful all night."
-    comingforyou: "Hold on. Wait. What was that noise? It sounds like it might... oh. Oh no. No no no."
+    peaceful: "You've been listening closely for a sign, but it's been peaceful all night."
+    comingforyou: "Suddenly a gust of wind howls past and a picutre falls at your feet, a picture of you!"
     toolate: "The white sheet draped across the pews is ripped apart. What's on the menu tonight? You. You are."
     choose:
-      one: "You hear noises coming from where %{target} is sleeping."
-      other: "You hear some very odd noises coming from %{target}"
+      one: "You spill a glass of water, a brief image of %{target} seems to appear on the floor."
+      other: "Whilst smoking a cigarette quietly in the corner, the smoke clearly forms an image of %{target}."
       instruct:
         one: "Say '!save' if you wish to save this player, quickly!"
         other: "Say '!save <playername>' to choose which player to visit. Either could by the real target. Saying '!save on its own will pick randomly."
