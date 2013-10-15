@@ -51,7 +51,7 @@ vampire:
   day:
     enter:
       solicit:
-        nokill: "It is now DAY %{day}: Talk to your fellow survivors about this unusual and eery lupine silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        nokill: "It is now DAY %{day}: Talk to your fellow survivors about this unusual and eery silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
           - "It is now DAY %{day}: Gossip with your fellow survivors about %{killed}'s timely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow survivors about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
@@ -115,15 +115,15 @@ vampire:
       dead:
         - "Good news %{voter}, %{votee} is already dead and you couldn't be happier."
         - "Good news %{voter}, %{votee} is already dead, time for a glass of champange!"
+        - "Your good friend %{votee} is dead, %{voter}."
         - "%{voter} has volunteered to burn %{votee}'s body."
         - "%{voter} kisses %{votee}'s cheek a final goodbye."
-        - "%{voter} is a necrophiliac and attempts to do some odd things to the body of %{votee}."
         - "When no-one is looking, %{voter} goes through the pockets of %{votee} and nabs their wallet and phone."
         - "%{voter} grabs the bag of %{votee} but only finds a note book containing poems."
     night:
       vote: "You have voted for %{votee} to be killed tonight"
       changed: "You have changed your vote to %{votee}"
-      abstain: "You have taken the Überwalt League of Temperance (werewolf division) black ribbon"
+      abstain: "You have decided to try and find some pigeons for dinner rather than the lovely warm blood of a fresh human."
       dead: "%{votee} is already dead you muppet"
       samerole: "You can't vote for one of your own kind!"
       self: "There is an error between the seat and the keyboard!"
@@ -155,8 +155,8 @@ vampire:
     role: "You are the SEER. Each night you can have the role of a player of your choice revealed."
     solicit: "It is now NIGHT %{night}: say !see <nickname> to me to reveal their role."
     awake:
-      - "You're wide awake - this is no time for visions!"
-      - "You're wide awake - you're not a shift worker!"
+      - "You're wide awake, meditation now would cause suspicion."
+      - "You're wide awake!"
     killed: "While dreaming vividly about %{target}, you are turned into a human happy meal. Your magic 8 ball didn't see that one coming!"
     target:
       confirm: "%{target}'s identity will be revealed to you as you wake."
@@ -180,9 +180,9 @@ vampire:
         fail: "%{vigilante} pulls out a crossbow and tries to commit suicide but manages to just shoot themself in the foot. %{vigilante} can't even kill themself properly..."
       other:
         success: "%{vigilante} pulls out a crossbow and shoots %{target}"
-        fail: "%{vigilante} pulls out a crossbow and tries to shoot %{target}, but the arrow wobbles off course and misses %{target}."
+        fail: "%{vigilante} pulls out a crossbow and tries to shoot %{target}, but the arrow wobbles off course, missing %{target} and breaking against a wall."
     reaction:
-      self: "The survivors had known that %{target} was having issues in the vampires infested world and frankly don't really care about %{target}'s death."
+      self: "The survivors had known that %{target} was having issues in the vampire infested world and frankly don't really care about %{target}'s death."
       other: "The survivors, despite their shock at the sudden discovery of a crossbow, shuffle forward to look at %{target}'s fallen body..."
     reveal:
       self: "%{vigilante}'s single arrow was put to waste in its maker's heart instead of a vampire."
@@ -191,11 +191,40 @@ vampire:
         l2: "%{vigilante}'s single arrow found its true home in the heart of %{target}!"
       seer:
         l1: "... and a tinkling crash cuts through the silence as a crystal ball rolls from %{target}'s sleeve."
-        l2: "%{vigilante} just shot the seer! What rotten luck."
+        l2: "%{vigilante} just killed the seer! What hope now remains?"
       normal:
         l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
         l2: "%{vigilante}'s single arrow was wasted on %{target} - a fellow survivor."
     over: "The survivors all agree that a bit of a sit down, a glass of sherry and an early bedtime is in order after the day's exciting events"
+  witch:
+    command: "save"
+    role: "You are a WITCH! You will find out who has been attacked by a vampire each night, and can choose to save them once during the game."
+    prepare: "It is now NIGHT %{night}. Once the vampire vote is over you will have only 10 seconds to decide if you want to save the victim (by saying '!save')"
+    tensecs: "It's almost dawn - get ready!"
+    wolfvoteover: "Time's up! voting is now closed."
+    peaceful: "You've been listening closely for any vampire activity, but it's been peaceful all night."
+    comingforyou: "Hold on. Wait. What was that noise? It sounds like it might... oh. Oh no. No no no."
+    toolate: "The white sheet drapped across the pews is ripped apart. What's on the menu tonight? You. You are."
+    choose:
+      one: "You hear noises coming from where %{target} is sleeping."
+      other: "You hear some very odd noises coming from %{target}"
+      instruct:
+        one: "Say '!save' if you wish to save this player, quickly!"
+        other: "Say '!save <playername>' to choose which player to visit. Either could by the real target. Saying '!save on its own will pick randomly."
+    choosedanger:
+      one: "You hear noises coming from %{target}, and get the horrible feeling something is stalking you too."
+      other: "You hear noises coming from: %{target}, and get the horrible feeling something is creeping up on you too."
+      instruct:
+        one: "Say '!save' if you wish to save this player. There's a 50/50 chance you're going to die first."
+        other: "Say '!save <playername>' to choose which player to save. Either could by the real target, and so could you. Saying '!save on its own will pick randomly."
+    nottarget: "'%{player}' isn't in danger here! Do you not understand the gravity of the situation?"
+    unambiguous: "Phew. You got there just in time to clean up %{target}'s bite wounds."
+    ambiguous:
+      success: "Phew. You chose to run towards %{player}, and that's exactly where the thirsty vampire was heading for a meal."
+      fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
+      failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
+    channelsuccess: "Everyone wakes and gathers at the village green to find out who has been viciously savaged during the night. It seems like %{saved} might have been taken, until they wander in late, with a few scratches and small bite marks."
+    privatesuccess: "You were attacked by a vampire last night. All was lost. You were walking towards the light when suddenly you hear %{witch}'s voice. %{witch} saved you!"
   invite:
     command: "invite"
     spam: "%{target} has been invited to join the channel recently, try again later."
