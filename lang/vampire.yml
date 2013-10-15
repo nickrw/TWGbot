@@ -223,7 +223,7 @@ vampire:
       success: "Phew. You chose to run towards %{player}, and that's exactly where the thirsty vampire was heading for a meal."
       fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
       failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
-    channelsuccess: "Everyone wakes and gathers at the church alter to find out who has been viciously savaged during the night. It seems like %{saved} might have been taken, until they wander in late, with a few scratches and small bite marks."
+    channelsuccess: "Everyone wakes and gathers at the church altar to find out who has been viciously savaged during the night. It seems like %{saved} might have been taken, until they wander in late, with a few scratches and small bite marks."
     privatesuccess: "You were attacked by a vampire last night. All was lost. You were walking towards the light when suddenly you hear %{witch}'s voice. %{witch} saved you!"
   invite:
     command: "invite"
