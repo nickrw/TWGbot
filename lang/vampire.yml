@@ -68,7 +68,7 @@ vampire:
       suspense:
         - "Everybody turns slowly toward %{killed}, who backs into a corner. With a savage array of kicks and punches %{killed} is no more. The clergy members make sure with a stake to the heart..."
         - "Everybody turns toward %{killed}. The end is quick but certainly not painless - %{killed} is dead. The clergy members use a mirror to reflect sunlight onto the body..."
-        - "%{killed} tries to flee, evacuating their bowls on the way. The spry mob is too quick - %{killed} is dead. The body is doused in holy water..."
+        - "%{killed} tries to flee, evacuating their bowels on the way. The spry mob is too quick - %{killed} is dead. The body is doused in holy water..."
       result:
         wolf:
           - "...it bursts into flames. You have killed the vampire."
