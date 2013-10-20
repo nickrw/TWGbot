@@ -14,12 +14,17 @@ module TWG
       # A "spam list" kept in memory to prevent someone repeatedly inviting
       # the same person over and over. Names stay in the list for an hour.
       @recent_invitees = Array.new
+      @blacklist = Array.new
+      config["blacklist"].each do |name|
+        @blacklist << name.irc_downcase(:rfc1459)
+      end
     end
 
     def invite(m, name)
       return if not m.channel?
       n = clean(name)
-      return if n == m.user.nick
+      nlower = n.irc_downcase(:rfc1459)
+      return if nlower == m.user.nick.irc_downcase(:rfc1459)
 
       # Don't allow invite spamming
       if @recent_invitees.include?(n)
@@ -41,8 +46,13 @@ module TWG
       end
 
       # Check the user isn't already in the channel
-      user = User(n)
+      user = User(nlower)
       return if m.channel.users.keys.include?(user)
+
+      if @blacklist.include?(nlower)
+        m.reply @lang.t('invite.blacklisted', :target => n), true
+        return
+      end
 
       # Check there is a user connected by this name
       user.refresh
@@ -52,12 +62,12 @@ module TWG
       end
 
       # Invite the user and add their name to the spam list
-      m.channel.invite(n)
-      @recent_invitees << n
+      m.channel.invite(nlower)
+      @recent_invitees << nlower
       m.reply @lang.t('invite.confirm', :target => n), true
 
       # Schedule removal of the name from the spam list
-      hook_async(:hook_delete_invitee, 3600, nil, n)
+      hook_async(:hook_delete_invitee, 3600, nil, nlower)
     end
 
     def delete_invitee(m, name)

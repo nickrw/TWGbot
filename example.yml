@@ -37,3 +37,8 @@ servers:
         class: "TWG::Vigilante"
         options:
             odds_per_player: 5
+      -
+        class: "TWG::Invite"
+        options:
+            blacklist:
+              - "playername"

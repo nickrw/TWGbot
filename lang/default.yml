@@ -241,6 +241,7 @@ default:
     spam: "%{target} has been invited to join the channel recently, try again later."
     noops: "Can't invite players, I don't have channel ops."
     ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."
+    blacklisted: "%{target} is on the !invite blacklist"
     nouser: "No user called %{target} online."
     confirm: "I have invited %{target} to join the channel."
   resign:
