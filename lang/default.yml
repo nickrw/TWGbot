@@ -248,3 +248,9 @@ default:
     command: "resign"
     announce: "%{player} has committed suicide rather than harm a soul in the village."
     unjoined: "%{player} has left the game (%{count}/%{min})"
+  moretime:
+    command: "moretime"
+    confirm:
+      one: "An extra %{count} second has been added to the registration window"
+      other: "An extra %{count} seconds have been added to the registration window"
+    toohigh: "Can't add more than %{limit} total extra seconds to the registration window"

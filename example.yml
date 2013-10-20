@@ -42,3 +42,7 @@ servers:
         options:
             blacklist:
               - "playername"
+      -
+        class: "TWG::Moretime"
+        options:
+            seconds: 120

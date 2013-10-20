@@ -318,6 +318,7 @@ module TWG
         voice(m.user)
         hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
         hook_async(:complete_startup, config["game_timers"]["registration"])
+        hook_async(:signup_started)
       end
     end
 
