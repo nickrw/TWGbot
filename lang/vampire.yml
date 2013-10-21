@@ -39,7 +39,7 @@ vampire:
       - "Your tan is the shade of a mahogany dining table."
       - "You are a vegetarian and have no interest in meat or human blood."
       - "Despite your yearning to become a vampire, you have not been bitten and are still a warm blooded human."
-      - "Like the Twighlight saga, you are soppy, limp and dull...certainly not the ingrediants of a savage vampire."
+      - "Like the Twighlight saga, you are soppy, limp and dull...certainly not the ingredients of a savage vampire."
     wolf:
       one:
         - "You are a lone VAMPIRE."
@@ -51,29 +51,29 @@ vampire:
   day:
     enter:
       solicit:
-        nokill: "It is now DAY %{day}: Talk to your fellow survivors about this unusual and eery silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+        nokill: "It is now DAY %{day}: Talk to your fellow clergy members about this unusual and eery silence! You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
         kill:
-          - "It is now DAY %{day}: Gossip with your fellow survivors about %{killed}'s timely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow survivors about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow survivors about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Gossip with your fellow clergy members about %{killed}'s timely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow clergy members about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow clergy members about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
     exit:
       novotes:
         - "Voting over! No votes were cast."
         - "Voting over! No votes were cast. I don't know why I even bother."
-      abstain: "Voting over! The survivors voted for peace... ლ(ಠ益ಠლ) That seems pretty silly."
+      abstain: "Voting over! The clergy members voted for peace... ლ(ಠ益ಠლ) That seems pretty silly."
       lynch:
         - "Voting over! The baying mob has spoken - %{killed} will die!"
         - "Voting over! The raging mob reaches agreement - %{killed} must die!"
         - "Voting over! A screaming mob wants %{killed} dead!"
       suspense:
-        - "Everybody turns slowly toward %{killed}, who backs into a corner. With a savage array of kicks and punches %{killed} is no more. The survivors make sure with a stake to the heart..."
-        - "Everybody turns toward %{killed}. The end is quick but certainly not painless - %{killed} is dead. The survivors use a mirror to reflect sunlight onto the body..."
-        - "%{killed} tries to flee, evacuating their bowls on the way. The spry mob is too quick - %{killed} is dead. The body is doused in holy water..."
+        - "Everybody turns slowly toward %{killed}, who backs into a corner. With a savage array of kicks and punches %{killed} is no more. The clergy members make sure with a stake to the heart..."
+        - "Everybody turns toward %{killed}. The end is quick but certainly not painless - %{killed} is dead. The clergy members use a mirror to reflect sunlight onto the body..."
+        - "%{killed} tries to flee, evacuating their bowels on the way. The spry mob is too quick - %{killed} is dead. The body is doused in holy water..."
       result:
         wolf:
           - "...it bursts into flames. You have killed the vampire."
         normal:
-          - "...but nothing unusual happens and the body begins to bleed warm red blood; you have killed a fellow survivor."
+          - "...but nothing unusual happens and the body begins to bleed warm red blood; you have killed a fellow clergy member."
           - "...but all that is found is a belly full of fish and chips. This is no vampire."
     almostready:
       yet:
@@ -88,18 +88,18 @@ vampire:
         - "Voting closes in %{secs} seconds! Everybody has voted. Don't even think about changing your vote."
   night:
     enter:
-      - "A chilly mist descends outside the church, it is now NIGHT %{night}. Survivors, sleep as best you can. Vampires, you have %{secs} seconds to decide who to drink dry."
-      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Survivors, go to bed. Vampires, you have %{secs} seconds to decide who is on the menu tonight."
-      - "It is now NIGHT %{night}. The church candles flicker in a slight draft. Survivors, sleep soundly. Vampires, you have %{secs} seconds to decide who to pounce upon."
-      - "It is now NIGHT %{night}. It's unseasonably warm. Survivors, hold each other tight, get some sleep. Vampires, you have %{secs} seconds to decide whose neck looks tastiest."
+      - "A chilly mist descends outside the church, it is now NIGHT %{night}. Clergy members, sleep as best you can. Vampires, you have %{secs} seconds to decide who to drink dry."
+      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Clergy members, go to bed. Vampires, you have %{secs} seconds to decide who is on the menu tonight."
+      - "It is now NIGHT %{night}. The church candles flicker in a slight draft. Clergy members, sleep soundly. Vampires, you have %{secs} seconds to decide who to pounce upon."
+      - "It is now NIGHT %{night}. It's unseasonably warm. Clergy members, hold each other tight, get some sleep. Vampires, you have %{secs} seconds to decide whose neck looks tastiest."
     solicit:
       one: "It is now NIGHT %{night}: To choose who will be dinner tonight say !vote <nickname> to me. You can !vote again if you change your mind."
       other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
     exit:
       body:
-        - "A bloodcurdling scream sounds throughout the church. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a survivor, is dead."
-        - "A bloodcurdling scream breaks the peaceful morning. People saunter over, yawning, to see the shredded neck of %{killed}. %{killed}, a survivor, is dead."
-        - "A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a survivor, is dead."
+        - "A bloodcurdling scream sounds throughout the church. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a clergy member, is dead."
+        - "A bloodcurdling scream breaks the peaceful morning. People saunter over, yawning, to see the shredded neck of %{killed}. %{killed}, a clergy member, is dead."
+        - "A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a clergy member, is dead."
       nobody:
         - "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
         - "Everybody wakes, well rested. After some scouting around there's no sign of a body. Nobody was murdered during the night!"
@@ -137,11 +137,11 @@ vampire:
   victory:
     wolfreveal:
       one:
-        - "With a bloodcurdling scream, the vampire %{wolf}'s eyes light up and teeth glint in the candle light. The remaining survivors don't stand a chance."
-        - "%{wolf} turns to face the remaining survivors, wearing only a gleeful smile and some underwear. A very dangerous, pointy smile. Ya'll dead."
+        - "With a bloodcurdling scream, the vampire %{wolf}'s eyes light up and teeth glint in the candle light. The remaining clergy members don't stand a chance."
+        - "%{wolf} turns to face the remaining clergy members, wearing only a gleeful smile and some underwear. A very dangerous, pointy smile. Ya'll dead."
       other:
-        - "With a bloodcurdling scream, the %{count} remaining triumphant vampires show their teeth. The remaining survivors don't stand a chance."
-        - "The %{count} vampires grin toothily at each other. Such a pitiful lynch mob of survivors could never hope to take on multiple speedy vampires."
+        - "With a bloodcurdling scream, the %{count} remaining triumphant vampires show their teeth. The remaining clergy members don't stand a chance."
+        - "The %{count} vampires grin toothily at each other. Such a pitiful lynch mob of clergy members could never hope to take on multiple speedy vampires."
     wolf: "Game over! The lone vampire %{wolf} wins!"
     wolves:
       one: "Game over! The last remaining vampire %{wolves} wins!"
@@ -167,8 +167,8 @@ vampire:
     reveal:
       dead: "You have a vision of %{target}'s body, twisted, broken, with teeth marks in the neck. A vampire got there before you."
       wolf: "You have a dream about %{target} drinking a glass of warm human blood. You've found a VAMPIRE."
-      vigilante: "You have a dream about %{target} shooting. It looks like %{target} is a fellow survivor."
-      normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow survivor."
+      vigilante: "You have a dream about %{target} in medieval costume. It looks like %{target} is a fellow clergy member."
+      normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow clergy member."
   vigilante:
     command: "shoot"
     role:
@@ -182,8 +182,8 @@ vampire:
         success: "%{vigilante} pulls out a crossbow and shoots %{target}"
         fail: "%{vigilante} pulls out a crossbow and tries to shoot %{target}, but the arrow wobbles off course, missing %{target} and breaking against a wall."
     reaction:
-      self: "The survivors had known that %{target} was having issues in the vampire infested world and frankly don't really care about %{target}'s death."
-      other: "The survivors, despite their shock at the sudden discovery of a crossbow, shuffle forward to look at %{target}'s fallen body..."
+      self: "The clergy members had known that %{target} was having issues in the vampire infested world and frankly don't really care about %{target}'s death."
+      other: "The clergy members, despite their shock at the sudden discovery of a crossbow, shuffle forward to look at %{target}'s fallen body..."
     reveal:
       self: "%{vigilante}'s single arrow was put to waste in its maker's heart instead of a vampire."
       wolf:
@@ -194,8 +194,8 @@ vampire:
         l2: "%{vigilante} just killed the seer! What hope now remains?"
       normal:
         l1: "... the brave %{brave} steps forward and rolls %{target} over with their toe, but nothing happens."
-        l2: "%{vigilante}'s single arrow was wasted on %{target} - a fellow survivor."
-    over: "The survivors all agree that a bit of a sit down, a glass of sherry and an early bedtime is in order after the day's exciting events"
+        l2: "%{vigilante}'s single arrow was wasted on %{target} - a fellow clergy member."
+    over: "The clergy members all agree that a bit of a sit down, a glass of sherry and an early bedtime is in order after the day's exciting events"
   witch:
     command: "save"
     role: "You are a PRIEST! Each night divine intervention allows you to find out who has been attacked by a vampire, you can save someone only once during the game."
