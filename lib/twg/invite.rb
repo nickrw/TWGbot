@@ -14,8 +14,9 @@ module TWG
       # A "spam list" kept in memory to prevent someone repeatedly inviting
       # the same person over and over. Names stay in the list for an hour.
       @recent_invitees = Array.new
+      configbl = config["blacklist"] ||= Array.new
       @blacklist = Array.new
-      config["blacklist"].each do |name|
+      configbl.each do |name|
         @blacklist << name.irc_downcase(:rfc1459)
       end
     end
