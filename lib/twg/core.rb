@@ -205,7 +205,6 @@ module TWG
     end
 
     def votes(m)
-      return if !m.channel?
       return if @game.state != :day
       tiebreak = @game.apply_votes(false)
       defer = nil
