@@ -69,7 +69,7 @@ module TWG
         return
       end
       m.reply @lang.t 'lang.packs'
-      @lang.list.each do |pack, desc|
+      TWG::Lang.list.each do |pack, desc|
         message = "#{pack}: #{desc}"
         if @lang.pack == pack
           message = Format(:italic, message)
@@ -87,8 +87,10 @@ module TWG
       else
         return
       end
-      r = @lang.select(lang.to_sym)
-      if r.nil?
+      case @lang.select(lang.to_sym)
+      when :inactive
+        m.reply @lang.t('lang.inactive', {:lang => lang})
+      when :notfound
         m.reply @lang.t('lang.notfound', {:lang => lang})
       else
         @@lang = lang.to_sym
@@ -207,7 +209,6 @@ module TWG
     def votes(m)
       return if @game.state != :day
       tiebreak = @game.apply_votes(false)
-      defer = nil
       order = {}
       @game.votes.each do |votee,voters|
         next if voters.nil?

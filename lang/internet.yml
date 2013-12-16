@@ -1,5 +1,6 @@
 internet:
-  description: "The internet!"
+  lang:
+    description: "The internet!"
   author: "nj"
   general:
     ready: "Internet bot is now up and running! Say !start to start a new game."

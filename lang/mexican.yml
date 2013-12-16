@@ -1,6 +1,7 @@
 mexican:
-  description: "Arriba arriba! Tijuana Nights: el Chupacabras."
-  author: "phpeach with some help from verin and jesperht"
+  lang:
+    description: "Arriba arriba! Tijuana Nights: el Chupacabras."
+    author: "phpeach with some help from verin and jesperht"
   command:
     start: "start"
     vote: "vote"
@@ -9,10 +10,6 @@ mexican:
     join: "andale"
     lang: "lang"
     langs: "langs"
-  lang:
-    advertise: "While no game is running say !langs to see a list of available themes / languages."
-    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
-    notfound: "No language pack named '%{lang}' available."
   general:
     plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
     noops: "I require channel ops before starting a game."

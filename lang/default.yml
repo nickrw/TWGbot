@@ -1,5 +1,10 @@
 default:
-  description: "Bog standard werewolf game"
+  lang:
+    description: "Bog standard werewolf game"
+    advertise: "While no game is running say !langs to see a list of available themes / languages."
+    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    notfound: "No language pack named '%{lang}' available."
+    inactive: "Language pack '%{lang}' is currently unavailable."
   command:
     start: "start"
     vote: "vote"
@@ -8,10 +13,6 @@ default:
     join: "join"
     lang: "lang"
     langs: "langs"
-  lang:
-    advertise: "While no game is running say !langs to see a list of available themes / languages."
-    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
-    notfound: "No language pack named '%{lang}' available."
   general:
     plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
     noops: "I require channel ops before starting a game."
