@@ -145,8 +145,8 @@ vampire:
       other: "Game over! The remaining vampires (%{wolves}) win!"
       all: "Game over! The vamipres (%{wolves}) win!"
     human:
-      one: "Game over! The lone vampire %{wolves} was unable to decive the humans."
-      other: "Game over! The vampire (%{wolves}) were unable to decive the humans."
+      one: "Game over! The lone vampire %{wolves} was unable to deceive the humans."
+      other: "Game over! The vampire (%{wolves}) were unable to deceive the humans."
   seer:
     command: "see"
     role: "You are the SEER. Each night you can have the role of a player of your choice revealed."
