@@ -18,8 +18,11 @@ module TWG
 
     def initialize(*args)
       super
-      command = Regexp.new(@lang.t('witch.command') + "(?: ([^ ]+))?$")
-      self.class.match(command, :method => :witch_save)
+      commands = @lang.t_array('witch.command')
+      commands.each do |command|
+        command = Regexp.new(command + "(?: ([^ ]+))?$")
+        self.class.match(command, :method => :witch_save)
+      end
       __register_matchers
       reset
     end

@@ -8,8 +8,11 @@ module TWG
 
     def initialize(*args)
       super
-      command = Regexp.new(@lang.t('invite.command') + " ([^ ]+)$")
-      self.class.match(command, :method => :invite)
+      commands = @lang.t_array('invite.command')
+      commands.each do |command|
+        command = Regexp.new(command + " ([^ ]+)$")
+        self.class.match(command, :method => :invite)
+      end
       __register_matchers
       # A "spam list" kept in memory to prevent someone repeatedly inviting
       # the same person over and over. Names stay in the list for an hour.

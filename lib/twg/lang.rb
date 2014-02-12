@@ -103,6 +103,27 @@ module TWG
 
     end
 
+    def t_array(key, kwargs={})
+      tr = safe_translate(key, kwargs.merge({:locale => @pack}))
+
+      case tr
+      when String
+        return [tr]
+
+      when Array
+        begin
+          # I18n doesn't interpolate if key returns an array
+          return tr.map { |entry| I18n.interpolate(entry, kwargs) }
+        rescue I18n::MissingInterpolationArgument => e
+          return "Translation error: #{e.message}"
+        end
+
+      else
+        return "Translation error: unexpected class returned: #{tr.class}"
+
+      end
+    end
+
     private
 
     def safe_translate(key, kwargs={})

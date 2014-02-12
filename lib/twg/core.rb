@@ -34,18 +34,20 @@ module TWG
       @lang = TWG::Lang.new(@@lang)
 
       commands = {
-        @lang.t('command.start') => :start,
-        Regexp.new(@lang.t('command.vote') + " ([^ ]+)(.*)?$") => :vote,
-        Regexp.new(@lang.t('command.abstain') + "( .*)?$") => :abstain,
-        @lang.t('command.votes') => :votes,
-        @lang.t('command.join') => :join,
-        Regexp.new(@lang.t('command.join') + " ([^ ]+)$") => :forcejoin,
-        @lang.t('command.langs') => :langlist,
-        Regexp.new(@lang.t('command.lang') + " ([^ ]+)$") => :selectlang
+        :start      => @lang.t_array('command.start'),
+        :vote       => @lang.t_array('command.vote').map{|c| Regexp.new(c + " ([^ ]+)(.*)?$") },
+        :abstain    => @lang.t_array('command.abstain').map{|c| Regexp.new(c + "( .*)?$") },
+        :votes      => @lang.t_array('command.votes'),
+        :join       => @lang.t_array('command.join'),
+        :forcejoin  => @lang.t_array('command.join').map{|c| Regexp.new(c + " ([^ ]+)$") },
+        :langlist   => @lang.t_array('command.langs'),
+        :selectlang => @lang.t_array('command.lang').map{|c| Regexp.new(c + " ([^ ]+)$") }
       }
 
-      commands.each do |pattern,method|
-        self.class.match(pattern, :method => method)
+      commands.each do |method,patterns|
+        patterns.each do |pattern|
+          self.class.match(pattern, :method => method)
+        end
       end
       __register_matchers
 

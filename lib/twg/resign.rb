@@ -10,7 +10,10 @@ module TWG
 
     def initialize(*args)
       super
-      self.class.match(@lang.t('resign.command'), :method => :resign)
+      commands = @lang.t_array('resign.command')
+      commands.each do |command|
+        self.class.match(command, :method => :resign)
+      end
       __register_matchers
     end
 

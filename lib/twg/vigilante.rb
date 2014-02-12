@@ -12,8 +12,11 @@ module TWG
 
     def initialize(*args)
       super
-      command = Regexp.new(@lang.t('vigilante.command') + " ([^ ]+)(.*)?$")
-      self.class.match(command, :method => :shoot)
+      commands = @lang.t_array('vigilante.command')
+      commands.each do |command|
+        command = Regexp.new(command + " ([^ ]+)(.*)?$")
+        self.class.match(command, :method => :shoot)
+      end
       __register_matchers
     end
 

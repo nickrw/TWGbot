@@ -12,10 +12,14 @@ module TWG
 
     def initialize(*args)
       super
-      commandwith = Regexp.new(@lang.t('moretime.command') + " ([0-9]+)")
-      commandwithout = Regexp.new(@lang.t('moretime.command') + " ?$")
-      self.class.match(commandwith, :method => :moretime)
-      self.class.match(commandwithout, :method => :moretime)
+      commands = [
+        @lang.t_array('moretime.command').map{|c| Regexp.new(c + " ([0-9]+)") },
+        @lang.t_array('moretime.command').map{|c| Regexp.new(c + " ?$") }
+      ]
+      commands.flatten!
+      commands.each do |command|
+      self.class.match(command, :method => :moretime)
+      end
       __register_matchers
       @signup = @coreconfig["game_timers"]["registration"]
       @additional = config["seconds"] ||= 120

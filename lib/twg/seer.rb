@@ -15,8 +15,11 @@ module TWG
 
     def initialize(*args)
       super
-      command = Regexp.new(@lang.t('seer.command') + " ([^ ]+)$")
-      self.class.match(command, :method => :see)
+      commands = @lang.t_array('seer.command')
+      commands.each do |command|
+        command = Regexp.new(command + " ([^ ]+)$")
+        self.class.match(command, :method => :see)
+      end
       __register_matchers
       reset
     end

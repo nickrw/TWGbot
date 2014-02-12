@@ -6,11 +6,19 @@ default:
     notfound: "No language pack named '%{lang}' available."
     inactive: "Language pack '%{lang}' is currently unavailable."
   command:
-    start: "start"
+    start:
+      - "start"
+      - "again"
+      - "twg"
+      - "play"
+      - "gogo"
+      - "begin"
     vote: "vote"
     votes: "votes"
     abstain: "abstain"
-    join: "join"
+    join:
+      - "join"
+      - "fine"
     lang: "lang"
     langs: "langs"
   general:
@@ -182,7 +190,9 @@ default:
       vigilante: "You have a dream about %{target} shooting. It looks like %{target} is a fellow villager."
       normal: "You have a dream about %{target} shouting. It looks like %{target} is a fellow villager."
   vigilante:
-    command: "shoot"
+    command:
+      - "shoot"
+      - "pew"
     role:
       l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, though your metalworking skills aren't up to much."
       l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day. "
