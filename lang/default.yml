@@ -132,7 +132,6 @@ default:
       - "%{votee} is not a player in this game."
       - "%{votee} is not a player in this game. Keep up."
     day:
-      vote: "%{voter} voted for %{votee}"
       changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
       abstain: "%{voter} has voted not to lynch"
       dead:

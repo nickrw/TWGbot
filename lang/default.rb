@@ -10,6 +10,18 @@
       # twg.listed: true/false - show the language pack in the !langs list?
       :listed => true,
 
+    },
+    :vote => {
+      :day => {
+        :vote => lambda { |key, opts|
+          # Easter egg vote string. 1 in 200 chance of firing.
+          if rand(200) == 100
+            opts[:voter].upcase + " WILL END " + opts[:votee].upcase
+          else
+            opts[:voter] + " voted for " + opts[:votee]
+          end
+        }
+      }
     }
   }
 }
