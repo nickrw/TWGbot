@@ -126,6 +126,19 @@ another special role has already been assigned (other than a wolf).
   Normally the vigilante never survives the following Night as the villagers 
   know that the vigilante can't be the wolf.
 
+* *WITCH* (5%)
+
+  Same as VILLAGER, but with a single-use special ability. During the Night,
+  after the wolves have voted, the Witch will be told who has been attacked
+  and has a short (10 second) window of opportunity in which to save the
+  victim.
+
+  The bot will notify the Witch shortly before night ends, to try 
+
+  As the ability may only be used once the Witch has a choice to use
+  use the power immediately, or hope they are still alive later in the game
+  to save someone at a more opportune moment (e.g. a revealed seer).
+
 Languages and Themes
 ====================
 
