@@ -1,7 +1,7 @@
-Starcraft:
+changeling:
   lang:
     description: "Changeling Game"
-	author: "Josh"
+    author: "Josh"
     advertise: "While no game is running say !langs to see a list of available themes / languages."
     packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
     notfound: "No language pack named '%{lang}' available."
@@ -73,9 +73,9 @@ Starcraft:
       novotes:
         - "Voting over! Pacifist cowards, the lot of you!"
         - "Voting over! No votes were cast. I don't know why I even bother."
-      abstain: "Voting over! The Zealots aren’t really in the mood for murder... ?(????) But at what cost?"
+      abstain: "Voting over! The Zealots aren’t really in the mood for murder... But at what cost?"
       lynch:
-        - "Voting over! %{killed} WILL BE ENDED!
+        - "Voting over! %{killed} WILL BE ENDED!"
         - "Voting over! The council reaches agreement - %{killed} must die!"
         - "Voting over! A gang of murderous Zealots wants %{killed} dead!"
       suspense:
@@ -149,7 +149,7 @@ Starcraft:
       one:
         - "The Zealots here a terrible rumbling, and distant screeches. Everyone turns to see %{wolf} melt into a puddle of goop as their job comes to an end. The remaining Zealots don't stand a chance as the conclave is overrun with the swarm."
         - "%{wolf} turns to face the remaining Zealots, burrowed Roaches scurry to the surface and proceed to vomit over the rest of the collective. Sucks to be you."
-        - "There is a distant flap of wings as a screech issues from %{wolf}’s mouth. The mutalisks are coming, and there’s nothing the Zealots can do to stop them.”
+        - "There is a distant flap of wings as a screech issues from %{wolf}’s mouth. The mutalisks are coming, and there’s nothing the Zealots can do to stop them."
       other:
         - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist thier parent Overseers at the base is demolished."
     wolf: "Game over! The lone Changeling %{wolf} wins!"
@@ -193,7 +193,7 @@ Starcraft:
         fail: "%{vigilante} starts screaming that they desire death… Other than that, nothing really happens. It’s a bit troubling, really."
       other:
         success: "%{vigilante} whispers something to the air next to him. %{target}’s head abruptly explodes as a hidden blade cleaves their body in twain."
-        fail: "%{vigilante} screams “I WILL END YOU, %{target}”, but nothing really happens. There’s an invisible mutter of discontent and everyone can see steps appear in the dirt as %{vigilante}’s Dark Templar friend walks off in disgust."
+        fail: "%{vigilante} screams \"I WILL END YOU, %{target}\", but nothing really happens. There’s an invisible mutter of discontent and everyone can see steps appear in the dirt as %{vigilante}’s Dark Templar friend walks off in disgust."
     reaction:
       self: "The villagers had known that %{target} was feeling a bit down in the dumps, but had always dismissed it as hormones."
       other: "The Zealots, despite their shock at the sudden OP nature of this action, shuffle forward to look at %{target}'s fallen body..."
