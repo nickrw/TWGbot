@@ -37,7 +37,7 @@ changeling:
       - "Battle.net has encountered a problem, game could not be started."
   roles:
     normal:
-      - "You are a meer Zealot."
+      - "You are a mere Zealot."
       - "Your life for Aiur! - You are a Zealot."
       - "Your meditation is over, you are a Zealot."
       - "You’re not a Changeling, but you do have bitching lightsabers coming out of your arms, Zealot!"
@@ -46,7 +46,7 @@ changeling:
       - "Z-E-A-L-O-T!"
       - "Zealot, you stand as one!"
       - "You are a blade of Auir, Zealot."
-      - "You ain’t no shitty marine, you’re a Zealot!"
+      - "You ain't no shitty marine, you're a Zealot!"
       - "You’d better not try and pick your nose with those things on your arms, Zealot"
       - "Unit Type: Zealot"
       - "[REDACTED DOGE COMMENT] Zealot"
@@ -131,7 +131,7 @@ changeling:
         - "%{voter} has volunteered to dig %{votee}'s grave."
         - "%{voter} bursts into tears, overcome at the untimely demise of %{votee}."
     night:
-      vote: "You have voted to summon the hoard to %{votee} tonight"
+      vote: "You have voted to summon the horde to %{votee} tonight"
       changed: "You’ve decided %{votee} is probably the best target for the swarm."
       abstain: "You have gone soft in the presence of all these meditators"
       dead: "%{votee} HAS ALREADY BEEN ENDED"
@@ -151,10 +151,10 @@ changeling:
         - "%{wolf} turns to face the remaining Zealots, burrowed Roaches scurry to the surface and proceed to vomit over the rest of the collective. Sucks to be you."
         - "There is a distant flap of wings as a screech issues from %{wolf}’s mouth. The mutalisks are coming, and there’s nothing the Zealots can do to stop them."
       other:
-        - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist thier parent Overseers at the base is demolished."
+        - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist their parent Overseers at the base is demolished."
     wolf: "Game over! The lone Changeling %{wolf} wins!"
     wolves:
-      one: "Game over! The last remaining Changeling%{wolves} wins!"
+      one: "Game over! The last remaining Changeling %{wolves} wins!"
       other: "Game over! The remaining Changelings (%{wolves}) win!"
       all: "Game over! The Changelings (%{wolves}) win!"
     human:
@@ -165,19 +165,19 @@ changeling:
     role: "You have a pet OBSERVER!. Each night you can send the Observer to watch someone. Pervert."
     solicit: "It is now NIGHT %{night}: say !see <nickname> to send your Observer to watch someone’s movements."
     awake:
-      - "Your Observer is recharging it’s psi-battry after a long night of observing!"
+      - "Your Observer is recharging its psi-battry after a long night of observing!"
     killed: "While watching the view feed from your pet Observer, you hear a floorboard creek behind you. Before you can turn around you are viciously torn to pieces. If only you’d used the Observer to watch your front door instead of %{target}’s nighttime actions!"
     target:
       confirm: "%{target}'s identity will be revealed to you as you wake."
       change: "You have changed the target of your Observer to %{target}."
       nosuch: "%{target} isn't a player in this game."
-      dead: "You want to watch %{target}’s dead body, what is wrong with you?!"
+      dead: "You want to watch %{target}'s dead body, what is wrong with you?!"
       self: "You set the Observer to sit in the corner of the room at glare at you. How do you feel now?!"
     reveal:
       dead: "Your pet Observer slowly floats over to %{target}'s house. Sadly, by the time it gets there, %{target} is already dead."
-      wolf: "Your Observer spys %{target} cuddling a tiny zergling. You've found a CHANGELING."
+      wolf: "Your Observer spies %{target} cuddling a tiny Zergling. You've found a CHANGELING."
       vigilante: "Your Observer sees %{target} going out to play cards with some Dark Templar friends. It looks like %{target} is a fellow Zealot."
-      normal: 
+      normal:
       - "You sit up all night watching %{target} through the Observer. It’s a pretty dull evening. It looks like %{target} is a fellow Zealot."
       - "The Observer watches %{target} charging around all night. Someone’s trying too hard, but they’re definitely a fellow Zealot."
   vigilante:
