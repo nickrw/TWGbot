@@ -1,0 +1,261 @@
+Starcraft:
+  lang:
+    description: "Changeling Game"
+	author: "Josh"
+    advertise: "While no game is running say !langs to see a list of available themes / languages."
+    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    notfound: "No language pack named '%{lang}' available."
+    inactive: "Language pack '%{lang}' is currently unavailable."
+  command:
+    start: "start"
+    vote: "vote"
+    votes: "votes"
+    abstain: "abstain"
+    join: "join"
+    lang: "lang"
+    langs: "langs"
+  general:
+    plzhold: "I'm not ready yet %{nick}. Give me a few seconds."
+    noops: "I require channel ops before starting a game."
+    ready: "Changeling bot is now up and running! Say !start to start a new game."
+    deopped: "Cancelling game - I have been deopped!"
+    rename: "Player %{oldnick} is now known as %{nick}"
+  start:
+    start: "The Changeling Game has been started by %{nick}!"
+    registration: "Registration is now open, say !join to join the game within %{limit} seconds. A minimum of %{players} players is required to play The Changeling Game."
+    skipmessage: "Say !start again to skip the wait when everybody has joined"
+    joined: "%{player} has joined the game (%{number}/%{min})"
+    forcejoined: "%{player} has been forced to join the game (%{number}/%{min})"
+    almostready: "%{secs} seconds left to !join. %{number} out of a minimum of %{min} players joined so far."
+    starting: "Game starting! Players are: %{players}"
+    rolesoon: "You will shortly receive your role via private message"
+    enoughplayers:
+      - "Not enough players to start a game, sorry. You can !start another if you find more players."
+      - "Not enough players to start a game, sorry. You could !start another if you had some friends."
+    error:
+      - "Niiiiiiiiiiiiiick, something went wrong, the game could not be started."
+      - "Battle.net has encountered a problem, game could not be started."
+  roles:
+    normal:
+      - "You are a meer Zealot."
+      - "Your life for Aiur! - You are a Zealot."
+      - "Your meditation is over, you are a Zealot."
+      - "You’re not a Changeling, but you do have bitching lightsabers coming out of your arms, Zealot!"
+      - "You seem pretty ordinary. Well, ordinary for a technologically advanced alien, anyway."
+      - "You’re a Zealot. Not even a funky custom-skinned one, just the regular kind."
+      - "Z-E-A-L-O-T!"
+      - "Zealot, you stand as one!"
+      - "You are a blade of Auir, Zealot."
+      - "You ain’t no shitty marine, you’re a Zealot!"
+      - "You’d better not try and pick your nose with those things on your arms, Zealot"
+      - "Unit Type: Zealot"
+      - "[REDACTED DOGE COMMENT] Zealot"
+    wolf:
+      one:
+        - "You are the infiltrating CHANGELING!"
+        - "What a brave collection of goop you are, CHANGELING!"
+        - "Shat out of an Overseer? Check. You must be CHANGELING!"
+        - "SKREEEEE! Welcome, CHANGELING!"
+        - "You could be anyone you wanted to be, you’re a CHANGELING!"
+        - "You’re born on creep. You’re a wierdo. What the hell are you doing here? You must be a CHANGELING!"
+      other:
+        - "CHANGELINGS, assemble! %{wolves} are your fellow zergs"
+        - "You are a CHANGELING! You're not the only one either! Give a gloopy high-five to %{wolves}"
+  day:
+    enter:
+      solicit:
+        nokill: "It is now DAY %{day}: You have %{secs} seconds to decide who to attack move on by doing !END <nickname>. If you change your mind, !END someone else."
+        kill:
+          - "It is now DAY %{day}: Hold a council with your fellow Zealots about %{killed}'s early promotion to Immortal. You have %{secs} seconds to vote on who to END by saying !END <nickname>. If you change your mind, !END again."
+          - "It is now DAY %{day}: Good news everyone! %{killed} has been brutally murdered in the night! You didn’t really like them anyway. You have %{secs} seconds to vote on who to stab-murder by saying !END <nickname>. If you change your mind, !END again, or feel free to !abstain and rejoice in %{killed}’s untimely demise."
+          - "It is now DAY %{day}: you wake to find %{killed} covered in goop. What a night! You have %{secs} seconds to vote on who to lynch by saying !end <nickname>. If you change your mind, !end again."
+    exit:
+      novotes:
+        - "Voting over! Pacifist cowards, the lot of you!"
+        - "Voting over! No votes were cast. I don't know why I even bother."
+      abstain: "Voting over! The Zealots aren’t really in the mood for murder... ?(????) But at what cost?"
+      lynch:
+        - "Voting over! %{killed} WILL BE ENDED!
+        - "Voting over! The council reaches agreement - %{killed} must die!"
+        - "Voting over! A gang of murderous Zealots wants %{killed} dead!"
+      suspense:
+        - "Everybody charges toward %{killed}, who backs into a corner. With a quick flurry of psionic-blades %{killed} is no more. The villagers examine the body..."
+        - "There is a sudden hum as psionic blades are activated. Everybody turns toward %{killed}. The end is quick and not painless - %{killed} has been horribly murdered. The villagers examine the body..."
+        - "%{killed} tries to flee, but a few nearby sentrys activate forcefields. The council is too quick - %{killed} is dead. A trusted physician examines the body..."
+      result:
+        wolf:
+          - "...SKREEEEE! A horrible screech issues from the creatures body. You have killed the Changeling!"
+          - "...and it explodes into a puddle of gloop and viscera, you’ve found a Changeling!"
+          - "...and it pops like a waterballoon! Well, a mucus/gloop/gunk balloon, but whatever. You killed the Changeling!"
+        normal:
+          - "...but can't see anything unusual, looks like you might have just done a rosario..."
+          - "...but there is just a spattering of blue gore and viscera. Damn."
+          - "...but the corpse looks normal - you horribly murdered an innocent(ish) Zealot."
+          - "...but the corpse looks about as normal as you Protoss get."
+    almostready:
+      yet:
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (gogogo)"
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (C’mon c’mon!)"
+      everybody:
+        - "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
+        - "Voting closes in %{secs} seconds! Everybody has voted, but it definitely isn't too late to change your mind..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. Don't forget you can always change your vote..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. It's definitely not too late to reconsider..."
+        - "Voting closes in %{secs} seconds! Everybody has voted. Don't even think about changing your vote."
+  night:
+    enter:
+      - "A chilly mist descends, it is now NIGHT %{night}. Zealots, sleep soundly. Changelings, you have %{secs} seconds to summon the burrowed roaches on an unsuspecting victim."
+      - "It is now NIGHT %{night}. Zealots, leave to meditate on the exciting events of the day. Changelings, you have %{secs} seconds to decide who summon the hoard to."
+    solicit:
+      one: "It is now NIGHT %{night}: You may !vote <nickname> to me to summon your burrowed roaches. You can !vote again if you change your mind."
+      other: "It is now NIGHT %{night}: Say !vote <nickname> to me to summon the hoard on a Zealot. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
+    exit:
+      body:
+        - "A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a Zealot, is dead."
+        - "A bloodcurdling scream breaks the quiet meditation of the gathered Zealots. Everyone saunters over, to see half of %{killed}'s body on the ground. %{killed} the Zealot, is dead."
+        - "There’s an eerie silence in the morning. The Zealots gather to discover one of their number missing. After a quick search, you discover the body of %{killed}."
+      nobody:
+        - "Everybody wakes, bleary eyed. There doesn't appear to be any sign of the Zerg scourge! Nobody was murdered during the night!"
+        - "Everybody wakes, well rested. Some probes are sent to scout around, but there's no sign of a body. Nobody was murdered during the night!"
+  vote:
+    noplayer:
+      - "%{votee} is not a player in this game."
+      - "%{votee} is not a player in this game. Keep up."
+    day:
+      vote: "%{voter} WILL END %{votee}"
+      changed: "%{voter} has decided to end %{votee} instead of %{origvotee}"
+      abstain: "%{voter} has voted not to lynch"
+      dead:
+        - "Good news %{voter}, %{votee} is already dead!"
+        - "%{voter} has volunteered to dig %{votee}'s grave."
+        - "%{voter} bursts into tears, overcome at the untimely demise of %{votee}."
+    night:
+      vote: "You have voted to summon the hoard to %{votee} tonight"
+      changed: "You’ve decided %{votee} is probably the best target for the swarm."
+      abstain: "You have gone soft in the presence of all these meditators"
+      dead: "%{votee} HAS ALREADY BEEN ENDED"
+      samerole: "You can't vote for one of your own kind!"
+      self: "Error ID - 10T"
+  votes:
+    abstain:
+      one: "%{count} peaceful soul has voted not to stab-murder (%{players})"
+      other: "%{count} peaceful souls have voted not to stab-murder (%{players})"
+    message:
+      one: "%{votee} has %{count} vote (%{voters})"
+      other: "%{votee} has %{count} votes (%{voters})"
+  victory:
+    wolfreveal:
+      one:
+        - "The Zealots here a terrible rumbling, and distant screeches. Everyone turns to see %{wolf} melt into a puddle of goop as their job comes to an end. The remaining Zealots don't stand a chance as the conclave is overrun with the swarm."
+        - "%{wolf} turns to face the remaining Zealots, burrowed Roaches scurry to the surface and proceed to vomit over the rest of the collective. Sucks to be you."
+        - "There is a distant flap of wings as a screech issues from %{wolf}’s mouth. The mutalisks are coming, and there’s nothing the Zealots can do to stop them.”
+      other:
+        - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist thier parent Overseers at the base is demolished."
+    wolf: "Game over! The lone Changeling %{wolf} wins!"
+    wolves:
+      one: "Game over! The last remaining Changeling%{wolves} wins!"
+      other: "Game over! The remaining Changelings (%{wolves}) win!"
+      all: "Game over! The Changelings (%{wolves}) win!"
+    human:
+      one: "Game over! The lone Changeling %{wolves} was unable to pull the wool over the Zealot’s eyes."
+      other: "Game over! The Changelings (%{wolves}) were unable to pull the wool over the Zealot’s eyes."
+  seer:
+    command: "see"
+    role: "You have a pet OBSERVER!. Each night you can send the Observer to watch someone. Pervert."
+    solicit: "It is now NIGHT %{night}: say !see <nickname> to send your Observer to watch someone’s movements."
+    awake:
+      - "Your Observer is recharging it’s psi-battry after a long night of observing!"
+    killed: "While watching the view feed from your pet Observer, you hear a floorboard creek behind you. Before you can turn around you are viciously torn to pieces. If only you’d used the Observer to watch your front door instead of %{target}’s nighttime actions!"
+    target:
+      confirm: "%{target}'s identity will be revealed to you as you wake."
+      change: "You have changed the target of your Observer to %{target}."
+      nosuch: "%{target} isn't a player in this game."
+      dead: "You want to watch %{target}’s dead body, what is wrong with you?!"
+      self: "You set the Observer to sit in the corner of the room at glare at you. How do you feel now?!"
+    reveal:
+      dead: "Your pet Observer slowly floats over to %{target}'s house. Sadly, by the time it gets there, %{target} is already dead."
+      wolf: "Your Observer spys %{target} cuddling a tiny zergling. You've found a CHANGELING."
+      vigilante: "Your Observer sees %{target} going out to play cards with some Dark Templar friends. It looks like %{target} is a fellow Zealot."
+      normal: 
+      - "You sit up all night watching %{target} through the Observer. It’s a pretty dull evening. It looks like %{target} is a fellow Zealot."
+      - "The Observer watches %{target} charging around all night. Someone’s trying too hard, but they’re definitely a fellow Zealot."
+  vigilante:
+    command:
+      - "stab"
+      - "pew"
+    role:
+      l1: "You know of a DARK TEMPLAR who owes you a massive favor. Can tell it to attack someone during the day."
+      l2: "Once during any DAY you can say !stab <player> (in the channel, not privately) to immediately kill that player and end the day. "
+    shoot:
+      self:
+        success: "There is a shimmer in the air as %{vigilante} is suddenly decapitated!"
+        fail: "%{vigilante} starts screaming that they desire death… Other than that, nothing really happens. It’s a bit troubling, really."
+      other:
+        success: "%{vigilante} whispers something to the air next to him. %{target}’s head abruptly explodes as a hidden blade cleaves their body in twain."
+        fail: "%{vigilante} screams “I WILL END YOU, %{target}”, but nothing really happens. There’s an invisible mutter of discontent and everyone can see steps appear in the dirt as %{vigilante}’s Dark Templar friend walks off in disgust."
+    reaction:
+      self: "The villagers had known that %{target} was feeling a bit down in the dumps, but had always dismissed it as hormones."
+      other: "The Zealots, despite their shock at the sudden OP nature of this action, shuffle forward to look at %{target}'s fallen body..."
+    reveal:
+      self: "%{vigilante}'s chance to save the base was quashed by his self hatred."
+      wolf:
+        l1: "... and jump back in horror as %{target} pops into a horrible black mess, %{vigilante} killed the Changeling!"
+        l2: "%{vigilante} made a good call. %{target} was a Changeling!"
+      seer:
+        l1: "... and %{target}'s pet Observer hovers over to see what has become of it’s master (not that you see this)."
+        l2: "%{vigilante} just orphaned a poor little Observer! What rotten luck."
+      normal:
+        l1: "... the brave %{brave} steps forward and pokes %{target} over with their boot, but there’s no goop. Looks like that’s another Zealot down."
+        l2: "%{vigilante}'s single favor from their Dark Templar friend was wasted on %{target} - a fellow Zealot."
+    over: "The villagers all agree that a bit of a sit down and an extended meditation is in order after the day's exciting events"
+  witch:
+    command: "blink"
+    role: "You’re older brother is a STALKER! You will find out who has been attacked by the Zerg swarm each night, and can choose to Blink them to safety once during the game."
+    prepare: "It is now NIGHT %{night}. Once the Changeling vote is over you will have only 10 seconds to decide if you want to save the victim (by saying '!blink’)"
+    tensecs: "It's almost dawn - get ready!"
+    wolfvoteover: "Time's up! voting is now closed."
+    peaceful: "You've been listening closely for any skittering activity, but it's been peaceful all night."
+    comingforyou: "Hold on. Wait. What was that noise? It sounds like it might... oh. Oh no. No no no."
+    toolate: "The door to your humble Zealot sleep-pod bursts open. What's on the menu tonight? You. You are."
+    choose:
+      one: "You hear noises coming from %{target}'s sleeping pod."
+      other: "You hear noises coming from the meditation pods of: %{target}"
+      instruct:
+        one: "Say '!blink if you wish to save this player, quickly!"
+        other: "Say '!blink <playername>' to choose which player to visit. Either could by the real target. Saying '!blink on its own will pick randomly."
+    choosedanger:
+      one: "You hear noises coming from %{target}'s cabin, and get the horrible feeling something is creeping up on you too."
+      other: "You hear noises coming from the cabins of: %{target}, and get the horrible feeling something is creeping up on you too."
+      instruct:
+        one: "Say '!blink if you wish to save this player. There's a 50/50 chance you're going to die first."
+        other: "Say '!blink <playername>' to choose which player to save. Either could by the real target, and so could you. Saying '!blink on its own will pick randomly."
+    nottarget: "'%{player}' isn't in danger here! Do you not understand the gravity of the situation?"
+    unambiguous: "Phew. Your brother got there just in time to blink %{target} to safety."
+    ambiguous:
+      success: "Phew. You chose to blink out %{player}, and that's exactly where the furry death went too."
+      fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
+      failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
+    channelsuccess: "Everyone wakes and gathers at the watercooler-pylon to find out who has been viciously savaged during the night. It seems like %{saved} was viciously attacked in the night, but they were luckily blinked to safety by a mysterious benefactor."
+    privatesuccess: "You were attacked by a swarm of banelings last night. All was lost. You were backed into a corner when suddenly you see %{witch}'s older brother, the Stalker, who blinks you to safety. %{witch} saved you!"
+  invite:
+    command: "invite"
+    spam: "%{target} has been invited to join the channel recently, try again later."
+    noops: "Can't invite players, I don't have channel ops."
+    ratelimit: "The !invite command is rate-limited. Try again in %{secs} seconds."
+    blacklisted: "%{target} is on the !invite blacklist"
+    nouser: "No user called %{target} online."
+    confirm: "I have invited %{target} to join the channel."
+  resign:
+    command: "resign"
+    announce: "%{player} has committed suicide rather than harm a soul in the village."
+    unjoined: "%{player} has left the game (%{count}/%{min})"
+  moretime:
+    command: "moretime"
+    confirm:
+      one: "An extra %{count} second has been added to the registration window"
+      other: "An extra %{count} seconds have been added to the registration window"
+    toohigh: "Can't add more than %{limit} total extra seconds to the registration window"
+
+
+
