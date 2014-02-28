@@ -76,6 +76,10 @@ default:
           - "It is now DAY %{day}: Gossip with your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about how totally murdered %{killed} was. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s ghastly end. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s terrible fate. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
     exit:
       novotes:
         - "Voting over! No votes were cast."
