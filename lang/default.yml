@@ -160,7 +160,7 @@ default:
   victory:
     wolfreveal:
       one:
-        - "With a bloodcurdling howl, hair beings sprouting from %{wolf}'s every orifice. The remaining villagers don't stand a chance."
+        - "With a bloodcurdling howl, hair begins sprouting from %{wolf}'s every orifice. The remaining villagers don't stand a chance."
         - "%{wolf} turns to face the remaining villagers, wearing only a gleeful smile. A very dangerous, pointy smile. Ya'll dead."
       other:
         - "With a bloodcurdling howl, hair begins sprouting from every orifice of the %{count} triumphant wolves. The remaining villagers don't stand a chance."
