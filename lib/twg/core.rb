@@ -131,6 +131,7 @@ module TWG
 
     def check_ready
       synchronize(:check_ready) do
+        @allow_starts = false
         begin
           ch = Channel(config["game_channel"])
         rescue NoMethodError
