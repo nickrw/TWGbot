@@ -117,9 +117,12 @@ default:
   night:
     enter:
       - "A chilly mist descends, it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
-      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Villagers, go to bed. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+      - "Suddenly: tranquil moonlight - it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+      - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Villagers, go to bed. Wolves, you have %{secs} seconds to decide who to fatally maim."
       - "It is now NIGHT %{night}. It is a bit overcast, tsk. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to pounce upon."
-      - "It is now NIGHT %{night}. It's unseasonably warm. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide who to claw apart."
+      - "It is now NIGHT %{night}. It's unseasonably warm. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide your next meal."
+      - "It is now NIGHT %{night}. It's unreasonably warm. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide who to tear asunder."
+      - "It is now NIGHT %{night}. Bit nippy tonight. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide who to claw apart."
     solicit:
       one: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind."
       other: "It is now NIGHT %{night}: To choose the object of your bloodlust say !vote <nickname> to me. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
@@ -128,21 +131,28 @@ default:
         - "A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a villager, is dead."
         - "A bloodcurdling scream breaks the monotony. People saunter over, yawning, to see half of %{killed}'s body on the ground. %{killed}, a villager, is dead."
         - "A piercing shriek shatters the early-morning silence. You'd recognise %{killed}'s piercing shriek any day. %{killed}, a villager, is dead."
+        - "As dawn breaks you find %{killed}'s mangled body in the village well. %{killed}, a villager, is dead."
       nobody:
         - "Everybody wakes, bleary eyed. There doesn't appear to be a body! Nobody was murdered during the night!"
         - "Everybody wakes, well rested. After some scouting around there's no sign of a body. Nobody was murdered during the night!"
+        - "Everybody wakes, cheerfully confident that the previous day's debates resolved this unpleasant business. You were right; nobody was murdered during the night!"
   vote:
     noplayer:
       - "%{votee} is not a player in this game."
       - "%{votee} is not a player in this game. Keep up."
     day:
-      changed: "%{voter} changed their vote from %{origvotee} to %{votee}"
-      abstain: "%{voter} has voted not to lynch"
+      changed:
+        - "%{voter} changed their vote from %{origvotee} to %{votee}"
+        - "%{voter} flip-flops from %{origvotee} to %{votee}"
+      abstain:
+        - "%{voter} has voted not to lynch"
+        - "%{voter} is a peaceful hippie"
       dead:
         - "Good news %{voter}, %{votee} is already dead!"
         - "%{voter} has volunteered to dig %{votee}'s grave."
         - "%{voter} sneaks into %{votee}'s house and rifles through %{votee}'s possessions."
         - "%{voter} checks %{votee}'s will, to see if they left anything good behind. Nope."
+        - "%{voter} touches %{votee}'s corpse."
     night:
       vote: "You have voted for %{votee} to be killed tonight"
       changed: "You have changed your vote to %{votee}"
@@ -196,6 +206,8 @@ default:
     command:
       - "shoot"
       - "pew"
+      - "justice"
+      - "bring justice against"
     role:
       l1: "You are the VIGILANTE. You have perfected the technology of gunpowder, though your metalworking skills aren't up to much."
       l2: "Once during any DAY you can say !shoot <player> (in the channel, not privately) to immediately kill that player and end the day. "
