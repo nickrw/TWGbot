@@ -9,7 +9,6 @@ module TWG
       super
       commands = @lang.t_array('changelog.command')
       commands.each do |command|
-        command = Regexp.new(command + " ([^ ]+)$")
         self.class.match(command, :method => :changelog)
       end
       __register_matchers
