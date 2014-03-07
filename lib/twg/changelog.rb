@@ -15,7 +15,7 @@ module TWG
     end
 
     def changelog(m)
-      m.reply("https://github.com/nickrw/TWGbot/commits/master")
+      m.reply("https://github.com/nickrw/TWGbot/commits/master", true)
     end
 
   end
