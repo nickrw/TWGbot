@@ -147,12 +147,17 @@ default:
       abstain:
         - "%{voter} has voted not to lynch"
         - "%{voter} is a peaceful hippie"
+        - "%{voter} passes round the peace pipe"
+        - "%{voter} is a floating voter"
+        - "Who needs politics anyway, %{voter}?"
+        - "%{voter} has voiced their disdain for democracy."
       dead:
         - "Good news %{voter}, %{votee} is already dead!"
         - "%{voter} has volunteered to dig %{votee}'s grave."
         - "%{voter} sneaks into %{votee}'s house and rifles through %{votee}'s possessions."
         - "%{voter} checks %{votee}'s will, to see if they left anything good behind. Nope."
         - "%{voter} touches %{votee}'s corpse."
+        - "%{voter} leaves flowers on %{votee}'s grave."
     night:
       vote: "You have voted for %{votee} to be killed tonight"
       changed: "You have changed your vote to %{votee}"
