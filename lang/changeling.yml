@@ -8,7 +8,7 @@ changeling:
     inactive: "Language pack '%{lang}' is currently unavailable."
   command:
     start: "start"
-    vote: "vote"
+    vote: "end"
     votes: "votes"
     abstain: "abstain"
     join: "join"
@@ -37,7 +37,7 @@ changeling:
       - "Battle.net has encountered a problem, game could not be started."
   roles:
     normal:
-      - "You are a meer Zealot."
+      - "You are a mere Zealot."
       - "Your life for Aiur! - You are a Zealot."
       - "Your meditation is over, you are a Zealot."
       - "You’re not a Changeling, but you do have bitching lightsabers coming out of your arms, Zealot!"
@@ -46,7 +46,7 @@ changeling:
       - "Z-E-A-L-O-T!"
       - "Zealot, you stand as one!"
       - "You are a blade of Auir, Zealot."
-      - "You ain’t no shitty marine, you’re a Zealot!"
+      - "You ain't no shitty marine, you're a Zealot!"
       - "You’d better not try and pick your nose with those things on your arms, Zealot"
       - "Unit Type: Zealot"
       - "[REDACTED DOGE COMMENT] Zealot"
@@ -79,8 +79,8 @@ changeling:
         - "Voting over! The council reaches agreement - %{killed} must die!"
         - "Voting over! A gang of murderous Zealots wants %{killed} dead!"
       suspense:
-        - "Everybody charges toward %{killed}, who backs into a corner. With a quick flurry of psionic-blades %{killed} is no more. The villagers examine the body..."
-        - "There is a sudden hum as psionic blades are activated. Everybody turns toward %{killed}. The end is quick and not painless - %{killed} has been horribly murdered. The villagers examine the body..."
+        - "Everybody charges toward %{killed}, who backs into a corner. With a quick flurry of psionic-blades %{killed} is no more. The Zealots examine the body..."
+        - "There is a sudden hum as psionic blades are activated. Everybody turns toward %{killed}. The end is quick and not painless - %{killed} has been horribly murdered. The Zealots examine the body..."
         - "%{killed} tries to flee, but a few nearby sentrys activate forcefields. The council is too quick - %{killed} is dead. A trusted physician examines the body..."
       result:
         wolf:
@@ -112,7 +112,7 @@ changeling:
       other: "It is now NIGHT %{night}: Say !vote <nickname> to me to summon the hoard on a Zealot. You can !vote again if you change your mind. If you vote differently to your pack a target will be chosen at random from your tied votes."
     exit:
       body:
-        - "A bloodcurdling scream sounds throughout the village. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a Zealot, is dead."
+        - "A bloodcurdling scream sounds throughout the Natural. Everybody rushes to find the broken body of %{killed} lying on the ground. %{killed}, a Zealot, is dead."
         - "A bloodcurdling scream breaks the quiet meditation of the gathered Zealots. Everyone saunters over, to see half of %{killed}'s body on the ground. %{killed} the Zealot, is dead."
         - "There’s an eerie silence in the morning. The Zealots gather to discover one of their number missing. After a quick search, you discover the body of %{killed}."
       nobody:
@@ -131,7 +131,7 @@ changeling:
         - "%{voter} has volunteered to dig %{votee}'s grave."
         - "%{voter} bursts into tears, overcome at the untimely demise of %{votee}."
     night:
-      vote: "You have voted to summon the hoard to %{votee} tonight"
+      vote: "You have voted to summon the horde to %{votee} tonight"
       changed: "You’ve decided %{votee} is probably the best target for the swarm."
       abstain: "You have gone soft in the presence of all these meditators"
       dead: "%{votee} HAS ALREADY BEEN ENDED"
@@ -151,10 +151,10 @@ changeling:
         - "%{wolf} turns to face the remaining Zealots, burrowed Roaches scurry to the surface and proceed to vomit over the rest of the collective. Sucks to be you."
         - "There is a distant flap of wings as a screech issues from %{wolf}’s mouth. The mutalisks are coming, and there’s nothing the Zealots can do to stop them."
       other:
-        - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist thier parent Overseers at the base is demolished."
+        - "There is a terrible roar as the cannons at the front of the Zealot’s base are overrun by huge Ultralisks. As packs of Zerglings descend on the doomed Zealots, the %{count} triumphant Changelings bro-fist their parent Overseers at the base is demolished."
     wolf: "Game over! The lone Changeling %{wolf} wins!"
     wolves:
-      one: "Game over! The last remaining Changeling%{wolves} wins!"
+      one: "Game over! The last remaining Changeling %{wolves} wins!"
       other: "Game over! The remaining Changelings (%{wolves}) win!"
       all: "Game over! The Changelings (%{wolves}) win!"
     human:
@@ -165,19 +165,19 @@ changeling:
     role: "You have a pet OBSERVER!. Each night you can send the Observer to watch someone. Pervert."
     solicit: "It is now NIGHT %{night}: say !see <nickname> to send your Observer to watch someone’s movements."
     awake:
-      - "Your Observer is recharging it’s psi-battry after a long night of observing!"
+      - "Your Observer is recharging its psi-battry after a long night of observing!"
     killed: "While watching the view feed from your pet Observer, you hear a floorboard creek behind you. Before you can turn around you are viciously torn to pieces. If only you’d used the Observer to watch your front door instead of %{target}’s nighttime actions!"
     target:
       confirm: "%{target}'s identity will be revealed to you as you wake."
       change: "You have changed the target of your Observer to %{target}."
       nosuch: "%{target} isn't a player in this game."
-      dead: "You want to watch %{target}’s dead body, what is wrong with you?!"
+      dead: "You want to watch %{target}'s dead body, what is wrong with you?!"
       self: "You set the Observer to sit in the corner of the room at glare at you. How do you feel now?!"
     reveal:
       dead: "Your pet Observer slowly floats over to %{target}'s house. Sadly, by the time it gets there, %{target} is already dead."
-      wolf: "Your Observer spys %{target} cuddling a tiny zergling. You've found a CHANGELING."
+      wolf: "Your Observer spies %{target} cuddling a tiny Zergling. You've found a CHANGELING."
       vigilante: "Your Observer sees %{target} going out to play cards with some Dark Templar friends. It looks like %{target} is a fellow Zealot."
-      normal: 
+      normal:
       - "You sit up all night watching %{target} through the Observer. It’s a pretty dull evening. It looks like %{target} is a fellow Zealot."
       - "The Observer watches %{target} charging around all night. Someone’s trying too hard, but they’re definitely a fellow Zealot."
   vigilante:
@@ -195,7 +195,7 @@ changeling:
         success: "%{vigilante} whispers something to the air next to him. %{target}’s head abruptly explodes as a hidden blade cleaves their body in twain."
         fail: "%{vigilante} screams \"I WILL END YOU, %{target}\", but nothing really happens. There’s an invisible mutter of discontent and everyone can see steps appear in the dirt as %{vigilante}’s Dark Templar friend walks off in disgust."
     reaction:
-      self: "The villagers had known that %{target} was feeling a bit down in the dumps, but had always dismissed it as hormones."
+      self: "The Zealots had known that %{target} was feeling a bit down in the dumps, but had always dismissed it as psi-channels being clogged."
       other: "The Zealots, despite their shock at the sudden OP nature of this action, shuffle forward to look at %{target}'s fallen body..."
     reveal:
       self: "%{vigilante}'s chance to save the base was quashed by his self hatred."
@@ -208,7 +208,7 @@ changeling:
       normal:
         l1: "... the brave %{brave} steps forward and pokes %{target} over with their boot, but there’s no goop. Looks like that’s another Zealot down."
         l2: "%{vigilante}'s single favor from their Dark Templar friend was wasted on %{target} - a fellow Zealot."
-    over: "The villagers all agree that a bit of a sit down and an extended meditation is in order after the day's exciting events"
+    over: "The Zealots all agree that a bit of a sit down and an extended meditation is in order after the day's exciting events"
   witch:
     command: "blink"
     role: "You’re older brother is a STALKER! You will find out who has been attacked by the Zerg swarm each night, and can choose to Blink them to safety once during the game."
@@ -233,7 +233,7 @@ changeling:
     nottarget: "'%{player}' isn't in danger here! Do you not understand the gravity of the situation?"
     unambiguous: "Phew. Your brother got there just in time to blink %{target} to safety."
     ambiguous:
-      success: "Phew. You chose to blink out %{player}, and that's exactly where the furry death went too."
+      success: "Phew. You chose to blink out %{player}, and that's exactly where the furious death went too."
       fail: "Oh no. You chose to run towards %{save}, but the real target was %{target}."
       failhard: "Oh no. You chose to run towards %{save}, but it was YOU that was chosen for tonight's feast."
     channelsuccess: "Everyone wakes and gathers at the watercooler-pylon to find out who has been viciously savaged during the night. It seems like %{saved} was viciously attacked in the night, but they were luckily blinked to safety by a mysterious benefactor."
@@ -248,7 +248,7 @@ changeling:
     confirm: "I have invited %{target} to join the channel."
   resign:
     command: "resign"
-    announce: "%{player} has committed suicide rather than harm a soul in the village."
+    announce: "%{player} has committed suicide rather than harm a soul in the Natural Base."
     unjoined: "%{player} has left the game (%{count}/%{min})"
   moretime:
     command: "moretime"
