@@ -278,7 +278,7 @@ module TWG
       return if @game.nil?
       return if @game.participants[oldname].nil?
       @game.nickchange(oldname, newname)
-      return if @game.participants[oldname] == :dead
+      return if @game.participants[newname] == :dead
       chanm @lang.t('general.rename', {
         :oldnick => Format(:bold, m.user.last_nick),
         :nick    => Format(:bold, m.user.to_s)
