@@ -58,6 +58,13 @@ default:
       - "Species: Villager"
       - "such human                villager             wow            so humblest"
       - "I expect you want me to tell you that you're a WOLF. But you're not. You're a villager."
+      - "I spy with my little eye... a villager. Disappointing."
+      - "You are a villager."
+      - "You are an upstanding member of the community."
+      - "Erhmagerd you're a villager."
+      - "Dull human"
+      - "Mediocre human"
+      - "God you don't even have any special powers, how dull."
     wolf:
       one:
         - "You are a lone WOLF."
@@ -65,9 +72,11 @@ default:
         - "My what big teeth you have."
         - "You are a freakish monster with elongated hind legs and hair everywhere. Ew."
         - "Desire for human flesh: ✅. ; Four legs: ✅. ; Furry: ✅."
+        - "Erhmagerd you're a WOLF!"
       other:
         - "You are a WOLF in a pack with: %{wolves}"
         - "You are a WOLF! You're not the only one either! Say hi to %{wolves}"
+        - "Erhmagerd multiple WOLVES: %{wolves}"
   day:
     enter:
       solicit:
@@ -76,10 +85,12 @@ default:
           - "It is now DAY %{day}: Gossip with your fellow villagers about %{killed}'s untimely demise. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s sad offing. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow villagers about how totally murdered %{killed} was. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Chinwag about how totally murdered %{killed} was. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
           - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s unfortunate perishment. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s ghastly end. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
-          - "It is now DAY %{day}: Talk to your fellow villagers about %{killed}'s terrible fate. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: %{killed} met a ghastly end during the night. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: Gossip freely about %{killed}'s terrible fate. You have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: %{killed} has shuffled off this mortal coil - you now have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
+          - "It is now DAY %{day}: There's no time to hold a minute silence for the departed %{killed} - you only have %{secs} seconds to vote on who to lynch by saying !vote <nickname>. If you change your mind, !vote again."
     exit:
       novotes:
         - "Voting over! No votes were cast."
@@ -87,18 +98,21 @@ default:
       abstain: "Voting over! The villagers voted for peace... ლ(ಠ益ಠლ) But at what cost?"
       lynch:
         - "Voting over! The baying mob has spoken - %{killed} will die!"
+        - "Voting over! The spitting mob achieves consensus - %{killed} shall die!"
         - "Voting over! The glorious mob reaches agreement - %{killed} must die!"
         - "Voting over! A screaming mob wants %{killed} dead!"
       suspense:
         - "Everybody turns slowly toward %{killed}, who backs into a corner. With a quick flurry of pitchforks %{killed} is no more. The villagers examine the body..."
         - "Everybody turns toward %{killed}. The end is quick and not painless - %{killed} is dead. The villagers examine the body..."
         - "%{killed} tries to flee, leaving a suspicious puddle behind. The spry mob is too quick - %{killed} is dead. A trusted physician examines the body..."
+        - "%{killed} backs into a corner, crying hysterically. The eager mob efficiently dismantles %{killed}. They perform a through inspection of the corpse..."
       result:
         wolf:
           - "...and it starts to transform before their very eyes! A dead wolf lies before them."
           - "...and it tranforms into a vicious killing machine with terrifying teeth and claws! Well done, you found a wolf."
           - "...and it shrinks into the form of a cute puppy! Congratulations!"
         normal:
+          - "...but it's just blood and guts. Uh oh."
           - "...but can't see anything unusual, looks like you might have turned upon one of your own."
           - "...but everything seems to be in order. Whoops."
           - "...but the corpse looks normal - you lynched one of your own number."
@@ -108,6 +122,7 @@ default:
         - "Voting closes in %{secs} seconds! Yet to vote: %{absentees}"
         - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (sort yourselves out)"
         - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (pay more attention)"
+        - "Voting closes in %{secs} seconds! Yet to vote: %{absentees} (get your act together)"
       everybody:
         - "Voting closes in %{secs} seconds! Everybody has voted, but it's not too late to change your mind..."
         - "Voting closes in %{secs} seconds! Everybody has voted, but it definitely isn't too late to change your mind..."
@@ -118,6 +133,7 @@ default:
     enter:
       - "A chilly mist descends, it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
       - "Suddenly: tranquil moonlight - it is now NIGHT %{night}. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to rip to shreds."
+      - "A tropical rainstorm descends, it is now NIGHT %{night}. Villagers, tuck yourselves in. Wolves, you have %{secs} seconds to decide who to dine upon."
       - "It is now NIGHT %{night}. Bit of a chilly mist tonight. Villagers, go to bed. Wolves, you have %{secs} seconds to decide who to fatally maim."
       - "It is now NIGHT %{night}. It is a bit overcast, tsk. Villagers, sleep soundly. Wolves, you have %{secs} seconds to decide who to pounce upon."
       - "It is now NIGHT %{night}. It's unseasonably warm. Villagers, try to go to bed. Wolves, you have %{secs} seconds to decide your next meal."
