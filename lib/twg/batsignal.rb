@@ -24,6 +24,7 @@ module TWG
       __register_matchers
       @api = config["api"].sub(/\/$/,'')
       @device = config["device"].to_s
+      @time = config["time"].to_i || 30
     end
 
     def batsignal(m, newstate)
@@ -36,7 +37,7 @@ module TWG
 
     def batsignal_on(m=nil)
       turn 'on'
-      hook_async(:hook_batsignal_off, 15)
+      hook_async(:hook_batsignal_off, @time)
     end
 
     def batsignal_off(m=nil)
