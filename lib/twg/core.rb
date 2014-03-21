@@ -131,6 +131,7 @@ module TWG
 
     def check_ready
       synchronize(:check_ready) do
+        return if @allow_starts
         @allow_starts = false
         begin
           ch = Channel(config["game_channel"])
