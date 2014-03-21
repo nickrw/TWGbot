@@ -303,3 +303,5 @@ default:
     toohigh: "Can't add more than %{limit} total extra seconds to the registration window"
   changelog:
     command: "changelog"
+  batsignal:
+    command: "batsignal"

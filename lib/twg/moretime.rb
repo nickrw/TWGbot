@@ -3,8 +3,8 @@ require 'twg/plugin'
 module TWG
   class Moretime < TWG::Plugin
     include Cinch::Plugin
-    listen_to :signup_started, :method => :enable_command
-    listen_to :complete_startup, :method => :disable_command
+    listen_to :hook_signup_started, :method => :enable_command
+    listen_to :hook_signup_complete, :method => :disable_command
 
     def self.description
       "Ability to add additional time onto the signup clock"
@@ -28,7 +28,7 @@ module TWG
 
     def moretime(m, seconds=nil)
 
-      # The :signup_started hook will assign @when a Time object, so we can
+      # The :hook_signup_started hook will assign @when a Time object, so we can
       # calculate the number of seconds elapsed when !moretime is called.
       #
       # We can ignore the request entirely if @when isn't a Time object as
@@ -59,11 +59,11 @@ module TWG
       # Cancel the game registration window timers and re-set them with the
       # extra seconds
       hook_cancel(:ten_seconds_left)
-      hook_cancel(:complete_startup)
+      hook_cancel(:hook_signup_complete)
       @limit = @limit - seconds
       remaining = @signup - (Time.now - @when).to_i
       hook_async(:ten_seconds_left, remaining + seconds - 10)
-      hook_async(:complete_startup, remaining + seconds)
+      hook_async(:hook_signup_complete, remaining + seconds)
       m.reply(@lang.t('moretime.confirm', :count => seconds), true)
     end
 

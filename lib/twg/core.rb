@@ -14,7 +14,7 @@ module TWG
     listen_to :exit_day, :method => :exit_day
     listen_to :ten_seconds_left, :method => :ten_seconds_left
     listen_to :warn_vote_timeout, :method => :warn_vote_timeout
-    listen_to :complete_startup, :method => :complete_startup
+    listen_to :hook_signup_complete, :method => :complete_startup
     listen_to :hook_notify_roles, :method => :notify_roles
     listen_to :nick, :method => :nickchange
     listen_to :join, :method => :channel_join
@@ -301,7 +301,7 @@ module TWG
       else
         if @signup_started == true
           hook_cancel(:ten_seconds_left)
-          hook_expedite(:complete_startup)
+          hook_expedite(:hook_signup_complete)
           return
         end
       end
@@ -320,8 +320,8 @@ module TWG
         @game.register(m.user.to_s)
         voice(m.user)
         hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
-        hook_async(:complete_startup, config["game_timers"]["registration"])
-        hook_async(:signup_started)
+        hook_async(:hook_signup_complete, config["game_timers"]["registration"])
+        hook_async(:hook_signup_started)
       end
     end
 

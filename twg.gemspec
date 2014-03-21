@@ -11,4 +11,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'cinch', '>= 2.0.5'
   s.add_dependency 'cinchize'
   s.add_dependency 'i18n'
+  s.add_dependency 'httparty'
 end
