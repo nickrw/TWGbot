@@ -19,6 +19,7 @@ default:
     join:
       - "join"
       - "fine"
+      - "whythefucknot"
     lang: "lang"
     langs: "langs"
   general:
