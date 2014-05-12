@@ -152,6 +152,8 @@ module TWG
       if m.user.to_s == bot.nick
         check_ready
       else
+        # refresh to ensure user case is accurate
+        m.user.refresh
         return if @game.nil?
         return if @game.participants[m.user.to_s].nil?
         return if @game.participants[m.user.to_s] == :dead
