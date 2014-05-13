@@ -345,7 +345,7 @@ module TWG
         end
       end
       if not @shutdown_reason.empty?
-        m.reply @lang.t('start.shutdown', {:reason => @reason})
+        m.reply @lang.t('start.shutdown', {:reason => @shutdown_reason})
         return
       end
       if @game.state.nil? || @game.state == :wolveswin || @game.state == :humanswin
