@@ -41,6 +41,8 @@ module TWG
       hook_async(:hook_player_resignation, 0, nil, player)
 
       @game.kill(player)
+      @game.remove_votes_for(player)
+      @game.remove_votes_by(player)
       chansay('resign.announce', :player => player)
       @core.devoice(player)
 
