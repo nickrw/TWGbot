@@ -21,6 +21,8 @@ module TWG
     listen_to :op, :method => :opped
     listen_to :deop, :method => :opped
     listen_to :hook_allow_starts, :method => :allow_starts
+    listen_to :hook_shutdown, :method => :shutdown
+    listen_to :hook_openup, :method => :openup
 
     attr_accessor :lang
     attr_accessor :game
@@ -54,6 +56,7 @@ module TWG
       shared[:game] = @game
       @timer = nil
       @allow_starts = false
+      @shutdown_reason = ""
       check_ready
     end
 
@@ -284,6 +287,28 @@ module TWG
       end
     end
 
+    def disallow_starts(m)
+      synchronize(:allow_starts) do
+        if @allow_starts
+          @allow_starts = false
+        end
+      end
+    end
+
+    def shutdown(m, reason)
+      @shutdown_reason = reason
+      if @signup_started == true
+        hook_cancel(:ten_seconds_left)
+        hook_cancel(:hook_signup_complete)
+        wipe_slate
+        return
+      end
+    end
+
+    def openup(m)
+      @shutdown_reason = ""
+    end
+
     def nickchange(m)
       u = m.user
       oldname = u.last_nick
@@ -307,7 +332,7 @@ module TWG
           m.reply @lang.t('general.plzhold', {:nick => u.nick})
         else
           m.reply @lang.t 'general.noops'
-        end 
+        end
         return
       end
       if @game.nil?
@@ -318,6 +343,10 @@ module TWG
           hook_expedite(:hook_signup_complete)
           return
         end
+      end
+      if not @shutdown_reason.empty?
+        m.reply @lang.t('start.shutdown', {:reason => @reason})
+        return
       end
       if @game.state.nil? || @game.state == :wolveswin || @game.state == :humanswin
         @game.reset

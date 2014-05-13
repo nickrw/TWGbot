@@ -29,6 +29,7 @@ default:
     deopped: "Cancelling game - I have been deopped!"
     rename: "Player %{oldnick} is now known as %{nick}"
   start:
+    shutdown: "TWG is currently unavailable: %{reason}"
     start: "TWG has been started by %{nick}!"
     registration: "Registration is now open, say !join to join the game within %{limit} seconds. A minimum of %{players} players is required to play TWG."
     skipmessage: "Say !start again to skip the wait when everybody has joined"
