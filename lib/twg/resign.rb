@@ -19,16 +19,16 @@ module TWG
 
     def resign(m)
       return if @game.nil?
-      player = m.user.to_s
-      role = @game.participants[player]
+      u = m.user
+      role = @game.participants[u]
       return if role.nil?
       return if role == :dead
 
       if @game.state == :signup
-        @game.deregister(player)
-        @core.devoice(player)
+        @game.deregister(u)
+        @core.devoice(u)
         chansay('resign.unjoined',
-          :player => player,
+          :player => u.nick,
           :count  => @game.participants.count,
           :min    => @game.min_part
         )
@@ -38,13 +38,13 @@ module TWG
       # Let plugins which introduce non-core roles handle anything that
       # might be required from their character dying, and also handle a player
       # leaving the game that might be a target of a special character's action
-      hook_async(:hook_player_resignation, 0, nil, player)
+      hook_async(:hook_player_resignation, 0, nil, u)
 
-      @game.kill(player)
-      @game.remove_votes_for(player)
-      @game.remove_votes_by(player)
-      chansay('resign.announce', :player => player)
-      @core.devoice(player)
+      @game.kill(u)
+      @game.remove_votes_for(u)
+      @game.remove_votes_by(y)
+      chansay('resign.announce', :player => u)
+      @core.devoice(u)
 
       # Ask the game if victory conditions will be met by the next state
       # change, given that we have changed the balance.

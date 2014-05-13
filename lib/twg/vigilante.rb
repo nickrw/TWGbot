@@ -25,6 +25,7 @@ module TWG
       pick_special(:vigilante, odds)
       bp_count = (@game.participants.count / 3) - 1
       @bulletproof = @game.participants.keys.shuffle[0..bp_count]
+      @bulletproof.map! { |p| p.nick }
       debug "Selected bulletproof players: #{@bulletproof.join(', ')}"
     end
 
@@ -32,18 +33,19 @@ module TWG
       return if @game.nil?
       v = vigilante
       return if v.nil?
-      User(v).send @lang.t('vigilante.role.l1')
-      User(v).send @lang.t('vigilante.role.l2')
-      info "Role notification sent to #{v}"
+      v.send @lang.t('vigilante.role.l1')
+      v.send @lang.t('vigilante.role.l2')
+      info "Role notification sent to #{v.nick}"
     end
 
     def shoot(m, target, rant)
       return if @game.nil?
       v = vigilante
+      target = User(target)
       return if v.nil?
       return if not m.channel?
       return if @game.state != :day
-      return if v != m.user.nick
+      return if v != m.user
       return if @game.participants[target].nil?
       return if @game.participants[target] == :dead
 
@@ -52,12 +54,12 @@ module TWG
 
         if v != target
           m.reply @lang.t('vigilante.shoot.other.fail', {
-            :vigilante => m.user.to_s,
-            :target    => target
+            :vigilante => v.nick,
+            :target    => target.nick
           })
         else
           m.reply @lang.t('vigilante.shoot.self.fail', {
-            :vigilante => m.user.to_s
+            :vigilante => v.nick
           })
         end
 
@@ -73,20 +75,20 @@ module TWG
 
       if v != target
         m.reply @lang.t('vigilante.shoot.other.success', {
-          :vigilante => m.user.to_s,
-          :target    => target
+          :vigilante => v.nick,
+          :target    => target.nick
         })
       else
         m.reply @lang.t('vigilante.shoot.self.success', {
-          :vigilante => m.user.to_s
+          :vigilante => v.nick
         })
       end
 
       sleep 10
       if v != target
-        m.reply @lang.t('vigilante.reaction.other', :target => target)
+        m.reply @lang.t('vigilante.reaction.other', :target => target.nick)
       else
-        m.reply @lang.t('vigilante.reaction.self', :target => target)
+        m.reply @lang.t('vigilante.reaction.self', :target => target.nick)
       end
       sleep 5
 
@@ -95,17 +97,17 @@ module TWG
         debug "Error! Valid player was sent to kill, but got nil back"
         debug "#{target.inspect}"
       when :vigilante
-        m.reply @lang.t('vigilante.reveal.self', :vigilante => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.self', :vigilante => v.nick)
       when :wolf
-        m.reply @lang.t('vigilante.reveal.wolf.l1', :target => target)
-        m.reply @lang.t('vigilante.reveal.wolf.l2', :target => target, :vigilante => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.wolf.l1', :target => target.nick)
+        m.reply @lang.t('vigilante.reveal.wolf.l2', :target => target.nick, :vigilante => v.nick)
       when :seer
-        m.reply @lang.t('vigilante.reveal.seer.l1', :target => target)
-        m.reply @lang.t('vigilante.reveal.seer.l2', :vigilante => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.seer.l1', :target => target.nick)
+        m.reply @lang.t('vigilante.reveal.seer.l2', :vigilante => v.nick)
       else
         brave = players_of_role(:dead, true).shuffle[0]
-        m.reply @lang.t('vigilante.reveal.normal.l1', :target => target, :brave => brave)
-        m.reply @lang.t('vigilante.reveal.normal.l2', :target => target, :vigilante => m.user.to_s)
+        m.reply @lang.t('vigilante.reveal.normal.l1', :target => target.nick, :brave => brave.nick)
+        m.reply @lang.t('vigilante.reveal.normal.l2', :target => target.nick, :vigilante => v.nick)
       end
 
       sleep 3

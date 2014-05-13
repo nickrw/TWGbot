@@ -109,11 +109,12 @@ module TWG
       return if not [:night, :day].include?(@game.state)
       return if @game.state == :night && m.channel?
       return if @game.state == :day && !m.channel?
-      if @game.abstain(m.user.to_s) == true
+      u = m.user
+      if @game.abstain(u) == true
         if @game.state == :night
           m.reply @lang.t('vote.night.abstain')
         else
-          m.reply @lang.t('vote.day.abstain', {:voter => m.user.to_s})
+          m.reply @lang.t('vote.day.abstain', {:voter => u.nick})
         end
       end
     end
@@ -149,21 +150,25 @@ module TWG
     end
 
     def channel_join(m)
-      if m.user.to_s == bot.nick
+      u = m.user
+      if u.nick == bot.nick
         check_ready
       else
         # refresh to ensure user case is accurate
-        m.user.refresh
+        u.refresh
         return if @game.nil?
-        return if @game.participants[m.user.to_s].nil?
-        return if @game.participants[m.user.to_s] == :dead
-        voice(m.user)
+        return if @game.participants[u].nil?
+        return if @game.participants[u] == :dead
+        voice(u)
       end
     end
 
-    def vote(m, mfor, reason)
+    def vote(m, vfor, reason)
       return if @game.nil?
-      r = @game.vote(m.user.to_s, mfor, (m.channel? ? :channel : :private))
+      u = m.user
+      vfor = User(vfor)
+      is_channel = (m.channel? ? :channel : :private)
+      r = @game.vote(u, vfor, is_channel)
 
       if m.channel?
 
@@ -171,22 +176,22 @@ module TWG
         when :confirmvote
           if r[:previous].nil? || r[:previous] == :abstain
             m.reply @lang.t('vote.day.vote', {
-              :voter => m.user.to_s,
-              :votee => Format(:bold, mfor)
+              :voter => u.nick,
+              :votee => Format(:bold, vfor.nick)
             })
           else
             m.reply @lang.t('vote.day.changed', {
-              :voter     => m.user.to_s,
+              :voter     => u.nick,
               :origvotee => r[:previous],
-              :votee     => Format(:bold, mfor)
+              :votee     => Format(:bold, vfor.nick)
             })
           end
         when :voteenotplayer
-          m.reply @lang.t('vote.noplayer', {:votee => mfor})
+          m.reply @lang.t('vote.noplayer', {:votee => vfor.nick})
         when :voteedead
           m.reply @lang.t('vote.day.dead', {
-            :voter => m.user.to_s,
-            :votee => mfor
+            :voter => u.nick,
+            :votee => vfor.nick
           })
         end
 
@@ -195,14 +200,14 @@ module TWG
         case r[:code]
         when :confirmvote
           if r[:previous].nil?
-            m.reply @lang.t('vote.night.vote', {:votee => mfor})
+            m.reply @lang.t('vote.night.vote', {:votee => vfor.nick})
           else
-            m.reply @lang.t('vote.night.changed', {:votee => mfor})
+            m.reply @lang.t('vote.night.changed', {:votee => vfor.nick})
           end
         when :fellowwolf
           m.reply @lang.t('vote.night.samerole')
         when :voteenotplayer
-          m.reply @lang.t('vote.noplayer', {:votee => mfor})
+          m.reply @lang.t('vote.noplayer', {:votee => vfor.nick})
         when :dead
           m.reply @lang.t('vote.night.dead')
         when :self
@@ -234,6 +239,10 @@ module TWG
     end
 
     def votee_summary(votee, voters, tiebreak)
+      if votee.class == Cinch::User
+        votee = votee.nick
+      end
+      voters.map! { |p| p.nick }
       if votee == :abstain
         message = @lang.t('votes.abstain', {
           :count => voters.count,
@@ -276,24 +285,26 @@ module TWG
     end
 
     def nickchange(m)
-      oldname = m.user.last_nick.to_s
-      newname = m.user.to_s
+      u = m.user
+      oldname = u.last_nick
+      newname = u.nick
       return if @game.nil?
-      return if @game.participants[oldname].nil?
-      @game.nickchange(oldname, newname)
-      return if @game.participants[newname] == :dead
+      return if @game.participants[u].nil?
+      #@game.nickchange(oldname, newname)
+      return if @game.participants[u] == :dead
       chanm @lang.t('general.rename', {
-        :oldnick => Format(:bold, m.user.last_nick),
-        :nick    => Format(:bold, m.user.to_s)
+        :oldnick => Format(:bold, oldname),
+        :nick    => Format(:bold, newname)
       })
     end
 
     def start(m)
       return if !m.channel?
       return if m.channel != config["game_channel"]
+      u = m.user
       if !@allow_starts
         if opped?
-          m.reply @lang.t('general.plzhold', {:nick => m.user.to_s})
+          m.reply @lang.t('general.plzhold', {:nick => u.nick})
         else
           m.reply @lang.t 'general.noops'
         end 
@@ -314,14 +325,14 @@ module TWG
       if @game.state == :signup
         wipe_slate
         @signup_started = true
-        m.reply @lang.t('start.start', {:nick => m.user.to_s})
+        m.reply @lang.t('start.start', {:nick => u.nick})
         m.reply @lang.t('start.registration', {
           :limit   => config["game_timers"]["registration"].to_s,
           :players => @game.min_part.to_s
         })
         m.reply @lang.t('start.skipmessage')
-        @game.register(m.user.to_s)
-        voice(m.user)
+        @game.register(u)
+        voice(u)
         hook_async(:ten_seconds_left, config["game_timers"]["registration"] - 10)
         hook_async(:hook_signup_complete, config["game_timers"]["registration"])
         hook_async(:hook_signup_started)
@@ -335,8 +346,9 @@ module TWG
       @signup_started = false
 
       if r.code == :gamestart
+        players = @game.participants.keys.sort.map { |p| p.nick }
         chanm @lang.t('start.starting', {
-          :players => @game.participants.keys.sort.join(', ')
+          :players => players
         })
         chanm @lang.t('start.rolesoon')
         Channel(config["game_channel"]).mode('+m')
@@ -356,14 +368,15 @@ module TWG
       return if !m.channel?
       return if !@signup_started
       if !@game.nil? && @game.state == :signup
-        r = @game.register(m.user.to_s)
+        u = m.user
+        r = @game.register(u)
         if r.code == :confirmplayer
           m.reply @lang.t('start.joined', {
-            :player => m.user.to_s,
+            :player => u.nick,
             :number => @game.participants.length.to_s,
             :min    => @game.min_part.to_s
           })
-          Channel(config["game_channel"]).voice(m.user)
+          voice(u)
         end
       end
     end
@@ -374,16 +387,16 @@ module TWG
       return if not @signup_started
       return if @game.nil?
       return if @game.state != :signup
-      uobj = User(user)
-      return if not m.channel.users.keys.include?(uobj)
-      r = @game.register(user)
+      u = User(user)
+      return if not m.channel.users.keys.include?(u)
+      r = @game.register(u)
       if r.code == :confirmplayer
         m.reply @lang.t('start.forcejoined', {
-          :player => user,
+          :player => u.nick,
           :number => @game.participants.length.to_s,
           :min    => @game.min_part.to_s
         })
-        Channel(config["game_channel"]).voice(uobj)
+        voice(u)
       end
     end
 
@@ -406,6 +419,7 @@ module TWG
             elligible.delete(voter)
           end
         end
+        elligible.map! { |p| p.nick }
         if elligible.count > 0
           chanm @lang.t('day.almostready.yet', {
             :secs      => secsremain,
@@ -444,7 +458,7 @@ module TWG
       else
         killed = r[0]
         chanm @lang.t('night.exit.body', {
-          :killed => killed
+          :killed => killed.nick
         })
         devoice(killed)
       end
@@ -481,11 +495,11 @@ module TWG
         k = r[0]
         role = r[1]
         chanm @lang.t('day.exit.lynch', {
-          :killed => k
+          :killed => k.nick
         })
         sleep 2
         chanm @lang.t('day.exit.suspense', {
-          :killed => k
+          :killed => k.nick
         })
         sleep(config["game_timers"]["dramatic_effect"])
       end
@@ -506,11 +520,12 @@ module TWG
       @game.participants.keys.each do |user|
         case @game.participants[user]
         when :normal
-          userm(user, @lang.t('roles.normal'))
+          user.send(@lang.t('roles.normal'))
         when :wolf
           wolfcp = @game.game_wolves.dup
           wolfcp.delete(user)
-          userm(user, @lang.t('roles.wolf', {
+          wolfcp.map! { |p| p.nick }
+          user.send(@lang.t('roles.wolf', {
             :count => @game.game_wolves.count,
             :wolves => wolfcp.join(', ')
           }))
@@ -520,20 +535,22 @@ module TWG
 
     def check_victory_conditions
       return if @game.nil?
+      all_wolves = @game.game_wolves.map { |p| p.nick }
+      wolves_alive = @game.wolves_alive.map { |p| p.nick }
       if @game.state == :wolveswin
         chanm @lang.t('victory.wolfreveal', {
-          :count => @game.live_wolves,
-          :wolf  => @game.wolves_alive[0]
+          :count => wolves_alive.count,
+          :wolf  => wolves_alive[0]
         })
         if @game.game_wolves.length == 1
-          chanm @lang.t('victory.wolf', {:wolf => @game.wolves_alive[0]})
+          chanm @lang.t('victory.wolf', {:wolf => wolves_alive[0]})
         else
           if @game.live_wolves == @game.game_wolves.length
-            chanm @lang.t('victory.wolves.all', {:wolves => @game.game_wolves.join(', ')})
+            chanm @lang.t('victory.wolves.all', {:wolves => all_wolves.join(', ')})
           else
             chanm @lang.t('victory.wolves', {
-              :count  => @game.wolves_alive.count,
-              :wolves => @game.wolves_alive.join(', ')
+              :count  => wolves_alive.count,
+              :wolves => wolves_alive.join(', ')
             })
           end
         end
@@ -541,8 +558,8 @@ module TWG
         return true
       elsif @game.state == :humanswin
         chanm @lang.t('victory.human', {
-          :wolves => @game.game_wolves.join(', '),
-          :count  => @game.game_wolves.count
+          :wolves => all_wolves.join(', '),
+          :count  => all_wolves.count
         })
         wipe_slate
         return true
@@ -567,7 +584,7 @@ module TWG
         :night => @game.iteration
       })
       alive.each do |wolf|
-        userm(wolf, message)
+        wolf.send(message)
       end
     end
 
@@ -582,7 +599,7 @@ module TWG
         message = @lang.t('day.enter.solicit.kill', {
           :day    => @game.iteration,
           :secs   => config["game_timers"]["day"].to_s,
-          :killed => killed
+          :killed => killed.nick
         })
       end
       chanm message
@@ -590,10 +607,6 @@ module TWG
 
     def chanm(m)
       Channel(config["game_channel"]).send(m)
-    end
-
-    def userm(user, m)
-      User(user).send(m)
     end
 
     def wipe_slate

@@ -7,7 +7,6 @@ module TWG
     listen_to :hook_notify_roles,         :method => :notify_roles
     listen_to :hook_night_votes_applied,  :method => :seer_reveal
     listen_to :enter_night,               :method => :solicit_seer_choice
-    listen_to :nick,                      :method => :nickchange
 
     def self.description
       "Special role which can reveal other players' roles at night"
@@ -34,7 +33,7 @@ module TWG
       reset
       @seer = seer
       return if @seer.nil?
-      User(@seer).send @lang.t('seer.solicit', :night => @game.iteration.to_s)
+      @seer.send @lang.t('seer.solicit', :night => @game.iteration.to_s)
     end
 
     def seer_reveal(m,opts)
@@ -42,22 +41,15 @@ module TWG
       return if @game.state != :night
       return if @seer.nil?
       return if @target.nil?
+      tnick = @target.nick
       if seer != @seer
-        User(@seer).send @lang.t('seer.killed', :target => @target)
+        @seer.send @lang.t('seer.killed', :target => tnick)
         reset
         return
       end
       t = @game.participants[@target]
-      case t
-        when :dead
-          User(@seer).send @lang.t('seer.reveal.dead', :target => @target)
-        when :wolf
-          User(@seer).send @lang.t('seer.reveal.wolf', :target => @target)
-        when :vigilante
-          User(@seer).send @lang.t('seer.reveal.vigilante', :target => @target)
-        else
-          User(@seer).send @lang.t('seer.reveal.normal', :target => @target)
-      end
+      t = :normal if not [:dead, :wolf, :vigilante].include?(t)
+      @seer.send @lang.t("seer.reveal.#{t.to_s}", :target => tnick)
       reset
     end
 
@@ -65,7 +57,7 @@ module TWG
       return if @game.nil?
       s = seer
       return if s.nil?
-      User(s).send @lang.t('seer.role')
+      s.send @lang.t('seer.role')
     end
 
     def see(m, target)
@@ -75,6 +67,8 @@ module TWG
       return if s.nil?
       return if s != m.user.nick
 
+      target = User(target)
+
       if @game.state != :night
         m.reply @lang.t('seer.awake')
         return
@@ -82,7 +76,7 @@ module TWG
 
       t = @game.participants[target]
       if t.nil?
-        m.reply @lang.t('seer.target.nosuch', :target => target)
+        m.reply @lang.t('seer.target.nosuch', :target => target.nick)
         return
       end
 
@@ -92,24 +86,17 @@ module TWG
       end
 
       if t == :dead
-        m.reply @lang.t('seer.target.dead', :target => target)
+        m.reply @lang.t('seer.target.dead', :target => target.nick)
         return
       end
 
       if @target.nil?
-        m.reply @lang.t('seer.target.confirm', :target => target)
+        m.reply @lang.t('seer.target.confirm', :target => target.nick)
       else
-        m.reply @lang.t('seer.target.change', :target => target)
+        m.reply @lang.t('seer.target.change', :target => target.nick)
       end
 
       @target = target
-    end
-
-    def nickchange(m)
-      oldname = m.user.last_nick.to_s
-      newname = m.user.to_s
-      @seer = newname if @seer == oldname
-      @target = newname if @target == oldname
     end
 
     private
