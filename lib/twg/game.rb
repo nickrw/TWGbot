@@ -213,12 +213,6 @@ module TWG
 
     def assign_roles
 
-      # Convert all keys in @participants to strings, to make comparison (voting, etc) easier.
-      # These will initially be Cinch::User objects for IRC.
-      partasstring = {}
-      @participants.keys.each { |part| partasstring[part.to_s] = :normal }
-      @participants = partasstring
-
       @live_wolves = (@wolf_ratio * @participants.length).to_i
       @live_norms = @participants.length - @live_wolves
       @game_wolves = @participants.keys.shuffle[0..(@live_wolves-1)].sort
