@@ -42,7 +42,7 @@ module TWG
 
       @game.kill(u)
       @game.remove_votes_for(u)
-      @game.remove_votes_by(y)
+      @game.remove_votes_by(u)
       chansay('resign.announce', :player => u)
       @core.devoice(u)
 
