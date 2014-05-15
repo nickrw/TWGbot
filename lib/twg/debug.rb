@@ -5,9 +5,9 @@ module TWG
   class Debug < TWG::Plugin
     include Cinch::Plugin
 
-    match /debug ([^ ]+)$/, :method => :debug
+    match /debug ([^ ]+)$/, :method => :debug_command
 
-    def debug(m, request)
+    def debug_command(m, request)
       return if m.channel?
       u = m.user
       return if not admin?(u)
