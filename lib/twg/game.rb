@@ -195,11 +195,11 @@ module TWG
       return old
     end
 
-    def remove_vote_for(nick)
+    def remove_votes_for(nick)
       @votes.delete(nick)
     end
 
-    def remove_vote_by(nick)
+    def remove_votes_by(nick)
       @votes.dup.each do |votee,voters|
         if voters.include?(nick)
           @votes[votee].delete(nick)

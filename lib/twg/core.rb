@@ -245,7 +245,7 @@ module TWG
       if votee.class == Cinch::User
         votee = votee.nick
       end
-      voters.map! { |p| p.nick }
+      voters = voters.map { |p| p.nick }
       if votee == :abstain
         message = @lang.t('votes.abstain', {
           :count => voters.count,
@@ -377,7 +377,7 @@ module TWG
       if r.code == :gamestart
         players = @game.participants.keys.sort.map { |p| p.nick }
         chanm @lang.t('start.starting', {
-          :players => players
+          :players => players.join(", ")
         })
         chanm @lang.t('start.rolesoon')
         Channel(config["game_channel"]).mode('+m')
