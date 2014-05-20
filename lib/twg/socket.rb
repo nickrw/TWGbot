@@ -74,6 +74,17 @@ module TWG
         args = res[:args]
         hook_async(hook, 0, nil, *args)
         socket.puts "OK triggered hook %s" % hook.to_s
+      when :debug
+        args = res[:args]
+        debug_command = args.shift
+        response = TWG::Debug.handler(
+          "via local socket",
+          @game,
+          @core,
+          debug_command,
+          args.join(" ")
+        )
+        socket.puts "DBG %s" % response
       else
         socket.puts "ERR unrecognised command %s" % res[:command].to_s
       end
