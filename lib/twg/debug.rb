@@ -5,13 +5,20 @@ module TWG
   class Debug < TWG::Plugin
     include Cinch::Plugin
 
-    match /debug ([^ ]+)$/, :method => :debug_command
+    match /debug ([^ ]+)(?: (.*))?$/, :method => :debug_command
 
-    def debug_command(m, request)
-      return if m.channel?
+    def debug_command(m, request, args = nil)
       u = m.user
       return if not admin?(u)
       case request
+      when 'minimum'
+        args = args.to_i
+        @game.min_part = args
+        m.reply("Minimum number of participants set to #{@game.min_part.inspect}")
+      when 'lang'
+        m.reply(@core.lang.inspect)
+      when 'state'
+        m.reply(@game.state.inspect)
       when 'roles'
         transparency(u, request)
         m.reply(@game.participants.inspect)

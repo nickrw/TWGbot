@@ -7,7 +7,7 @@ module TWG
     attr_reader :live_norms
     attr_reader :votes
     attr_reader :game_wolves
-    attr_reader :min_part
+    attr_accessor :min_part
     attr_reader :iteration
 
     def initialize
@@ -214,6 +214,8 @@ module TWG
     def assign_roles
 
       @live_wolves = (@wolf_ratio * @participants.length).to_i
+      # wolf ratio might cause zero wolves in a debug'd game
+      @live_wolves += 1 if @live_wolves == 0
       @live_norms = @participants.length - @live_wolves
       @game_wolves = @participants.keys.shuffle[0..(@live_wolves-1)].sort
 
