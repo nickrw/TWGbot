@@ -70,16 +70,16 @@ module TWG
       return if not @allow_starts
       case @game.state
       when nil, :signup, :wolveswin, :humanswin
-      else
-        return
-      end
-      m.reply @lang.t 'lang.packs'
-      TWG::Lang.list.each do |pack, desc|
-        message = "#{pack}: #{desc}"
-        if @lang.pack == pack
-          message = Format(:italic, message)
+        m.reply @lang.t 'lang.packs.all'
+        TWG::Lang.list.each do |pack, desc|
+          message = "#{pack}: #{desc}"
+          if @lang.pack == pack
+            message = Format(:italic, message)
+          end
+          m.reply message
         end
-        m.reply message
+      else
+        m.reply @lang.t 'lang.packs.current', :lang => @lang.pack.to_s
       end
     end
 
@@ -90,6 +90,7 @@ module TWG
       case @game.state
       when nil, :signup, :wolveswin, :humanswin
       else
+        m.reply @lang.t 'lang.packs.current', :lang => @lang.pack.to_s
         return
       end
       case @lang.select(lang.to_sym)

@@ -2,7 +2,9 @@ default:
   lang:
     description: "Bog standard werewolf game"
     advertise: "While no game is running say !langs to see a list of available themes / languages."
-    packs: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+    packs:
+      all: "The following language packs are available (active pack italicised). Say !lang <name> to switch."
+      current: "Can't change language packs during a game. The current active pack is: %{lang}"
     notfound: "No language pack named '%{lang}' available."
     inactive: "Language pack '%{lang}' is currently unavailable."
   command:
