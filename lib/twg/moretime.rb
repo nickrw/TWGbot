@@ -73,6 +73,7 @@ module TWG
 
     def enable_command(m=nil)
       @limit = @signup
+      @added = 0
       @when = Time.now
     end
 
