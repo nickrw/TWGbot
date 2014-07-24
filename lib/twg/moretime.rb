@@ -23,6 +23,7 @@ module TWG
       __register_matchers
       @signup = @coreconfig["game_timers"]["registration"]
       @additional = config["seconds"] ||= 120
+      @added = 0
       disable_command
     end
 
@@ -56,14 +57,17 @@ module TWG
       # maintain a dignified silence if negative numbers are tried
       return if seconds < 1
 
+      # keep a running total of added time
+      @added += seconds
+
       # Cancel the game registration window timers and re-set them with the
       # extra seconds
       hook_cancel(:ten_seconds_left)
       hook_cancel(:hook_signup_complete)
       @limit = @limit - seconds
       remaining = @signup - (Time.now - @when).to_i
-      hook_async(:ten_seconds_left, remaining + seconds - 10)
-      hook_async(:hook_signup_complete, remaining + seconds)
+      hook_async(:ten_seconds_left, remaining + @added - 10)
+      hook_async(:hook_signup_complete, remaining + @added)
       m.reply(@lang.t('moretime.confirm', :count => seconds), true)
     end
 
