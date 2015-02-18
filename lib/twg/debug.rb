@@ -7,7 +7,7 @@ module TWG
 
     match /debug ([^ ]+)(?: (.*))?$/, :method => :debug_command
 
-    def self.handler(username, game, core, request, args = nil)
+    def self.handler(username, game, core, request, shared, args = nil)
       case request
       when 'minimum'
         if args.nil? or args.empty?
@@ -19,6 +19,9 @@ module TWG
         end
       when 'lang'
         return core.lang.inspect
+      when 'timers'
+        shared[:timer] ||= Hash.new
+        return shared[:timer].inspect
       when 'state'
         return game.state.inspect
       when 'roles'
@@ -35,7 +38,7 @@ module TWG
     def debug_command(m, request, args = nil)
       u = m.user
       return if not admin?(u)
-      response = self.class.handler(u.nick, @game, @core, request, args)
+      response = self.class.handler(u.nick, @game, @core, request, shared, args)
       m.reply response
     end
 
