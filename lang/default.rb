@@ -18,7 +18,7 @@
           if rand(200) == 100
             opts[:voter].upcase + " WILL END " + opts[:votee].upcase
           else
-            if opts[:voter] == "Josh" and rand(10) == 5
+            if opts[:voter] == "CapnJosh" and rand(10) == 5
               opts[:voter] + " vote's for " + opts[:votee]
             else 
               opts[:voter] + " voted for " + opts[:votee]
