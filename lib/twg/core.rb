@@ -353,6 +353,10 @@ module TWG
         @game.reset
       end
       if @game.state == :signup
+        if not opped?
+          m.reply @lang.t 'general.noops'
+          return
+        end
         wipe_slate
         @signup_started = true
         m.reply @lang.t('start.start', {:nick => u.nick})
