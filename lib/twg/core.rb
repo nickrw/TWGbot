@@ -517,10 +517,11 @@ module TWG
 
       # Voice everyone back
       voice = []
-      players = @game.participants.keys.sort.map { |p| p.nick }
-      players.each do |nick|
-        next if nick == bot.nick
-        voice << nick
+      players = @game.participants.keys.sort.map { |p| p }
+      players.each do |player|
+        next if player.nick == bot.nick
+        next if @game.dead? player
+        voice << player.nick
       end
       multimode(voice, config["game_channel"], "+", "v")
 
