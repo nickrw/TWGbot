@@ -474,6 +474,16 @@ module TWG
         :night => @game.iteration.to_s,
         :secs => config["game_timers"]["night"].to_s
       })
+
+      # De-voice everyone during the night.
+      devoice = []
+      @gchan = Channel(config["game_channel"])
+      @gchan.users.each do |user,mode|
+        next if user == bot.nick
+        devoice << user if mode.include? 'v'
+      end
+      multimode(devoice, config["game_channel"], "-", "v")
+
       @game.state_transition_in
       solicit_wolf_votes
       hook_async(:exit_night, config["game_timers"]["night"])
@@ -504,6 +514,16 @@ module TWG
     def enter_day(m,killed)
       return if @game.nil?
       @game.state_transition_in
+
+      # Voice everyone back
+      voice = []
+      players = @game.participants.keys.sort.map { |p| p.nick }
+      players.each do |nick|
+        next if nick == bot.nick
+        voice << nick
+      end
+      multimode(voice, config["game_channel"], "+", "v")
+
       solicit_human_votes(killed)
       warn_timeout = config["game_timers"]["day_warn"]
       warn_timeout = [warn_timeout] if warn_timeout.class != Array
