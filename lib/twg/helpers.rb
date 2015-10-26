@@ -103,7 +103,7 @@ module TWG
       if str.class != String
         raise ArgumentError, "Non-string variable passed to clean"
       end
-      str = Cinch::Utilities::String.filter_string(str)
+      str = Cinch::Helpers.sanitize(str)
       str.strip
     end
 
