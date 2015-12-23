@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.1'
   s.files = Dir['{lib,lang}/**/*']
 
-  s.add_dependency 'cinch', '>= 2.0.5'
+  s.add_dependency 'cinch', '>= 2.2.0'
   s.add_dependency 'cinchize'
   s.add_dependency 'i18n', '0.6.4'
   s.add_dependency 'httparty'
